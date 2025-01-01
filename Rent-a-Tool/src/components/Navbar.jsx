@@ -1,12 +1,12 @@
 import React from "react";
 import "./Navbar.css";
-import logo from "./assets/Nav/logo.png";
-import home from "./assets/Nav/home.png";
-import add from "./assets/Nav/more.png";
-import message from "./assets/Nav/message.png";
-import settings from "./assets/Nav/settings.png";
-import login from "./assets/Nav/user.png";
-import logout from "./assets/Nav/logout.png";
+import logo from "../assets/Nav/logo.png";
+import home from "../assets/Nav/home.png";
+import add from "../assets/Nav/more.png";
+import message from "../assets/Nav/message.png";
+import settings from "../assets/Nav/settings.png";
+import login from "../assets/Nav/user.png";
+import logout from "../assets/Nav/logout.png";
 
 function Navbar() {
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);

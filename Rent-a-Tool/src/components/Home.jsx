@@ -1,7 +1,7 @@
 import React from "react";
-import HomePage from "./assets/Home/HomePage.png";
-import HomePageOffset from "./assets/Home/HomePage-80.png";
-import logo from "./assets/Home/logo.png";
+import HomePage from "../assets/Home/HomePage.png";
+import HomePageOffset from "../assets/Home/HomePage-80.png";
+import logo from "../assets/Home/logo.png";
 
 export default function Home() {
   return (
