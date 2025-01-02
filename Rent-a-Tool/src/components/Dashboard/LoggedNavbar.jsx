@@ -8,7 +8,7 @@ import settings from "../../assets/Nav/settings.png";
 import login from "../../assets/Nav/user.png";
 import logout from "../../assets/Nav/logout.png";
 
-function Navbar() {
+function Navbar({onImageClick }) {
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
 
   return (
@@ -28,8 +28,8 @@ function Navbar() {
       <div className="hidden sm:flex flex-row items-center justify-end">
         <img src={home} alt="Home" className="h-7 w-7 mx-2" />
         <img src={add} alt="Add Tools" className="h-7 w-7 mx-2" />
-        {/* <img src={message} alt="Requests" className="h-7 w-7 mx-2" />
-        <img src={settings} onClick={onImageClick} className="cursor-pointer h-7 w-7 mx-2" alt="settings"  /> */}
+        <img src={message} alt="Requests" className="h-7 w-7 mx-2" />
+        <img src={settings} onClick={onImageClick} className="cursor-pointer h-7 w-7 mx-2" alt="settings"  />
         <img src={login} alt="Login" className="h-7 w-7 mx-2" />
       </div>
 
