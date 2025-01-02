@@ -9,7 +9,7 @@ import login from "../../assets/Nav/user.png";
 import logout from "../../assets/Nav/logout.png";
 
 function Navbar({onImageClick }) {
-  const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   return (
     <div className="flex items-center justify-around h-[64px] bg-nav text-black sticky top-0 z-20">

@@ -7,19 +7,19 @@ import Home from './components/HomePage/Home'
 import DashBoard from './components/Dashboard/Dashboard'
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
-
-  // Example function to toggle login state
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const toggleLogin = () => {
     setIsLoggedIn(!isLoggedIn);
   };
-  // write the code for checking if we are on dashboard page then show the dashboard otherwise navbar only
 
   return (
 
     <>
- {isLoggedIn ? (<DashBoard />  ) : (  <Navbar />)}
-      {/* <DashBoard/> */}
+      {/* displays navbar with no setting, home and listing icon if user is not logged in*/}
+      {isLoggedIn ? (<DashBoard />  ) : (  <Navbar />)} 
+
+      {/* temporarily used so that when click on login takes us to dashboard page */}
+      {!isLoggedIn && <Home setIsLoggedIn={setIsLoggedIn} />}
       <Footer/>
     </>
   )
