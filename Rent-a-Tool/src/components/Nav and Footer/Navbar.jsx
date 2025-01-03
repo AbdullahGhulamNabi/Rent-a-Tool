@@ -7,23 +7,32 @@ import settings from "../../assets/Nav/settings.png";
 import login from "../../assets/Nav/user.png";
 import logout from "../../assets/Nav/logout.png";
 import LoginModal from "../Login and Sign Up/Login";
+import SignUpModal from "../Login and Sign Up/SignUp";
 
 
   
 
 function Navbar() {
-  const [isLoginOpen, setIsLoginOpen] = React.useState(false); 
-
-  const openLoginModal = () => {
-    setIsLoginOpen(true);
-    setIsDrawerOpen(false)
-    document.body.style.overflow = "hidden"; // Disable background scrolling
-  };
-
-  const closeLoginModal = () => {
-    setIsLoginOpen(false);
-    document.body.style.overflow = "auto"; // Enable background scrolling
-  };
+  const [isLoginOpen, setIsLoginOpen] = React.useState(false);
+    const [isSignUpOpen, setIsSignUpOpen] = React.useState(false);
+  
+    const openLoginModal = () => {
+      setIsLoginOpen(true);
+      setIsSignUpOpen(false); // Close SignUp modal if open
+      document.body.style.overflow = "hidden";
+    };
+  
+    const openSignUpModal = () => {
+      setIsSignUpOpen(true);
+      setIsLoginOpen(false); // Close Login modal if open
+      document.body.style.overflow = "hidden";
+    };
+  
+    const closeModals = () => {
+      setIsLoginOpen(false);
+      setIsSignUpOpen(false);
+      document.body.style.overflow = "auto";
+    };
   
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
   return (
@@ -98,7 +107,8 @@ function Navbar() {
           </div>
         </div>
       )}
-      {isLoginOpen && <LoginModal onClose={closeLoginModal} />}
+      {isLoginOpen && <LoginModal onClose={closeModals} onSignUpClick={openSignUpModal} />}
+      {isSignUpOpen && <SignUpModal onClose={closeModals} onLoginClick={openLoginModal} />}
     </div>
   );
 }
