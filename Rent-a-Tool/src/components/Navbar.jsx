@@ -7,9 +7,11 @@ import message from "../assets/Nav/message.png";
 import settings from "../assets/Nav/settings.png";
 import login from "../assets/Nav/user.png";
 import logout from "../assets/Nav/logout.png";
+import Listing from "./Listing";
 
 function Navbar() {
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
+  
   return (
     <div className="flex items-center justify-around h-[64px] bg-nav text-black sticky top-0 z-20">
       <div className="">
@@ -27,7 +29,7 @@ function Navbar() {
       <div className="hidden sm:flex flex-row items-center justify-end">
         <img src={home} alt="Home" className="h-7 w-7 mx-2" />
         <img src={add} alt="Add Tools" className="h-7 w-7 mx-2" />
-        {/* <img src={message} alt="Requests" className="h-7 w-7 mx-2" /> */}
+         {/* {<img src={message} alt="Requests" className="h-7 w-7 mx-2 "/> */} 
         {/* <img src={settings} alt="settings" className="h-7 w-7 mx-2" /> */}
         <img src={login} alt="Login" className="h-7 w-7 mx-2" />
       </div>
@@ -63,6 +65,7 @@ function Navbar() {
               <img src={login} alt="Login" className="h-7 w-7 mr-4" />
               <span className="text-sm font-medium">Login</span>
             </div>
+            
             <div className="flex items-center my-2">
               <img src={add} alt="Add Tools" className="h-7 w-7 mr-4" />
               <span className="text-sm font-medium">Add Tools</span>
