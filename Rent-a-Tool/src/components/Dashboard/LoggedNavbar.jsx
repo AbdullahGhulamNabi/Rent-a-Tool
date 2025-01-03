@@ -1,15 +1,16 @@
 import React from "react";
-import "./Navbar.css";
-import logo from "../assets/Nav/logo.png";
-import home from "../assets/Nav/home.png";
-import add from "../assets/Nav/more.png";
-import message from "../assets/Nav/message.png";
-import settings from "../assets/Nav/settings.png";
-import login from "../assets/Nav/user.png";
-import logout from "../assets/Nav/logout.png";
+import { useState } from "react";
+import logo from "../../assets/Nav/logo.png";
+import home from "../../assets/Nav/home.png";
+import add from "../../assets/Nav/more.png";
+import message from "../../assets/Nav/message.png";
+import settings from "../../assets/Nav/settings.png";
+import login from "../../assets/Nav/user.png";
+import logout from "../../assets/Nav/logout.png";
 
-function Navbar() {
-  const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
+function Navbar({onImageClick }) {
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
   return (
     <div className="flex items-center justify-around h-[64px] bg-nav text-black sticky top-0 z-20">
       <div className="">
@@ -27,8 +28,8 @@ function Navbar() {
       <div className="hidden sm:flex flex-row items-center justify-end">
         <img src={home} alt="Home" className="h-7 w-7 mx-2" />
         <img src={add} alt="Add Tools" className="h-7 w-7 mx-2" />
-        {/* <img src={message} alt="Requests" className="h-7 w-7 mx-2" /> */}
-        {/* <img src={settings} alt="settings" className="h-7 w-7 mx-2" /> */}
+        <img src={message} alt="Requests" className="h-7 w-7 mx-2" />
+        <img src={settings} onClick={onImageClick} className="cursor-pointer h-7 w-7 mx-2" alt="settings"  />
         <img src={login} alt="Login" className="h-7 w-7 mx-2" />
       </div>
 
@@ -67,21 +68,23 @@ function Navbar() {
               <img src={add} alt="Add Tools" className="h-7 w-7 mr-4" />
               <span className="text-sm font-medium">Add Tools</span>
             </div>
-            {/* <div className="flex items-center my-2">
+            <div className="flex items-center my-2">
               <img src={message} alt="Requests" className="h-7 w-7 mr-4" />
               <span className="text-sm font-medium">Requests</span>
-            </div> */}
-            {/* <div className="flex items-center my-2">
+            </div>
+            <div className="flex items-center my-2">
               <img src={settings} alt="Settings" className="h-7 w-7 mr-4" />
               <span className="text-sm font-medium">Settings</span>
-            </div> */}
-            {/* <div className="flex items-center my-2">
+            </div>
+            <div className="flex items-center my-2">
               <img src={logout} alt="LogOut" className="h-7 w-7 mr-4" />
               <span className="text-sm font-medium">Log Out</span>
-            </div> */}
+            </div>
           </div>
         </div>
       )}
+
+
     </div>
   );
 }
