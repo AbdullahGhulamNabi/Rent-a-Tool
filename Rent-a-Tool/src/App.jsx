@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import './App.css'
-import Navbar from './components/HomePage/Navbar'
+import Navbar from './components/Nav and Footer/Navbar'
 import LoggedNavbar from './components/Dashboard/LoggedNavbar'
-import Footer from './components/HomePage/Footer'
+import Footer from './components/Nav and Footer/Footer'
 import Home from './components/HomePage/Home'
 import DashBoard from './components/Dashboard/Dashboard'
 
