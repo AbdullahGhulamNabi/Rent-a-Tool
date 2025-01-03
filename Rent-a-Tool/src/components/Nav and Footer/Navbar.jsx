@@ -12,7 +12,7 @@ import LoginModal from "../Login and Sign Up/Login";
 
   
 
-function Navbar() {
+function Navbar({onImageClick}) {
   const [isLoginOpen, setIsLoginOpen] = React.useState(false); 
 
   const openLoginModal = () => {
@@ -93,7 +93,7 @@ function Navbar() {
               <span className="text-sm font-medium">Requests</span>
             </div>
             <div className="flex items-center my-2">
-              <img src={settings} alt="Settings" className="h-7 w-7 mr-4" />
+              <img src={settings} alt="Settings" onClick={onImageClick} className="cursor-pointer h-7 w-7 mr-4" />
               <span className="text-sm font-medium">Settings</span>
             </div>
             <div className="flex items-center my-2">
