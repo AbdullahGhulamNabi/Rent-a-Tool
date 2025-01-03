@@ -42,7 +42,7 @@ function Navbar() {
 
       <div className="hidden sm:flex flex-row items-center justify-end">
         <img src={home} alt="Home" className="h-7 w-7 mx-2" />
-        <img src={add} alt="Add Tools" className="h-7 w-7 mx-2" />
+        {/* <img src={add} alt="Add Tools" className="h-7 w-7 mx-2" /> */}
         {/* <img src={message} alt="Requests" className="h-7 w-7 mx-2" /> */}
         {/* <img src={settings} alt="settings" className="h-7 w-7 mx-2" /> */}
         <button onClick={openLoginModal}><img src={login} alt="Login" className="h-7 w-7 mx-2" /></button>
