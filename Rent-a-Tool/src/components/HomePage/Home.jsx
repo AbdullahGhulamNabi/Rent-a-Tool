@@ -4,10 +4,12 @@ import HomePageOffset from "../../assets/Home/HomePage-80.png";
 import logo from "../../assets/Home/logo.png";
 import LoginModal from "../Login and Sign Up/Login";
 import SignUpModal from "../Login and Sign Up/SignUp";
+import Tools from "./Tools";
 
-export default function Home({ setIsLoggedIn }) {
+export default function Home({ setIsLoggedIn,onLoginSuccess }) {
   const [isLoginOpen, setIsLoginOpen] = React.useState(false);
   const [isSignUpOpen, setIsSignUpOpen] = React.useState(false);
+  
 
   const openLoginModal = () => {
     setIsLoginOpen(true);
@@ -24,6 +26,8 @@ export default function Home({ setIsLoggedIn }) {
 
   const handleLogin = () => {
     setIsLoggedIn(true);
+   
+    
   };
   
   const closeModals = () => {
@@ -65,6 +69,7 @@ export default function Home({ setIsLoggedIn }) {
       {/* Modals */}
       {isLoginOpen && <LoginModal onClose={closeModals} onSignUpClick={openSignUpModal} />}
       {isSignUpOpen && <SignUpModal onClose={closeModals} onLoginClick={openLoginModal} />}
+      <Tools/>
     </div>
   );
 }

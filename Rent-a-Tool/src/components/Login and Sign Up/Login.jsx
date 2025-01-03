@@ -1,7 +1,8 @@
 import React from "react";
 import SignUpModel from './SignUp'
+import { NavLink } from "react-router-dom";
 
-function Login({ onClose, onSignUpClick }) {
+function Login({ onClose, onSignUpClick,onLoginSuccess }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
       <div className="bg-white rounded-lg shadow-lg p-6 w-[380px] relative">
@@ -29,12 +30,13 @@ function Login({ onClose, onSignUpClick }) {
               placeholder="Enter your password"
             />
           </div>
-          <button
+         <NavLink to="/dashboard" className="no-underline"> <button
             type="submit"
+            onClick={onLoginSuccess}
             className="w-full bg-HomeText text-white py-2 rounded"
           >
             Login
-          </button>
+          </button></NavLink>
         </form>
         <p className="text-sm text-center mt-4">
           Don't have an account yet?{" "}

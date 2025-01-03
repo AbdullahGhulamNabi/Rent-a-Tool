@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { Routes, Route } from 'react-router-dom';
+
 import './App.css'
 import Navbar from './components/Nav and Footer/Navbar'
 import LoggedNavbar from './components/Dashboard/LoggedNavbar'
@@ -7,6 +9,7 @@ import Home from './components/HomePage/Home'
 import Tools from './components/HomePage/Tools'
 import DashBoard from './components/Dashboard/Dashboard'
 import Login from './components/Login and Sign Up/Login'
+import SignUp from './components/Login and Sign Up/SignUp';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -17,19 +20,16 @@ function App() {
   return (
 
     <>
-      {/* displays navbar with no setting, home and listing icon if user is not logged in*/}
-      {/* {isLoggedIn ? (<DashBoard />  ) : (  <Navbar />)}  */}
+      <Navbar />
+      <Routes>
+        <Route path='/' element={<Home />} />
+        {/* <Route path='/dashboard' element={<DashBoard />} /> */}
+        <Route path='/signup' element={<SignUp />} />
+      </Routes>
+      <Footer />
+      {/* <Navbar/>
+      <Footer />  */}
 
-      {/* temporarily used so that when click on login takes us to dashboard page */}
-      {/* {!isLoggedIn && <Home setIsLoggedIn={setIsLoggedIn} />} */}
-      {/* ==== */}
-      {/* hello */}
-      {/* <Tools/>
-      <Footer/>  */}
-      <Navbar/>
-      
-       <Home/>
-    
     </>
   )
 }
