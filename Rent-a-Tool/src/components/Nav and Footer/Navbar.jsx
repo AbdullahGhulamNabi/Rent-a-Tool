@@ -1,14 +1,30 @@
 import React from "react";
-import "./Navbar.css";
-import logo from "../assets/Nav/logo.png";
-import home from "../assets/Nav/home.png";
-import add from "../assets/Nav/more.png";
-import message from "../assets/Nav/message.png";
-import settings from "../assets/Nav/settings.png";
-import login from "../assets/Nav/user.png";
-import logout from "../assets/Nav/logout.png";
+import logo from "../../assets/Nav/logo.png";
+import home from "../../assets/Nav/home.png";
+import add from "../../assets/Nav/more.png";
+import message from "../../assets/Nav/message.png";
+import settings from "../../assets/Nav/settings.png";
+import login from "../../assets/Nav/user.png";
+import logout from "../../assets/Nav/logout.png";
+import LoginModal from "../Login and Sign Up/Login";
+
+
+  
 
 function Navbar() {
+  const [isLoginOpen, setIsLoginOpen] = React.useState(false); 
+
+  const openLoginModal = () => {
+    setIsLoginOpen(true);
+    setIsDrawerOpen(false)
+    document.body.style.overflow = "hidden"; // Disable background scrolling
+  };
+
+  const closeLoginModal = () => {
+    setIsLoginOpen(false);
+    document.body.style.overflow = "auto"; // Enable background scrolling
+  };
+  
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
   return (
     <div className="flex items-center justify-around h-[64px] bg-nav text-black sticky top-0 z-20">
@@ -29,7 +45,7 @@ function Navbar() {
         <img src={add} alt="Add Tools" className="h-7 w-7 mx-2" />
         {/* <img src={message} alt="Requests" className="h-7 w-7 mx-2" /> */}
         {/* <img src={settings} alt="settings" className="h-7 w-7 mx-2" /> */}
-        <img src={login} alt="Login" className="h-7 w-7 mx-2" />
+        <button onClick={openLoginModal}><img src={login} alt="Login" className="h-7 w-7 mx-2" /></button>
       </div>
 
       <div className="sm:hidden">
@@ -59,10 +75,10 @@ function Navbar() {
               <img src={home} alt="Home" className="h-7 w-7 mr-4" />
               <span className="text-sm font-medium">Home</span>
             </div>
-            <div className="flex items-center my-2">
+            <button onClick={openLoginModal} className="flex items-center my-2">
               <img src={login} alt="Login" className="h-7 w-7 mr-4" />
               <span className="text-sm font-medium">Login</span>
-            </div>
+            </button>
             <div className="flex items-center my-2">
               <img src={add} alt="Add Tools" className="h-7 w-7 mr-4" />
               <span className="text-sm font-medium">Add Tools</span>
@@ -82,6 +98,7 @@ function Navbar() {
           </div>
         </div>
       )}
+      {isLoginOpen && <LoginModal onClose={closeLoginModal} />}
     </div>
   );
 }
