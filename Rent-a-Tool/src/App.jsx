@@ -22,6 +22,7 @@ function App() {
       {/* temporarily used so that when click on login takes us to dashboard page */}
       {!isLoggedIn && <Home setIsLoggedIn={setIsLoggedIn} />}
       {/* ==== */}
+      {/* hello */}
       <Tools/>
       <Footer/>
     </>
