@@ -17,13 +17,15 @@ export default function Modal({ onClose }) {
         return (
           <div className="bg-white rounded-lg shadow-lg p-6 w-full sm:w-[380px] md:w-[450px] lg:w-[500px]">
             <h3 className="text-lg font-bold mb-4">Account Settings</h3>
-            <p>Here you can update your account details.</p>
-            <button
-              onClick={closeSubModal}
-              className="mt-4 bg-blue-500 text-white px-6 py-3 rounded-full hover:bg-blue-600 transition"
-            >
-              Back
-            </button>
+              <div className="mb-4">
+                <label htmlFor="username" className="block text-gray-700 mb-1">Username</label>
+                <input
+                  type="text"
+                  id="username"
+                  placeholder="Enter your username"
+                  className="w-full px-4 py-2 border rounded-md border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                />
+              </div>
           </div>
         );
       case "notifications":
@@ -55,16 +57,72 @@ export default function Modal({ onClose }) {
       case "change-password":
         return (
           <div className="bg-white rounded-lg shadow-lg p-6 w-full sm:w-[380px] md:w-[450px] lg:w-[500px]">
-            <h3 className="text-lg font-bold mb-4">Privacy</h3>
-            <p>Control your privacy settings here.</p>
-            <button
-              onClick={closeSubModal}
-              className="mt-4 bg-blue-500 text-white px-6 py-3 rounded-full hover:bg-blue-600 transition"
-            >
-              Back
-            </button>
+            {/* Title Section */}
+            <h3 className="text-lg font-semibold mb-6 text-center">Account Settings</h3>
+        
+            {/* Account Details Section */}
+            <div className="mb-6">
+              <div className="mb-4">
+                <label htmlFor="email" className="block text-gray-700 mb-1">Email Address</label>
+                <input
+                  type="email"
+                  id="email"
+                  placeholder="Enter your email"
+                  className="w-full px-4 py-2 border rounded-md border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                />
+              </div>
+              
+            </div>
+        
+            {/* Change Password Section */}
+            <div className="mb-6">
+              <h4 className="text-md font-semibold mb-3">Change Password</h4>
+              <div className="mb-4">
+                <label htmlFor="current-password" className="block text-gray-700 mb-1">Current Password</label>
+                <input
+                  type="password"
+                  id="current-password"
+                  placeholder="Enter your current password"
+                  className="w-full px-4 py-2 border rounded-md border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="new-password" className="block text-gray-700 mb-1">New Password</label>
+                <input
+                  type="password"
+                  id="new-password"
+                  placeholder="Enter your new password"
+                  className="w-full px-4 py-2 border rounded-md border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="confirm-password" className="block text-gray-700 mb-1">Confirm New Password</label>
+                <input
+                  type="password"
+                  id="confirm-password"
+                  placeholder="Confirm your new password"
+                  className="w-full px-4 py-2 border rounded-md border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                />
+              </div>
+            </div>
+        
+            {/* Action Buttons */}
+            <div className="flex justify-between mt-4">
+              <button
+                onClick={closeSubModal}
+                className="bg-gray-300 text-black px-6 py-3 rounded-full hover:bg-gray-400 transition"
+              >
+                Cancel
+              </button>
+              <button
+                className="bg-blue-500 text-white px-6 py-3 rounded-full hover:bg-blue-600 transition"
+              >
+                Save Changes
+              </button>
+            </div>
           </div>
         );
+        
       case "messages":
         return (
           <div className="bg-white rounded-lg shadow-lg p-6 w-full sm:w-[380px] md:w-[450px] lg:w-[500px]">
