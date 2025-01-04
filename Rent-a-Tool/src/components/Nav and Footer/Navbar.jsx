@@ -9,11 +9,15 @@ import login from "../../assets/Nav/user.png";
 import logout from "../../assets/Nav/logout.png";
 import LoginModal from "../Login and Sign Up/Login";
 import SignUpModal from "../Login and Sign Up/SignUp";
+import AddUpdateModal from '../Add-Update/AddUpdate'
+
+
 
 function Navbar({ onImageClick }) {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isSignUpOpen, setIsSignUpOpen] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isAddUpdateOpen, setIsAddUpateOpen] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false); // Track login status
 
   const openLoginModal = () => {
@@ -28,9 +32,18 @@ function Navbar({ onImageClick }) {
     document.body.style.overflow = "hidden";
   };
 
+  const openAddUpdateModal = () =>{
+     setIsAddUpateOpen(true);
+     setIsLoginOpen(false);
+     setIsSignUpOpen(false);
+    document.body.style.overflow = "hidden";
+
+  };
+
   const closeModals = () => {
     setIsLoginOpen(false);
     setIsSignUpOpen(false);
+    setIsAddUpateOpen(false);
     document.body.style.overflow = "auto";
   };
 
@@ -63,8 +76,10 @@ function Navbar({ onImageClick }) {
         </NavLink>
 
         {loggedIn ? (
-          <>
+          <> 
+            <button onClick={openAddUpdateModal}>
             <img src={add} alt="Add Tools" className="h-7 w-7 mx-2" />
+            </button>
             <img src={message} alt="Requests" className="h-7 w-7 mx-2" />
             <img src={settings} onClick={onImageClick} className="cursor-pointer h-7 w-7 mx-2" alt="settings" />
             <button onClick={handleLogout}>
@@ -105,10 +120,12 @@ function Navbar({ onImageClick }) {
 
             {loggedIn ? (
               <>
+                  <button onClick={openAddUpdateModal}>
                 <div className="flex items-center my-2">
                   <img src={add} alt="Add Tools" className="h-7 w-7 mr-4" />
                   <span className="text-sm font-medium">Add Tools</span>
                 </div>
+                  </button>
                 <div className="flex items-center my-2">
                   <img src={message} alt="Requests" className="h-7 w-7 mr-4" />
                   <span className="text-sm font-medium">Requests</span>
@@ -136,6 +153,7 @@ function Navbar({ onImageClick }) {
 
       {isLoginOpen && <LoginModal onClose={closeModals} onSignUpClick={openSignUpModal} onLoginSuccess={handleLogin} />}
       {isSignUpOpen && <SignUpModal onClose={closeModals} onLoginClick={openLoginModal} />}
+      {isAddUpdateOpen && <AddUpdateModal onClose={closeModals} />}
     </div>
   );
 }

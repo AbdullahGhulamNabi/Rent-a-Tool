@@ -10,6 +10,9 @@ import Tools from './components/HomePage/Tools'
 import DashBoard from './components/Dashboard/Dashboard'
 import Login from './components/Login and Sign Up/Login'
 import SignUp from './components/Login and Sign Up/SignUp';
+import ToolDetail from './components/Tool-Description/ToolDetail';
+import AddUpdate from './components/Add-Update/AddUpdate';
+import ChatInterface from './components/Chat-Module/ChatInterface';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -25,6 +28,9 @@ function App() {
         <Route path='/' element={<Home />} />
         {/* <Route path='/dashboard' element={<DashBoard />} /> */}
         <Route path='/signup' element={<SignUp />} />
+        <Route path='/add_tool' element={<AddUpdate/>} />
+        <Route path='/tooldetail' element={<ToolDetail/>} />
+        <Route path='/chat' element={<ChatInterface/>} />
       </Routes>
       <Footer />
       {/* <Navbar/>
