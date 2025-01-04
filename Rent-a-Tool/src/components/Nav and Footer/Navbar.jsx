@@ -9,39 +9,48 @@ import logout from "../../assets/Nav/logout.png";
 import LoginModal from "../Login and Sign Up/Login";
 import SignUpModal from "../Login and Sign Up/SignUp";
 
-
-  
-
 function Navbar() {
   const [isLoginOpen, setIsLoginOpen] = React.useState(false);
-    const [isSignUpOpen, setIsSignUpOpen] = React.useState(false);
-  
-    const openLoginModal = () => {
-      setIsLoginOpen(true);
-      setIsSignUpOpen(false); // Close SignUp modal if open
-      document.body.style.overflow = "hidden";
-    };
-  
-    const openSignUpModal = () => {
-      setIsSignUpOpen(true);
-      setIsLoginOpen(false); // Close Login modal if open
-      document.body.style.overflow = "hidden";
-    };
-  
-    const closeModals = () => {
-      setIsLoginOpen(false);
-      setIsSignUpOpen(false);
-      document.body.style.overflow = "auto";
-    };
-  
-  const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
+  const [isSignUpOpen, setIsSignUpOpen] = React.useState(false);
+  const [isLoginClicked, setIsLoginClicked] = React.useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
+
+  const openLoginModal = () => {
+    setIsLoginOpen(true);
+    setIsSignUpOpen(false);
+    document.body.style.overflow = "hidden";
+  };
+
+  const openSignUpModal = () => {
+    setIsSignUpOpen(true);
+    setIsLoginOpen(false);
+    document.body.style.overflow = "hidden";
+  };
+
+  const closeModals = () => {
+    setIsLoginOpen(false);
+    setIsSignUpOpen(false);
+    setIsSettingsOpen(false);
+    document.body.style.overflow = "auto";
+  };
+
+  const goToDashboard = () => {
+    setIsLoginClicked(true);
+    setIsLoginOpen(false);
+  };
+
+  const openSettingsModal = () => {
+    setIsSettingsOpen(true);
+    document.body.style.overflow = "hidden";
+  };
+
   return (
     <div className="flex items-center justify-around h-[64px] bg-nav text-black sticky top-0 z-20">
-      <div className="">
+      <div>
         <img src={logo} alt="Logo" className="h-12 w-18 " />
       </div>
 
-      <div className="">
+      <div>
         <input
           type="search"
           placeholder="Search..."
@@ -51,66 +60,48 @@ function Navbar() {
 
       <div className="hidden sm:flex flex-row items-center justify-end">
         <img src={home} alt="Home" className="h-7 w-7 mx-2" />
-        {/* <img src={add} alt="Add Tools" className="h-7 w-7 mx-2" /> */}
-        {/* <img src={message} alt="Requests" className="h-7 w-7 mx-2" /> */}
-        {/* <img src={settings} alt="settings" className="h-7 w-7 mx-2" /> */}
-        <button onClick={openLoginModal}><img src={login} alt="Login" className="h-7 w-7 mx-2" /></button>
-      </div>
 
-      <div className="sm:hidden">
-        <button
-          onClick={() => setIsDrawerOpen(!isDrawerOpen)}
-          className="h-10 w-10 bg-gray-200 rounded-full"
-        >
-          ☰
-        </button>
-      </div>
-
-      {isDrawerOpen && (
-        <div className="fixed top-0 bottom-0 left-0 w-64 h-screen bg-white flex flex-col p-4">
-          <button
-            onClick={() => setIsDrawerOpen(false)}
-            className="self-end mb-4 text-black"
-          >
-            ✖
-          </button>
-
-          <div className="mb-6">
-            <img src={logo} alt="Logo" className="h-12 w-18 mr-4" />
-          </div>
-
-          <div className="flex flex-col">
-            <div className="flex items-center my-2">
-              <img src={home} alt="Home" className="h-7 w-7 mr-4" />
-              <span className="text-sm font-medium">Home</span>
-            </div>
-            <button onClick={openLoginModal} className="flex items-center my-2">
-              <img src={login} alt="Login" className="h-7 w-7 mr-4" />
-              <span className="text-sm font-medium">Login</span>
+        {isLoginClicked ? (
+          <>
+            <img src={add} alt="Add Tools" className="h-7 w-7 mx-2" />
+            <img src={message} alt="Requests" className="h-7 w-7 mx-2" />
+            <button onClick={openSettingsModal}>
+              <img src={settings} alt="Settings" className="h-7 w-7 mx-2" />
             </button>
-            <div className="flex items-center my-2">
-              <img src={add} alt="Add Tools" className="h-7 w-7 mr-4" />
-              <span className="text-sm font-medium">Add Tools</span>
-            </div>
-            {/* <div className="flex items-center my-2">
-              <img src={message} alt="Requests" className="h-7 w-7 mr-4" />
-              <span className="text-sm font-medium">Requests</span>
-            </div> */}
-            {/* <div className="flex items-center my-2">
-              <img src={settings} alt="Settings" className="h-7 w-7 mr-4" />
-              <span className="text-sm font-medium">Settings</span>
-            </div> */}
-            {/* <div className="flex items-center my-2">
-              <img src={logout} alt="LogOut" className="h-7 w-7 mr-4" />
-              <span className="text-sm font-medium">Log Out</span>
-            </div> */}
+            <img src={logout} alt="LogOut" className="h-7 w-7 mx-2" />
+          </>
+        ) : (
+          <button onClick={openLoginModal}>
+            <img src={login} alt="Login" className="h-7 w-7 mx-2" />
+          </button>
+        )}
+      </div>
+
+      {isLoginOpen && <LoginModal onClose={closeModals} onSignUpClick={openSignUpModal} goToDashboard={goToDashboard} />}
+      {isSignUpOpen && <SignUpModal onClose={closeModals} onLoginClick={openLoginModal} />}
+      {isSettingsOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-[380px] relative">
+            <button
+              onClick={closeModals}
+              className="absolute top-2 right-3 text-gray-500 hover:text-black"
+            >
+              ✕
+            </button>
+            <h2 className="text-xl font-bold mb-4">Settings</h2>
+            <ul>
+              <li className="mb-2">Account Settings</li>
+              <li className="mb-2">Notifications</li>
+              <li className="mb-2">Privacy</li>
+            </ul>
           </div>
         </div>
       )}
-      {isLoginOpen && <LoginModal onClose={closeModals} onSignUpClick={openSignUpModal} />}
-      {isSignUpOpen && <SignUpModal onClose={closeModals} onLoginClick={openLoginModal} />}
     </div>
   );
 }
 
 export default Navbar;
+
+
+

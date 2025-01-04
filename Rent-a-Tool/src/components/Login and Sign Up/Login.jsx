@@ -1,7 +1,9 @@
 import React from "react";
 import SignUpModel from '../Login and Sign Up/SignUp'
 
-function Login({ onClose, onSignUpClick }) {
+function Login({goToDashboard ,onClose, onSignUpClick }) {
+
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
       <div className="bg-white rounded-lg shadow-lg p-6 w-[380px] relative">
@@ -30,6 +32,7 @@ function Login({ onClose, onSignUpClick }) {
             />
           </div>
           <button
+            onClick={goToDashboard}
             type="submit"
             className="w-full bg-HomeText text-white py-2 rounded"
           >
