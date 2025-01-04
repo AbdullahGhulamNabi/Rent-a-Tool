@@ -1,102 +1,65 @@
-// src/components/Dashboard.jsx
-import React, { useState } from 'react';
-import LoggedNavbar from './LoggedNavbar';
-import Modal from './Modal';
+import React from 'react';
 
-const Dashboard = () => {
-  const [isModalVisible, setModalVisible] = useState(false);
-  const [selectedItem, setSelectedItem] = useState(null);
-
-  const toggleModal = () => {
-    setModalVisible(!isModalVisible);
-  };
-
-  const handleItemClick = (item) => {
-    setSelectedItem(item);
-  };
-
+function Dashboard() {
   return (
-    <div>
-      <LoggedNavbar onImageClick={toggleModal} />
-      {/* Other dashboard content */}
-      {isModalVisible && (
-        <Modal onClose={toggleModal}>
-          {!selectedItem ? (
-            <ul className="divide-y divide-gray-200">
-              <li
-                className="p-4 cursor-pointer hover:bg-gray-100"
-                onClick={() => handleItemClick('change-password')}
-              >
-                Change Password
-              </li>
+    <div className="p-8 bg-imageBG">
+      {/* Welcome Message */}
+      <div className="bg-white shadow-md rounded-lg p-6">
+        <h1 className="text-3xl font-bold text-gray-800 mb-4">
+          Welcome to Rent-a-Tool!
+        </h1>
+        <p className="text-gray-600">
+          We're glad to have you on board. Explore tools or manage your rentals with ease.
+        </p>
+      </div>
 
-                
-              <li
-                className="p-4 cursor-pointer hover:bg-gray-100"
-                onClick={() => handleItemClick('account-setting')}
-              >
-                Account Settings
-              </li>
+      {/* Stats Cards */}
+      <div className="mt-8">
+        <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+          Quick Stats
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          <div className="bg-white shadow-md rounded-lg p-4 text-center">
+            <h3 className="text-lg font-medium text-gray-800">Total Tools Listed</h3>
+            <p className="text-2xl font-bold text-blue-600">15</p>
+          </div>
+          <div className="bg-white shadow-md rounded-lg p-4 text-center">
+            <h3 className="text-lg font-medium text-gray-800">Active Rentals</h3>
+            <p className="text-2xl font-bold text-green-600">4</p>
+          </div>
+          <div className="bg-white shadow-md rounded-lg p-4 text-center">
+            <h3 className="text-lg font-medium text-gray-800">Pending Requests</h3>
+            <p className="text-2xl font-bold text-orange-600">2</p>
+          </div>
+        </div>
+      </div>
 
-              <li
-                className="p-4 cursor-pointer hover:bg-gray-100"
-                onClick={() => handleItemClick('tutorial-and-help')}
-              >
-                Tutorial and Help
-              </li>
-              <li
-                className="p-4 cursor-pointer hover:bg-gray-100"
-                onClick={() => handleItemClick('msg-and-notification')}
-              >
-                Message and Notification Setting
-              </li>
-              
-            </ul>
-          ) : (
-            <div>
-              {selectedItem === 'change-password' && (
-                <div>
-                  <h2 className="text-xl font-bold mb-4">Change Password</h2>
-                  <p>Instructions for changing your password...</p>
-                  {/* Include form or additional content here */}
-                </div>
-              )}
-              {selectedItem === 'tutorial-and-help' && (
-                <div>
-                  <h2 className="text-xl font-bold mb-4">Tutorial and Help</h2>
-                  <p>Instructions for changing your password...</p>
-                  {/* Include form or additional content here */}
-                </div>
-              )}
-
-              {selectedItem === 'account-setting' && (
-                <div>
-                  <h2 className="text-xl font-bold mb-4">Account Setting</h2>
-                  <p>Instructions for changing your password...</p>
-                  {/* Include form or additional content here */}
-                </div>
-              )}
-              {selectedItem === 'msg-and-notification' && (
-                <div>
-                  <h2 className="text-xl font-bold mb-4">Messages and Notifications</h2>
-                  <p>Instructions for changing your password...</p>
-                  {/* Include form or additional content here */}
-                </div>
-              )}
-              
-
-              <button
-                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
-                onClick={() => setSelectedItem(null)}
-              >
-                Back to List
-              </button>
-            </div>
-          )}
-        </Modal>
-      )}
+      {/* Quick Links */}
+      <div className="mt-8">
+        <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+          Quick Links
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          <div className="bg-white shadow-md rounded-lg p-4 text-center">
+            <h3 className="text-lg font-medium text-gray-800">Browse Tools</h3>
+            <p className="text-gray-600">Explore tools available for rent.</p>
+          </div>
+          <div className="bg-white shadow-md rounded-lg p-4 text-center">
+            <h3 className="text-lg font-medium text-gray-800">Add Your Tools</h3>
+            <p className="text-gray-600">List your tools for rent here.</p>
+          </div>
+          <div className="bg-white shadow-md rounded-lg p-4 text-center">
+            <h3 className="text-lg font-medium text-gray-800">My Rentals</h3>
+            <p className="text-gray-600">View your current rentals and history.</p>
+          </div>
+          <div className="bg-white shadow-md rounded-lg p-4 text-center">
+            <h3 className="text-lg font-medium text-gray-800">Tutorials and Help</h3>
+            <p className="text-gray-600">View the detailed tutorial to use app alongwith videos.</p>
+          </div>
+        </div>
+      </div>
     </div>
   );
-};
+}
 
 export default Dashboard;

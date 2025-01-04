@@ -1,6 +1,9 @@
 import React from "react";
+import SignUpModel from '../Login and Sign Up/SignUp'
 
-function Login ({ onClose }) {
+function Login({goToDashboard ,onClose, onSignUpClick }) {
+
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
       <div className="bg-white rounded-lg shadow-lg p-6 w-[380px] relative">
@@ -10,7 +13,7 @@ function Login ({ onClose }) {
         >
           ✕
         </button>
-        <h2 className="text-xl font-bold mb-4 test-HomeText">Login</h2>
+        <h2 className="text-xl font-bold mb-4">Login</h2>
         <form>
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1">Email</label>
@@ -21,29 +24,35 @@ function Login ({ onClose }) {
             />
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-1 test-HomeText">Password</label>
+            <label className="block text-sm font-medium mb-1">Password</label>
             <input
               type="password"
               className="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:border-imageBG"
               placeholder="Enter your password"
             />
           </div>
-          <button
+          {/* <NavLink to="/dashboard" className="no-underline">  */}
+        <button
             type="submit"
+            onClick={goToDashboard}
             className="w-full bg-HomeText text-white py-2 rounded"
           >
             Login
           </button>
+          {/* </NavLink> */}
         </form>
         <p className="text-sm text-center mt-4">
           Don't have an account yet?{" "}
-          <a href="#" className="text-blue-500 hover:underline">
+          <button
+            onClick={onSignUpClick}
+            className="text-blue-500 hover:underline"
+          >
             Sign up
-          </a>
+          </button>
         </p>
       </div>
     </div>
   );
-};
+}
 
 export default Login;

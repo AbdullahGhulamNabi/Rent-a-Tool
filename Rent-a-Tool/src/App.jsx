@@ -1,32 +1,94 @@
-import { useState } from 'react'
-import './App.css'
-import Navbar from './components/Nav and Footer/Navbar'
-import LoggedNavbar from './components/Dashboard/LoggedNavbar'
-import Footer from './components/Nav and Footer/Footer'
-import Home from './components/HomePage/Home'
-import Tools from './components/HomePage/Tools'
-import DashBoard from './components/Dashboard/Dashboard'
+import React, { useState } from 'react';
+import './App.css';
+import Navbar from './components/Nav and Footer/Navbar';
+import Footer from './components/Nav and Footer/Footer';
+import Home from './components/HomePage/Home';
+import DashBoard from './components/Dashboard/Dashboard';
+import Tools from './components/HomePage/Tools';
+import LoginModal from "./components/Login and Sign Up/Login";
+import SignUpModal from "./components/Login and Sign Up/SignUp";
+import SettingsModal from "./components/Dashboard/Modal";
+import MyTools from './components/Dashboard/MyTools';
+import Listing from './components/FeedBack and Help/Listing'
+import Help from './components/FeedBack and Help/Help'
+import FeedbackPage from './components/FeedBack and Help/FeedbackPage';
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const toggleLogin = () => {
-    setIsLoggedIn(!isLoggedIn);
+  const [isLoginOpen, setIsLoginOpen] = React.useState(false);
+  const [isSignUpOpen, setIsSignUpOpen] = React.useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
+  const [isLoginClicked, setIsLoginClicked] = React.useState(false);
+
+  const openLoginModal = () => {
+    setIsLoginOpen(true);
+    setIsSignUpOpen(false);
+    document.body.style.overflow = "hidden";
   };
 
+  const openSignUpModal = () => {
+    setIsSignUpOpen(true);
+    setIsLoginOpen(false);
+    document.body.style.overflow = "hidden";
+  };
+
+  const closeModals = () => {
+    setIsLoginOpen(false);
+    setIsSignUpOpen(false);
+    setIsSettingsOpen(false);
+    document.body.style.overflow = "auto";
+  };
+
+  const openSettingsModal = () => {
+    setIsSettingsOpen(true);
+    document.body.style.overflow = "hidden";
+  };
+
+
   return (
-
     <>
-      {/* displays navbar with no setting, home and listing icon if user is not logged in*/}
-      {isLoggedIn ? (<DashBoard />  ) : (  <Navbar />)} 
 
-      {/* temporarily used so that when click on login takes us to dashboard page */}
-      {!isLoggedIn && <Home setIsLoggedIn={setIsLoggedIn} />}
-      {/* ==== */}
-      {/* hello */}
-      <Tools/>
-      <Footer/> {/**/}
+      <Navbar
+        isLoginClicked={isLoginClicked}
+        openLoginModal={openLoginModal}
+        openSettingsModal={openSettingsModal}
+      />
+
+      {isLoginClicked?(<DashBoard/>):(<Home/>)}
+
+      {isLoginClicked?(<MyTools/>):(<Tools/>)}
+
+      {/* <Listing/>
+      <FeedbackPage/> */}
+      {/* <Help/> */}
+
+      <Footer/>
+
+      {isLoginOpen && (
+        <LoginModal
+          onClose={closeModals}
+          onSignUpClick={openSignUpModal}
+          goToDashboard={() => {
+            setIsLoginClicked(true);
+            closeModals();
+          }}
+        />
+      )}
+
+
+      {isSignUpOpen && (
+        <SignUpModal
+          onClose={closeModals}
+          onLoginClick={openLoginModal}
+        />
+      )}
+
+      {isSettingsOpen && <SettingsModal onClose={closeModals} />}
+    
+    
     </>
-  )
+
+
+  );
 }
 
-export default App
+export default App;

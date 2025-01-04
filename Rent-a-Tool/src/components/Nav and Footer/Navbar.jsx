@@ -1,40 +1,28 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
+import { NavLink } from "react-router-dom";
 import logo from "../../assets/Nav/logo.png";
 import home from "../../assets/Nav/home.png";
 import add from "../../assets/Nav/more.png";
-import message from "../../assets/Nav/message.png";
+import person from "../../assets/Tools/Person.jpg";
 import settings from "../../assets/Nav/settings.png";
 import login from "../../assets/Nav/user.png";
 import logout from "../../assets/Nav/logout.png";
-import LoginModal from "../Login and Sign Up/Login";
 
+function Navbar({ isLoginClicked, openLoginModal, openSettingsModal }) {
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  
-
-function Navbar() {
-  const [isLoginOpen, setIsLoginOpen] = React.useState(false); 
-
-  const openLoginModal = () => {
-    setIsLoginOpen(true);
-    setIsDrawerOpen(false)
-    document.body.style.overflow = "hidden"; // Disable background scrolling
+  const handleLogout = () => {
+    alert("clicked");
+    isLoginClicked = false;
   };
-
-  const closeLoginModal = () => {
-    setIsLoginOpen(false);
-    document.body.style.overflow = "auto"; // Enable background scrolling
-  };
-  
-  const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
 
   return (
     <div className="flex items-center justify-around h-[64px] bg-nav text-black sticky top-0 z-20">
-      <div className="">
+      <div>
         <img src={logo} alt="Logo" className="h-12 w-18 " />
       </div>
 
-      <div className="">
+      <div>
         <input
           type="search"
           placeholder="Search..."
@@ -44,13 +32,26 @@ function Navbar() {
 
       <div className="hidden sm:flex flex-row items-center justify-end">
         <img src={home} alt="Home" className="h-7 w-7 mx-2" />
-        {/* <img src={add} alt="Add Tools" className="h-7 w-7 mx-2" /> */}
-        {/* <img src={message} alt="Requests" className="h-7 w-7 mx-2" />
-        <img src={settings} onClick={onImageClick} className="cursor-pointer h-7 w-7 mx-2" alt="settings"  /> */}
-        {/* <img src={login} alt="Login" className="h-7 w-7 mx-2" /> */}
-        {/* <img src={message} alt="Requests" className="h-7 w-7 mx-2" /> */}
-        {/* <img src={settings} alt="settings" className="h-7 w-7 mx-2" /> */}
-        <button onClick={openLoginModal}><img src={login} alt="Login" className="h-7 w-7 mx-2" /></button>
+
+        {isLoginClicked ? (
+          <>
+            <img src={add} alt="Add Tools" className="h-7 w-7 mx-2" />
+            {/* <img src={message} alt="Requests" className="h-7 w-7 mx-2" /> */}
+            <button onClick={openSettingsModal}>
+              <img src={settings} alt="Settings" className="h-7 w-7 mx-2" />
+            </button>
+
+            <img  src={person} alt="Login" className="h-10 w-11 mx-2 rounded-xl" />
+
+            <button onClick={handleLogout}>
+              <img src={logout} alt="LogOut" className="h-7 w-7 mx-2" />
+            </button>
+          </>
+        ) : (
+          <button onClick={openLoginModal}>
+            <img src={login} alt="Login" className="h-7 w-7 mx-2" />
+          </button>
+        )}
       </div>
 
       <div className="sm:hidden">
@@ -64,10 +65,7 @@ function Navbar() {
 
       {isDrawerOpen && (
         <div className="fixed top-0 bottom-0 left-0 w-64 h-screen bg-white flex flex-col p-4">
-          <button
-            onClick={() => setIsDrawerOpen(false)}
-            className="self-end mb-4 text-black"
-          >
+          <button onClick={() => setIsDrawerOpen(false)} className="self-end mb-4 text-black">
             ✖
           </button>
 
@@ -80,32 +78,47 @@ function Navbar() {
               <img src={home} alt="Home" className="h-7 w-7 mr-4" />
               <span className="text-sm font-medium">Home</span>
             </div>
-            <button onClick={openLoginModal} className="flex items-center my-2">
-              <img src={login} alt="Login" className="h-7 w-7 mr-4" />
-              <span className="text-sm font-medium">Login</span>
-            </button>
-            <div className="flex items-center my-2">
-              <img src={add} alt="Add Tools" className="h-7 w-7 mr-4" />
-              <span className="text-sm font-medium">Add Tools</span>
-            </div>
-            <div className="flex items-center my-2">
-              <img src={message} alt="Requests" className="h-7 w-7 mr-4" />
-              <span className="text-sm font-medium">Requests</span>
-            </div>
-            <div className="flex items-center my-2">
-              <img src={settings} alt="Settings" className="h-7 w-7 mr-4" />
-              <span className="text-sm font-medium">Settings</span>
-            </div>
-            <div className="flex items-center my-2">
-              <img src={logout} alt="LogOut" className="h-7 w-7 mr-4" />
-              <span className="text-sm font-medium">Log Out</span>
-            </div>
+
+            {!isLoginClicked && (
+              <div className="flex items-center my-2">
+                <img
+                  onClick={openLoginModal}
+                  src={login}
+                  alt="Login"
+                  className="h-7 w-7 mr-4"
+                />
+                <span className="text-sm font-medium">Login</span>
+              </div>
+            )}
+
+            {isLoginClicked && (
+              <>
+                <div className="flex items-center my-2">
+                  <img src={add} alt="Add Tools" className="h-7 w-7 mr-4" />
+                  <span className="text-sm font-medium">Add Tools</span>
+                </div>
+
+                <div className="flex items-center my-2">
+                  <img
+                    onClick={openSettingsModal}
+                    src={settings}
+                    alt="Settings"
+                    className="h-7 w-7 mx-1"
+                  />
+                  <span className="text-sm font-medium">Settings</span>
+                </div>
+
+                <div className="flex items-center my-2">
+                  <button onClick={handleLogout} className="flex items-center">
+                    <img src={logout} alt="LogOut" className="h-7 w-7 mr-4" />
+                    <span className="text-sm font-medium">Log Out</span>
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
-
-
-      {isLoginOpen && <LoginModal onClose={closeLoginModal} />}
     </div>
   );
 }
