@@ -10,8 +10,8 @@ import SettingsModal from "../Dashboard/Modal";
 export default function Home() {
   const [isLoginOpen, setIsLoginOpen] = React.useState(false);
   const [isSignUpOpen, setIsSignUpOpen] = React.useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
-  const [isLoginClicked, setIsLoginClicked] = React.useState(false);
+  // const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
+  // const [isLoginClicked, setIsLoginClicked] = React.useState(false);
 
   const openLoginModal = () => {
     setIsLoginOpen(true);
@@ -32,23 +32,23 @@ export default function Home() {
     document.body.style.overflow = "auto";
   };
 
-  const goToDashboard = () => {
-    setIsLoginClicked(true);
-    closeModals();
-  };
+  // const goToDashboard = () => {
+  //   setIsLoginClicked(true);
+  //   closeModals();
+  // };
 
-  const openSettingsModal = () => {
-    setIsSettingsOpen(true);
-    document.body.style.overflow = "hidden";
-  };
+  // const openSettingsModal = () => {
+  //   setIsSettingsOpen(true);
+  //   document.body.style.overflow = "hidden";
+  // };
 
   return (
     <div>
-      <Navbar
+      {/* <Navbar
         isLoginClicked={isLoginClicked}
         openLoginModal={openLoginModal}
         openSettingsModal={openSettingsModal}
-      />
+      /> */}
 
       <div className="bg-imageBG h-[450px] w-[95%] m-[auto] mt-7 rounded-[30px] flex justify-around items-center relative">
         <img src={HomePage} alt="HomePage" className="hidden md:w-[500px] md:h-[400px] md:block" />
@@ -86,7 +86,7 @@ export default function Home() {
           onLoginClick={openLoginModal}
         />
       )}
-      {isSettingsOpen && <SettingsModal onClose={closeModals} />}
+      {/* {isSettingsOpen && <SettingsModal onClose={closeModals} />} */}
     </div>
   );
 }

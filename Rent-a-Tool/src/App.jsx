@@ -5,30 +5,83 @@ import Footer from './components/Nav and Footer/Footer';
 import Home from './components/HomePage/Home';
 import DashBoard from './components/Dashboard/Dashboard';
 import Tools from './components/HomePage/Tools';
+import LoginModal from "./components/Login and Sign Up/Login";
+import SignUpModal from "./components/Login and Sign Up/SignUp";
+import SettingsModal from "./components/Dashboard/Modal";
+import MyTools from './components/Dashboard/MyTools';
 
 function App() {
-  const [isLoginClicked, setIsLoginClicked] = useState(false); // Tracks login state
-  const [isLoginOpen, setIsLoginOpen] = useState(false); // Tracks login modal state
+  const [isLoginOpen, setIsLoginOpen] = React.useState(false);
+  const [isSignUpOpen, setIsSignUpOpen] = React.useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
+  const [isLoginClicked, setIsLoginClicked] = React.useState(false);
 
   const openLoginModal = () => {
     setIsLoginOpen(true);
+    setIsSignUpOpen(false);
+    document.body.style.overflow = "hidden";
   };
 
-  const closeLoginModal = () => {
+  const openSignUpModal = () => {
+    setIsSignUpOpen(true);
     setIsLoginOpen(false);
+    document.body.style.overflow = "hidden";
   };
 
-  const handleLogin = () => {
-    setIsLoginClicked(true); // Update login state
-    closeLoginModal(); // Close modal
+  const closeModals = () => {
+    setIsLoginOpen(false);
+    setIsSignUpOpen(false);
+    setIsSettingsOpen(false);
+    document.body.style.overflow = "auto";
   };
 
+  const openSettingsModal = () => {
+    setIsSettingsOpen(true);
+    document.body.style.overflow = "hidden";
+  };
+
+
+  console.log(isLoginClicked)
   return (
-    <div className="App">
-      <Home/>
-      <Tools/>
+    <>
+
+      <Navbar
+        isLoginClicked={isLoginClicked}
+        openLoginModal={openLoginModal}
+        openSettingsModal={openSettingsModal}
+      />
+
+      {isLoginClicked?(<DashBoard/>):(<Home/>)}
+      {isLoginClicked?(<MyTools/>):(<Tools/>)}
+
+      {/* <Tools/> */}
       <Footer/>
-    </div>
+
+      {isLoginOpen && (
+        <LoginModal
+          onClose={closeModals}
+          onSignUpClick={openSignUpModal}
+          goToDashboard={() => {
+            setIsLoginClicked(true);
+            closeModals();
+          }}
+        />
+      )}
+
+
+      {isSignUpOpen && (
+        <SignUpModal
+          onClose={closeModals}
+          onLoginClick={openLoginModal}
+        />
+      )}
+
+      {isSettingsOpen && <SettingsModal onClose={closeModals} />}
+    
+    
+    </>
+
+
   );
 }
 
