@@ -9,6 +9,9 @@ import LoginModal from "./components/Login and Sign Up/Login";
 import SignUpModal from "./components/Login and Sign Up/SignUp";
 import SettingsModal from "./components/Dashboard/Modal";
 import MyTools from './components/Dashboard/MyTools';
+import Listing from './components/FeedBack and Help/Listing'
+import Help from './components/FeedBack and Help/Help'
+import FeedbackPage from './components/FeedBack and Help/FeedbackPage';
 
 function App() {
   const [isLoginOpen, setIsLoginOpen] = React.useState(false);
@@ -53,6 +56,10 @@ function App() {
       {isLoginClicked?(<DashBoard/>):(<Home/>)}
 
       {isLoginClicked?(<MyTools/>):(<Tools/>)}
+
+      {/* <Listing/>
+      <FeedbackPage/> */}
+      <Help/>
 
       <Footer/>
 

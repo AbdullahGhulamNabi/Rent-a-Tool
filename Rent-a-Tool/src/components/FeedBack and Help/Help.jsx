@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import ImageforHelp from '../assets/Help/ImageforHelp.png'; // Ensure the path is correct
+import ImageforHelp from '../../assets/Help/ImageforHelp.png'; // Ensure the path is correct
 
 const UserGuide = () => {
   const sections = [
