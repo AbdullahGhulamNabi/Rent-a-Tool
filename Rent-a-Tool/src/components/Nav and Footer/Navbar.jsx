@@ -1,5 +1,5 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
+import { NavLink } from "react-router-dom";
 import logo from "../../assets/Nav/logo.png";
 import home from "../../assets/Nav/home.png";
 import add from "../../assets/Nav/more.png";
@@ -65,10 +65,7 @@ function Navbar({ isLoginClicked, openLoginModal, openSettingsModal }) {
 
       {isDrawerOpen && (
         <div className="fixed top-0 bottom-0 left-0 w-64 h-screen bg-white flex flex-col p-4">
-          <button
-            onClick={() => setIsDrawerOpen(false)}
-            className="self-end mb-4 text-black"
-          >
+          <button onClick={() => setIsDrawerOpen(false)} className="self-end mb-4 text-black">
             ✖
           </button>
 

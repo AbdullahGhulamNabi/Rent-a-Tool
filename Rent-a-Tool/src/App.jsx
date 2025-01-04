@@ -59,7 +59,7 @@ function App() {
 
       {/* <Listing/>
       <FeedbackPage/> */}
-      <Help/>
+      {/* <Help/> */}
 
       <Footer/>
 

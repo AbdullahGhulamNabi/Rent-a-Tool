@@ -25,6 +25,13 @@ export default function Home() {
     document.body.style.overflow = "hidden";
   };
 
+
+  const handleLogin = () => {
+    setIsLoggedIn(true);
+   
+    
+  };
+  
   const closeModals = () => {
     setIsLoginOpen(false);
     setIsSignUpOpen(false);

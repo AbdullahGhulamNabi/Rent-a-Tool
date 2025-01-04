@@ -31,13 +31,15 @@ function Login({goToDashboard ,onClose, onSignUpClick }) {
               placeholder="Enter your password"
             />
           </div>
-          <button
-            onClick={goToDashboard}
+          {/* <NavLink to="/dashboard" className="no-underline">  */}
+        <button
             type="submit"
+            onClick={goToDashboard}
             className="w-full bg-HomeText text-white py-2 rounded"
           >
             Login
           </button>
+          {/* </NavLink> */}
         </form>
         <p className="text-sm text-center mt-4">
           Don't have an account yet?{" "}
