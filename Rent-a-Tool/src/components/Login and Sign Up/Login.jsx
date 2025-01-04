@@ -1,7 +1,6 @@
 import React from "react";
-import SignUpModel from './SignUp'
 
-function Login({ onClose, onSignUpClick }) {
+function Login ({ onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
       <div className="bg-white rounded-lg shadow-lg p-6 w-[380px] relative">
@@ -11,7 +10,7 @@ function Login({ onClose, onSignUpClick }) {
         >
           ✕
         </button>
-        <h2 className="text-xl font-bold mb-4">Login</h2>
+        <h2 className="text-xl font-bold mb-4 test-HomeText">Login</h2>
         <form>
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1">Email</label>
@@ -22,7 +21,7 @@ function Login({ onClose, onSignUpClick }) {
             />
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">Password</label>
+            <label className="block text-sm font-medium mb-1 test-HomeText">Password</label>
             <input
               type="password"
               className="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:border-imageBG"
@@ -38,16 +37,13 @@ function Login({ onClose, onSignUpClick }) {
         </form>
         <p className="text-sm text-center mt-4">
           Don't have an account yet?{" "}
-          <button
-            onClick={onSignUpClick}
-            className="text-blue-500 hover:underline"
-          >
+          <a href="#" className="text-blue-500 hover:underline">
             Sign up
-          </button>
+          </a>
         </p>
       </div>
     </div>
   );
-}
+};
 
 export default Login;
