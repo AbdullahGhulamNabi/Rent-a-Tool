@@ -41,7 +41,6 @@ function App() {
   };
 
 
-  console.log(isLoginClicked)
   return (
     <>
 
@@ -52,9 +51,9 @@ function App() {
       />
 
       {isLoginClicked?(<DashBoard/>):(<Home/>)}
+
       {isLoginClicked?(<MyTools/>):(<Tools/>)}
 
-      {/* <Tools/> */}
       <Footer/>
 
       {isLoginOpen && (

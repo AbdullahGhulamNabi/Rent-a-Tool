@@ -10,8 +10,8 @@ import SettingsModal from "../Dashboard/Modal";
 export default function Home() {
   const [isLoginOpen, setIsLoginOpen] = React.useState(false);
   const [isSignUpOpen, setIsSignUpOpen] = React.useState(false);
-  // const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
-  // const [isLoginClicked, setIsLoginClicked] = React.useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
+  const [isLoginClicked, setIsLoginClicked] = React.useState(false);
 
   const openLoginModal = () => {
     setIsLoginOpen(true);

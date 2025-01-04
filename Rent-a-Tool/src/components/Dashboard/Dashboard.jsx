@@ -1,18 +1,65 @@
-import React from "react";
-import HomePage from "../../assets/Home/HomePage.png";
-import HomePageOffset from "../../assets/Home/HomePage-80.png";
-import logo from "../../assets/Home/logo.png";
-import SettingsModal from "../Dashboard/Modal";
-import LoginModal from "../Login and Sign Up/Login";
-import SignUpModal from "../Login and Sign Up/SignUp";
-import Navbar from "../Nav and Footer/Navbar";
-// import SettingsModal from "../Dashboard/Modal";
+import React from 'react';
 
-export default function DashBoard() {
- 
+function Dashboard() {
   return (
-    <>
-    hello
-    </>
+    <div className="p-8 bg-imageBG">
+      {/* Welcome Message */}
+      <div className="bg-white shadow-md rounded-lg p-6">
+        <h1 className="text-3xl font-bold text-gray-800 mb-4">
+          Welcome to Rent-a-Tool!
+        </h1>
+        <p className="text-gray-600">
+          We're glad to have you on board. Explore tools or manage your rentals with ease.
+        </p>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="mt-8">
+        <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+          Quick Stats
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          <div className="bg-white shadow-md rounded-lg p-4 text-center">
+            <h3 className="text-lg font-medium text-gray-800">Total Tools Listed</h3>
+            <p className="text-2xl font-bold text-blue-600">15</p>
+          </div>
+          <div className="bg-white shadow-md rounded-lg p-4 text-center">
+            <h3 className="text-lg font-medium text-gray-800">Active Rentals</h3>
+            <p className="text-2xl font-bold text-green-600">4</p>
+          </div>
+          <div className="bg-white shadow-md rounded-lg p-4 text-center">
+            <h3 className="text-lg font-medium text-gray-800">Pending Requests</h3>
+            <p className="text-2xl font-bold text-orange-600">2</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Links */}
+      <div className="mt-8">
+        <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+          Quick Links
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          <div className="bg-white shadow-md rounded-lg p-4 text-center">
+            <h3 className="text-lg font-medium text-gray-800">Browse Tools</h3>
+            <p className="text-gray-600">Explore tools available for rent.</p>
+          </div>
+          <div className="bg-white shadow-md rounded-lg p-4 text-center">
+            <h3 className="text-lg font-medium text-gray-800">Add Your Tools</h3>
+            <p className="text-gray-600">List your tools for rent here.</p>
+          </div>
+          <div className="bg-white shadow-md rounded-lg p-4 text-center">
+            <h3 className="text-lg font-medium text-gray-800">My Rentals</h3>
+            <p className="text-gray-600">View your current rentals and history.</p>
+          </div>
+          <div className="bg-white shadow-md rounded-lg p-4 text-center">
+            <h3 className="text-lg font-medium text-gray-800">Tutorials and Help</h3>
+            <p className="text-gray-600">View the detailed tutorial to use app alongwith videos.</p>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
+
+export default Dashboard;

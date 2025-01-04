@@ -3,16 +3,18 @@ import { useState } from "react";
 import logo from "../../assets/Nav/logo.png";
 import home from "../../assets/Nav/home.png";
 import add from "../../assets/Nav/more.png";
-import message from "../../assets/Nav/message.png";
+// import message from "../../assets/Nav/message.png";
 import settings from "../../assets/Nav/settings.png";
 import login from "../../assets/Nav/user.png";
 import logout from "../../assets/Nav/logout.png";
-import LoginModal from "../Login and Sign Up/Login";
-import SignUpModal from "../Login and Sign Up/SignUp";
-import SettingsModal from "../Dashboard/Modal";
 
 function Navbar({ isLoginClicked, openLoginModal, openSettingsModal }) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  const handleLogout = () => {
+    alert("clicked");
+    isLoginClicked = false;
+  };
 
   return (
     <div className="flex items-center justify-around h-[64px] bg-nav text-black sticky top-0 z-20">
@@ -38,8 +40,12 @@ function Navbar({ isLoginClicked, openLoginModal, openSettingsModal }) {
             <button onClick={openSettingsModal}>
               <img src={settings} alt="Settings" className="h-7 w-7 mx-2" />
             </button>
+
             <img src={login} alt="Login" className="h-7 w-7 mx-2" />
-            <img src={logout} alt="LogOut" className="h-7 w-7 mx-2" />
+
+            <button onClick={handleLogout}>
+              <img src={logout} alt="LogOut" className="h-7 w-7 mx-2" />
+            </button>
           </>
         ) : (
           <button onClick={openLoginModal}>
@@ -76,29 +82,43 @@ function Navbar({ isLoginClicked, openLoginModal, openSettingsModal }) {
               <span className="text-sm font-medium">Home</span>
             </div>
 
-            <div className="flex items-center my-2">
-              <img src={login} alt="Login" className="h-7 w-7 mr-4" />
-              <span className="text-sm font-medium">Login</span>
-            </div>
-            <div className="flex items-center my-2">
-              <img src={add} alt="Add Tools" className="h-7 w-7 mr-4" />
-              <span className="text-sm font-medium">Add Tools</span>
-            </div>
-            <div className="flex items-center my-2">
-              {/* <button onClick={openSettingsModal}> */}
-              <img
-                onClick={openSettingsModal}
-                src={settings}
-                alt="Settings"
-                className="h-7 w-7 mx-1"
-              />
-              {/* </button> */}
-              <span className="text-sm font-medium">Settings</span>
-            </div>
-            <div className="flex items-center my-2">
-              <img src={logout} alt="LogOut" className="h-7 w-7 mr-4" />
-              <span className="text-sm font-medium">Log Out</span>
-            </div>
+            {!isLoginClicked && (
+              <div className="flex items-center my-2">
+                <img
+                  onClick={openLoginModal}
+                  src={login}
+                  alt="Login"
+                  className="h-7 w-7 mr-4"
+                />
+                <span className="text-sm font-medium">Login</span>
+              </div>
+            )}
+
+            {isLoginClicked && (
+              <>
+                <div className="flex items-center my-2">
+                  <img src={add} alt="Add Tools" className="h-7 w-7 mr-4" />
+                  <span className="text-sm font-medium">Add Tools</span>
+                </div>
+
+                <div className="flex items-center my-2">
+                  <img
+                    onClick={openSettingsModal}
+                    src={settings}
+                    alt="Settings"
+                    className="h-7 w-7 mx-1"
+                  />
+                  <span className="text-sm font-medium">Settings</span>
+                </div>
+
+                <div className="flex items-center my-2">
+                  <button onClick={handleLogout} className="flex items-center">
+                    <img src={logout} alt="LogOut" className="h-7 w-7 mr-4" />
+                    <span className="text-sm font-medium">Log Out</span>
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
