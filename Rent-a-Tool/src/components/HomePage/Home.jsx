@@ -74,7 +74,10 @@ export default function Home() {
         <LoginModal
           onClose={closeModals}
           onSignUpClick={openSignUpModal}
-          goToDashboard={goToDashboard}
+          goToDashboard={() => {
+            setIsLoginClicked(true);
+            closeModals();
+          }}
         />
       )}
       {isSignUpOpen && (

@@ -6,6 +6,8 @@ import Footer from './components/Nav and Footer/Footer'
 import Home from './components/HomePage/Home'
 import Tools from './components/HomePage/Tools'
 import DashBoard from './components/Dashboard/Dashboard'
+import SettingModal from "./components/Dashboard/Modal"
+
 
 function App() {
 
@@ -14,6 +16,7 @@ function App() {
     <>
       {/* displays navbar with no setting, home and listing icon if user is not logged in*/}
       {/* <Navbar/> */}
+      {/* <SettingModal/> */}
       <Home/>
       <Tools/>
       <Footer/>
