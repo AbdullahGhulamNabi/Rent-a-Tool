@@ -3,7 +3,7 @@ import { useState } from "react";
 import logo from "../../assets/Nav/logo.png";
 import home from "../../assets/Nav/home.png";
 import add from "../../assets/Nav/more.png";
-// import message from "../../assets/Nav/message.png";
+import person from "../../assets/Tools/Person.jpg";
 import settings from "../../assets/Nav/settings.png";
 import login from "../../assets/Nav/user.png";
 import logout from "../../assets/Nav/logout.png";
@@ -41,7 +41,7 @@ function Navbar({ isLoginClicked, openLoginModal, openSettingsModal }) {
               <img src={settings} alt="Settings" className="h-7 w-7 mx-2" />
             </button>
 
-            <img src={login} alt="Login" className="h-7 w-7 mx-2" />
+            <img  src={person} alt="Login" className="h-10 w-11 mx-2 rounded-xl" />
 
             <button onClick={handleLogout}>
               <img src={logout} alt="LogOut" className="h-7 w-7 mx-2" />
