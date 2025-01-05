@@ -56,7 +56,7 @@ export default function Modal({ onClose }) {
 
             <button
               onClick={closeSubModal}
-              className="w-full bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
+              className="w-full bg-imageBG text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
             >
               Save Changes
             </button>
@@ -70,7 +70,7 @@ export default function Modal({ onClose }) {
             </p>
             <button
               onClick={closeSubModal}
-              className="w-full bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
+              className="w-full bg-imageBG text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
             >
               Back
             </button>
@@ -82,7 +82,7 @@ export default function Modal({ onClose }) {
             <p className="text-gray-600 mb-4">Control your privacy settings.</p>
             <button
               onClick={closeSubModal}
-              className="w-full bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
+              className="w-full bg-imageBG text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
             >
               Back
             </button>
@@ -135,7 +135,7 @@ export default function Modal({ onClose }) {
             </div>
             <button
               onClick={closeSubModal}
-              className="w-full bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
+              className="w-full bg-imageBG text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
             >
               Save Changes
             </button>
@@ -153,7 +153,8 @@ export default function Modal({ onClose }) {
             onClick={onClose}
             className=" text-gray-500 hover:text-gray-800 text-xl"
           >
-            ✕
+              ✕
+
           </button>
           <h2 className="text-xl font-bold mb-6 text-center">Settings</h2>
           <ul className="space-y-4">
@@ -166,7 +167,7 @@ export default function Modal({ onClose }) {
               <li
                 key={item.key}
                 onClick={() => openSubModal(item.key)}
-                className="cursor-pointer text-blue-500 hover:bg-gray-100 p-2 rounded transition text-center"
+                className="cursor-pointer bg-nav hover:bg-gray-100 p-2 rounded transition text-center"
               >
                 {item.label}
               </li>

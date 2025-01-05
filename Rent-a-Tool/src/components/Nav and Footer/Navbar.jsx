@@ -64,7 +64,7 @@ function Navbar({ isLoginClicked, openLoginModal, openSettingsModal, setIsLoginC
 
       {isDrawerOpen && (
         <div className="fixed top-0 bottom-0 left-0 w-64 h-screen bg-white flex flex-col p-4">
-          <button onClick={() => setIsDrawerOpen(false)} className="self-end mb-4 text-black">✖</button>
+          <button onClick={() => setIsDrawerOpen(false)} className=" self-end mb-4 text-imageBG">✕</button>
           <img src={logo} alt="Logo" className="h-12 w-18 mb-6" />
           <div className="flex flex-col">
             <div className="flex items-center my-2">
@@ -88,7 +88,7 @@ function Navbar({ isLoginClicked, openLoginModal, openSettingsModal, setIsLoginC
                   <span className="text-sm font-medium">Settings</span>
                 </div>
                 <div className="flex items-center my-2">
-                  <img src={person} alt="Profile" className="h-8 w-8 mr-4 rounded-full" />
+                  <img src={person} alt="Profile" className="h-7 w-7 mr-4 rounded-full" />
                   <span className="text-sm font-medium">Profile</span>
                 </div>
                 <div onClick={handleLogout} className="flex items-center my-2">
