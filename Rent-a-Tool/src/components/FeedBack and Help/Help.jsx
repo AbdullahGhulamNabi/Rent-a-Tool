@@ -1,75 +1,83 @@
 import React, { useState, useRef } from "react";
-import ImageforHelp from '../../assets/Help/ImageforHelp.png'; // Ensure the path is correct
+// import ImageforHelp from '../../assets/Help/ImageforHelp.png'; // Ensure the path is correct
+import register from '../../assets/Help/register.png'; // Ensure the path is correct
+import SignUp from '../../assets/Help/signUpPage.png'; // Ensure the path is correct
+import submit from '../../assets/Help/submit.png'; // Ensure the path is correct
+import addicon from '../../assets/Help/addicon.png'; // Ensure the path is correct
+import deleteok from '../../assets/Help/deleteok.png'; // Ensure the path is correct
+import deletePic from '../../assets/Help/delete.png'; // Ensure the path is correct
+import search from '../../assets/Help/search.png'; // Ensure the path is correct
 
 const UserGuide = () => {
   const sections = [
     {
       title: "Register User",
       content: [
-        { text: "Click on SignUp", imageUrl: ImageforHelp },
+        { text: "Click on SignUp", imageUrl: register },
         { text: "Provide following information:" },
-        { text: "Email (valid email format required)", imageUrl: ImageforHelp },
-        { text: "Username (must be unique)", imageUrl: ImageforHelp },
-        { text: "Password (must meet complexity requirements)", imageUrl: ImageforHelp },
-        { text: "Phone Number (valid format required)", imageUrl: ImageforHelp },
-        { text: "Address (mandatory based on role)", imageUrl: ImageforHelp },
-        { text: "Click on Register and a message displays on screen 'Register successful'", imageUrl: ImageforHelp },
+        { text: "Email (valid email format required)"},
+        { text: "Username (must be unique)"},
+        { text: "Password (must meet complexity requirements)" },
+        { text: "Phone Number (valid format required)"},
+        { text: "Address (mandatory based on role)" , imageUrl: SignUp},
+        { text: "Click on Register and a message displays on screen 'Register successful'",imageUrl: submit },
       ],
       videoUrl: "https://www.youtube.com/embed/example1",
     },
     {
       title: "Add Tool",
       content: [
-        { text: "Add a new tool to the system by providing", imageUrl: ImageforHelp },
-        { text: "Tool name", imageUrl: ImageforHelp },
-        { text: "Tool description", imageUrl: ImageforHelp },
-        { text: "Tool category", imageUrl: ImageforHelp },
-        { text: "Rental price", imageUrl: ImageforHelp },
-        { text: "Availability status", imageUrl: ImageforHelp },
-        { text: "Relevant specifications (e.g., brand, model, condition)", imageUrl: ImageforHelp },
-        { text: "Click on add button and display a message on screen 'Tool added successfully'", imageUrl: ImageforHelp },
+        {text:'Click on add Tool icon',imageUrl:addicon},
+        { text: "Add a new tool to the system by providing",imageUrl: SignUp},
+        { text: "Tool name" ,imageUrl: SignUp},
+        { text: "Tool description" ,imageUrl: SignUp},
+        { text: "Tool category" ,imageUrl: SignUp},
+        { text: "Rental price",imageUrl: SignUp },
+        { text: "Availability status" ,imageUrl: SignUp},
+        { text: "Relevant specifications (e.g., brand, model, condition)" ,imageUrl: SignUp},
+        { text: "Click on add button and display a message on screen 'Tool added successfully'" ,imageUrl: SignUp},
       ],
       videoUrl: "https://www.youtube.com/embed/example2",
     },
     {
       title: "Edit Tool",
       content: [
-        { text: "Navigate to the 'My Tools' section.", imageUrl: ImageforHelp },
-        { text: "Select the tool you want to edit.", imageUrl: ImageforHelp },
-        { text: "Update the desired fields and click 'Save' to apply changes.", imageUrl: ImageforHelp },
+        { text: "Navigate to the 'My Tools' section.",imageUrl: SignUp },
+        { text: "Select the tool you want to edit." ,imageUrl: SignUp},
+        { text: "Update the desired fields and click 'Save' to apply changes." ,imageUrl: SignUp},
       ],
       videoUrl: "https://www.youtube.com/embed/example2",
-      imageUrl: ImageforHelp,
+    
     },
     {
       title: "Delete Tool",
       content: [
-        { text: "Navigate to the 'My Tools' section.", imageUrl: ImageforHelp },
-        { text: "Select the tool you want to delete.", imageUrl: ImageforHelp },
-        { text: "Click on the 'Delete' button and confirm the action.", imageUrl: ImageforHelp },
+        { text: "Navigate to the 'My Tools' section." },
+        { text: "Select the tool you want to delete." ,imageUrl: deletePic},
+        { text: "Click on the 'Delete' button and confirm the action." ,imageUrl: deleteok},
       ],
       videoUrl: "https://www.youtube.com/embed/example3",
-      imageUrl: ImageforHelp,
+    
     },
     {
       title: "Search Tool",
       content: [
-        { text: "Go to the 'Search Tool' section.", imageUrl: ImageforHelp },
-        { text: "Enter keywords or filters to find the desired tool.", imageUrl: ImageforHelp },
-        { text: "Click on the search button to view results.", imageUrl: ImageforHelp },
+        { text: "Go to the 'Search Tool' section." },
+        { text: "Enter keywords or filters to find the desired tool."},
+        { text: "Click on the search button to view results.",imageUrl: search },
       ],
       videoUrl: "https://www.youtube.com/embed/example4",
-      imageUrl: ImageforHelp,
+    
     },
     {
       title: "Order Tool",
       content: [
-        { text: "Click on the 'Delete' button and confirm the action.", imageUrl: ImageforHelp },
-        { text: "Select the tool you wish to rent.", imageUrl: ImageforHelp },
-        { text: "Click on 'Order Now' and follow the checkout process.", imageUrl: ImageforHelp },
+        { text: "Click on the 'Delete' button and confirm the action." ,imageUrl: SignUp,imageUrl: SignUp},
+        { text: "Select the tool you wish to rent.",imageUrl: SignUp },
+        { text: "Click on 'Order Now' and follow the checkout process." ,imageUrl: SignUp,imageUrl: SignUp},
       ],
       videoUrl: "https://www.youtube.com/embed/example5",
-      imageUrl: ImageforHelp,
+      
     },
   ];
 
