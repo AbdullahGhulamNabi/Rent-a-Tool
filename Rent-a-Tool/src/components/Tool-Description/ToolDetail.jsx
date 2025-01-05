@@ -16,7 +16,8 @@ const ToolDetail = () => {
     <>
       <div className='w-full flex justify-center sm:p-5  '>
         {/* detail section */}
-        <div className='min-w-[300px] max-w-[1000px] p-5 bg-[#ffffff]  sm:border-2 border-slate-500 border-solid rounded-lg focus:outline-none focus:ring-0'>
+        <div className='min-w-[300px] max-w-[1000px] p-5 bg-[#ffffff] shadow-2xl rounded-lg focus:outline-none focus:ring-0'>
+
           <div className='flex justify-center border rounded-lg'>
             <img className='w-[900px] h-[350px] sm:h-[400px]'
               src={toolIcon} alt="" />
@@ -62,7 +63,7 @@ const ToolDetail = () => {
             </NavLink>
             <NavLink to="/place_order"><button className="w-[150px] sm:w-[270px] mt-4 bg-HomeText text-white py-2 rounded flex items-center justify-center space-x-2 gap-2">
               <ShoppingCartIcon className="w-7 h-7 " />
-              <span>Chat to Rent</span>
+              <span>Place Order</span>
             </button>
             </NavLink>
            
