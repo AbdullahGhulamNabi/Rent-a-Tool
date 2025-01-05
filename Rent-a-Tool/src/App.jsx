@@ -2,22 +2,23 @@ import React, { useState } from 'react';
 import './App.css';
 import Navbar from './components/Nav and Footer/Navbar';
 import Footer from './components/Nav and Footer/Footer';
-import Home from './components/HomePage/Home';
-import DashBoard from './components/Dashboard/Dashboard';
-import Tools from './components/HomePage/Tools';
 import LoginModal from "./components/Login and Sign Up/Login";
 import SignUpModal from "./components/Login and Sign Up/SignUp";
-import SettingsModal from "./components/Dashboard/Modal";
+import Home from './components/HomePage/Home';
+import Tools from './components/HomePage/Tools';
+import DashBoard from './components/Dashboard/Dashboard';
 import MyTools from './components/Dashboard/MyTools';
-import Listing from './components/FeedBack and Help/Listing'
-import Help from './components/FeedBack and Help/Help'
-import FeedbackPage from './components/FeedBack and Help/FeedbackPage';
+import SettingsModal from "./components/Dashboard/Modal";
+import FeedBackPage from "./components/FeedBack and Help/FeedbackPage"
+import Help from "./components/FeedBack and Help/Help"
+import Listing from "./components/FeedBack and Help/Listing"
+import ToolDescription from "./components/Tool-Description/ToolDetail"
 
 function App() {
-  const [isLoginOpen, setIsLoginOpen] = React.useState(false);
-  const [isSignUpOpen, setIsSignUpOpen] = React.useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
-  const [isLoginClicked, setIsLoginClicked] = React.useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isSignUpOpen, setIsSignUpOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isLoginClicked, setIsLoginClicked] = useState(false);
 
   const openLoginModal = () => {
     setIsLoginOpen(true);
@@ -43,25 +44,19 @@ function App() {
     document.body.style.overflow = "hidden";
   };
 
-
   return (
     <>
-
       <Navbar
         isLoginClicked={isLoginClicked}
         openLoginModal={openLoginModal}
         openSettingsModal={openSettingsModal}
+        setIsLoginClicked={setIsLoginClicked}
       />
 
-      {isLoginClicked?(<DashBoard/>):(<Home/>)}
+      {isLoginClicked ? <DashBoard /> : <Home openLoginModal={openLoginModal} />}
+      {isLoginClicked ? <MyTools /> : <Tools />}
 
-      {isLoginClicked?(<MyTools/>):(<Tools/>)}
 
-      {/* <Listing/>
-      <FeedbackPage/> */}
-      {/* <Help/> */}
-
-      <Footer/>
 
       {isLoginOpen && (
         <LoginModal
@@ -74,7 +69,6 @@ function App() {
         />
       )}
 
-
       {isSignUpOpen && (
         <SignUpModal
           onClose={closeModals}
@@ -83,11 +77,7 @@ function App() {
       )}
 
       {isSettingsOpen && <SettingsModal onClose={closeModals} />}
-    
-    
     </>
-
-
   );
 }
 

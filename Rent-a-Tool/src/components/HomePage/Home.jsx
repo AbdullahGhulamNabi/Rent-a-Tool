@@ -2,61 +2,14 @@ import React from "react";
 import HomePage from "../../assets/Home/HomePage.png";
 import HomePageOffset from "../../assets/Home/HomePage-80.png";
 import logo from "../../assets/Home/logo.png";
-import LoginModal from "../Login and Sign Up/Login";
-import SignUpModal from "../Login and Sign Up/SignUp";
-import Navbar from "../Nav and Footer/Navbar";
-import SettingsModal from "../Dashboard/Modal";
 
-export default function Home() {
-  const [isLoginOpen, setIsLoginOpen] = React.useState(false);
-  const [isSignUpOpen, setIsSignUpOpen] = React.useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
-  const [isLoginClicked, setIsLoginClicked] = React.useState(false);
+export default function Home({ openLoginModal }) {
 
-  const openLoginModal = () => {
-    setIsLoginOpen(true);
-    setIsSignUpOpen(false);
-    document.body.style.overflow = "hidden";
-  };
-
-  const openSignUpModal = () => {
-    setIsSignUpOpen(true);
-    setIsLoginOpen(false);
-    document.body.style.overflow = "hidden";
-  };
-
-
-  const handleLogin = () => {
-    setIsLoggedIn(true);
-   
-    
-  };
-  
-  const closeModals = () => {
-    setIsLoginOpen(false);
-    setIsSignUpOpen(false);
-    setIsSettingsOpen(false);
-    document.body.style.overflow = "auto";
-  };
-
-  // const goToDashboard = () => {
-  //   setIsLoginClicked(true);
-  //   closeModals();
-  // };
-
-  // const openSettingsModal = () => {
-  //   setIsSettingsOpen(true);
-  //   document.body.style.overflow = "hidden";
-  // };
-
+  const click = ()=>{
+    alert("hi")
+  }
   return (
     <div>
-      {/* <Navbar
-        isLoginClicked={isLoginClicked}
-        openLoginModal={openLoginModal}
-        openSettingsModal={openSettingsModal}
-      /> */}
-
       <div className="bg-imageBG h-[450px] w-[95%] m-[auto] mt-7 rounded-[30px] flex justify-around items-center relative">
         <img src={HomePage} alt="HomePage" className="hidden md:w-[500px] md:h-[400px] md:block" />
         <img src={HomePageOffset} alt="HomePage" className="md:hidden absolute inset-0 m-auto h-[400px] w-[500px]" />
@@ -76,24 +29,6 @@ export default function Home() {
           </button>
         </div>
       </div>
-
-      {isLoginOpen && (
-        <LoginModal
-          onClose={closeModals}
-          onSignUpClick={openSignUpModal}
-          goToDashboard={() => {
-            setIsLoginClicked(true);
-            closeModals();
-          }}
-        />
-      )}
-      {isSignUpOpen && (
-        <SignUpModal
-          onClose={closeModals}
-          onLoginClick={openLoginModal}
-        />
-      )}
-      {/* {isSettingsOpen && <SettingsModal onClose={closeModals} />} */}
     </div>
   );
 }
