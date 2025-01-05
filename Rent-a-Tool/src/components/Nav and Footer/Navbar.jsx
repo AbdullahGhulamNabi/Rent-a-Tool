@@ -71,13 +71,13 @@ function Navbar({ isLoginClicked, openLoginModal, openSettingsModal, setIsLoginC
               <img src={home} alt="Home" className="h-7 w-7 mr-4" />
               <span className="text-sm font-medium">Home</span>
             </div>
-            {!isLoginClicked &&  (
+            {!isLoginClicked &&(
               <div onClick={handleLogin} className="flex items-center my-2">
                 <img src={login} alt="Login" className="h-7 w-7 mr-4" />
                 <span className="text-sm font-medium">Login</span>
               </div>
             )}
-            {isLoginClicked && !isLogoutClicked && (
+            {isLoginClicked && (
               <>
                 <div className="flex items-center my-2">
                   <img src={add} alt="Add Tools" className="h-7 w-7 mr-4" />

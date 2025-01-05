@@ -36,7 +36,7 @@ export default function Modal({ onClose }) {
                 type="text"
                 id="username"
                 placeholder="Enter your updated username"
-                className="w-full px-4 py-2 border rounded-md border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="w-full px-4 py-2 border rounded-md border-gray-300 focus:ring-2 focus:bg-nav focus:outline-none"
               />
             </div>
             <div className="mb-4">
@@ -50,13 +50,13 @@ export default function Modal({ onClose }) {
                 type="text"
                 id="username"
                 placeholder="Enter your updated Email"
-                className="w-full px-4 py-2 border rounded-md border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="w-full px-4 py-2 border rounded-md border-gray-300 focus:ring-2 focus:bg-nav focus:outline-none"
               />
             </div>
 
             <button
               onClick={closeSubModal}
-              className="w-full bg-imageBG text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
+              className="w-full bg-imageBG text-black px-4 py-2 rounded-md hover:bg-nav transition"
             >
               Save Changes
             </button>
@@ -70,7 +70,7 @@ export default function Modal({ onClose }) {
             </p>
             <button
               onClick={closeSubModal}
-              className="w-full bg-imageBG text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
+              className="w-full bg-imageBG text-black px-4 py-2 rounded-md hover:bg-nav transition"
             >
               Back
             </button>
@@ -82,7 +82,7 @@ export default function Modal({ onClose }) {
             <p className="text-gray-600 mb-4">Control your privacy settings.</p>
             <button
               onClick={closeSubModal}
-              className="w-full bg-imageBG text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
+              className="w-full bg-imageBG text-black px-4 py-2 rounded-md hover:bg-nav transition"
             >
               Back
             </button>
@@ -102,7 +102,7 @@ export default function Modal({ onClose }) {
                 type="password"
                 id="current-password"
                 placeholder="Enter your current password"
-                className="w-full px-4 py-2 border rounded-md border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="w-full px-4 py-2 border rounded-md border-gray-300 focus:ring-2 focus:bg-nav focus:outline-none"
               />
             </div>
             <div className="mb-4">
@@ -116,7 +116,7 @@ export default function Modal({ onClose }) {
                 type="password"
                 id="new-password"
                 placeholder="Enter your new password"
-                className="w-full px-4 py-2 border rounded-md border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="w-full px-4 py-2 border rounded-md border-gray-300 focus:ring-2 focus:bg-nav focus:outline-none"
               />
             </div>
             <div className="mb-4">
@@ -130,12 +130,12 @@ export default function Modal({ onClose }) {
                 type="password"
                 id="confirm-password"
                 placeholder="Confirm your new password"
-                className="w-full px-4 py-2 border rounded-md border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="w-full px-4 py-2 border rounded-md border-gray-300 focus:ring-2 focus:bg-nav focus:outline-none"
               />
             </div>
             <button
               onClick={closeSubModal}
-              className="w-full bg-imageBG text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
+              className="w-full bg-imageBG text-black px-4 py-2 rounded-md hover:bg-nav transition"
             >
               Save Changes
             </button>
@@ -167,7 +167,7 @@ export default function Modal({ onClose }) {
               <li
                 key={item.key}
                 onClick={() => openSubModal(item.key)}
-                className="cursor-pointer bg-nav hover:bg-gray-100 p-2 rounded transition text-center"
+                className="cursor-pointer bg-imageBG hover:bg-nav p-2 rounded transition text-center"
               >
                 {item.label}
               </li>
