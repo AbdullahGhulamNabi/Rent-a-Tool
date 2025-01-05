@@ -2,13 +2,17 @@ import React, { useState } from 'react';
 import './App.css';
 import Navbar from './components/Nav and Footer/Navbar';
 import Footer from './components/Nav and Footer/Footer';
-import Home from './components/HomePage/Home';
-import DashBoard from './components/Dashboard/Dashboard';
-import Tools from './components/HomePage/Tools';
 import LoginModal from "./components/Login and Sign Up/Login";
 import SignUpModal from "./components/Login and Sign Up/SignUp";
-import SettingsModal from "./components/Dashboard/Modal";
+import Home from './components/HomePage/Home';
+import Tools from './components/HomePage/Tools';
+import DashBoard from './components/Dashboard/Dashboard';
 import MyTools from './components/Dashboard/MyTools';
+import SettingsModal from "./components/Dashboard/Modal";
+import FeedBackPage from "./components/FeedBack and Help/FeedbackPage"
+import Help from "./components/FeedBack and Help/Help"
+import Listing from "./components/FeedBack and Help/Listing"
+import ToolDescription from "./components/Tool-Description/ToolDetail"
 
 function App() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
@@ -52,7 +56,7 @@ function App() {
       {isLoginClicked ? <DashBoard /> : <Home openLoginModal={openLoginModal} />}
       {isLoginClicked ? <MyTools /> : <Tools />}
 
-      <Footer />
+
 
       {isLoginOpen && (
         <LoginModal
