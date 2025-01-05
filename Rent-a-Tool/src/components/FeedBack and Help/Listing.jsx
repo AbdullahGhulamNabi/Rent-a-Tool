@@ -36,7 +36,7 @@ function Listing() {
           <>
             {[
               {
-                name: "Abdullah Denver",
+                name: "Abdullah ",
                 title: "Chairs",
                 description: "For party at home...",
                 date: "Jan 04 - Jan 05",
@@ -46,7 +46,7 @@ function Listing() {
                 messages: "No messages yet",
               },
               {
-                name: "Usama Denver",
+                name: "Usama ",
                 title: "Tables",
                 description: "Needed for a conference...",
                 date: "Feb 10 - Feb 12",

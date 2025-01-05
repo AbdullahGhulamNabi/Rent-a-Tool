@@ -77,7 +77,7 @@ const ChatPage = () => {
       />
       <button
         onClick={sendMessage}
-        className="px-4 bg-blue-500 text-white rounded-r hover:bg-blue-600 sm:px-6 lg:px-8"
+        className="px-4 bg-imageBG text-white rounded-r hover:bg-nav sm:px-6 lg:px-8"
       > <SendIcon />&nbsp;&nbsp; Send
       </button>
     </div>

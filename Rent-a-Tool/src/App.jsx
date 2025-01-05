@@ -14,7 +14,6 @@ import FeedBackPage from "./components/FeedBack and Help/FeedbackPage"
 import Help from "./components/FeedBack and Help/Help"
 // import UserGuide from './components/Help'
 import Listing from "./components/FeedBack and Help/Listing"
-import ToolDescription from "./components/Tool-Description/ToolDetail"
 import ToolDetail from './components/Tool-Description/ToolDetail';
 import AddUpdate from './components/Add-Update/AddUpdate';
 import ChatInterface from './components/Chat-Module/ChatInterface';
@@ -69,10 +68,21 @@ function App() {
         <Route path='/tooldetail' element={<ToolDetail/>} />
         <Route path='/chat' element={<ChatInterface/>} />
       </Routes>
-      <Footer /> */}
+       */}
 
       {isLoginClicked ? <DashBoard /> : <Home openLoginModal={openLoginModal} />}
       {isLoginClicked ? <MyTools /> : <Tools />}
+
+
+
+        {/* <ToolDetail/> */}
+        {/* <Listing/> */}
+        {/* <Help/> */}
+        {/* <FeedBackPage/> */}
+        {/* <ChatInterface/> */}
+        {/* <AddUpdate/> */}
+
+
       <Footer />
 
 

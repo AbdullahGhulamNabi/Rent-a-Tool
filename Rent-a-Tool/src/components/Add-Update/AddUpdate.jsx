@@ -59,7 +59,7 @@ const AddUpdate = ({ onClose }) => {
                 <button
                   type="button" // Prevent default form submission behavior
                   onClick={() => setIsForRent(false)}
-                  className={`px-4 py-2 rounded-md w-[45%] ${!isForRent ? "bg-green-500 text-white" : "bg-gray-200 text-gray-800"
+                  className={`px-4 py-2 rounded-md w-[45%] ${!isForRent ? "bg-imageBG text-white" : "bg-gray-200 text-gray-800"
                     }`}
                 >
                   Free to borrow
@@ -69,7 +69,7 @@ const AddUpdate = ({ onClose }) => {
                 <button
                   type="button" // Prevent default form submission behavior
                   onClick={() => setIsForRent(true)}
-                  className={`px-4 py-2 rounded-md w-[45%] ${isForRent ? "bg-green-500 text-white" : "bg-gray-200 text-gray-800"
+                  className={`px-4 py-2 rounded-md w-[45%] ${isForRent ? "bg-imageBG text-white" : "bg-gray-200 text-gray-800"
                     }`}
                 >
                   For rent

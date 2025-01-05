@@ -106,7 +106,7 @@ const UserGuide = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-6 m-4 min-h-screen">
       {/* Sidebar Navigation */}
-      <div className="md:col-span-1 bg-gray-200 p-4 border-2 border-gray-300 sticky top-0 h-auto md:h-screen overflow-y-auto mb-6 md:mb-0">
+      <div className="md:col-span-1 bg-imageBG p-4 border-2 border-gray-300 sticky top-20 h-auto md:h-screen overflow-y-auto mb-6 md:mb-0">
         <h2 className="text-xl font-bold text-center">User Guide</h2>
         <ul>
           {sections.map((section) => (
@@ -118,7 +118,7 @@ const UserGuide = () => {
                   behavior: "smooth",
                 })
               }
-              className="p-3 cursor-pointer rounded-md hover:bg-gray-100"
+              className="p-3 cursor-pointer rounded-md hover:bg-nav"
             >
               {section.title}
             </li>
@@ -129,7 +129,7 @@ const UserGuide = () => {
       {/* Main Content */}
       <div className="md:col-span-3 p-6 overflow-x-hidden">
         {/* Search Section */}
-        <div className="flex justify-center items-center h-32 space-x-4 mb-6">
+        <div className=" flex justify-center items-center h-32 space-x-4 mb-6">
           <input
             type="text"
             value={searchQuery}
@@ -155,7 +155,7 @@ const UserGuide = () => {
             >
               {/* Section Content */}
               <div className="w-full p-4">
-                <h2 className="text-2xl font-bold mb-4 bg-[#8af5] rounded-full h-12 flex justify-center items-center">
+                <h2 className="text-2xl font-bold mb-4 bg-imageBG rounded-full h-12 flex justify-center items-center">
                   {section.title}
                 </h2>
                 <ul className="list-disc pl-6 space-y-2">
