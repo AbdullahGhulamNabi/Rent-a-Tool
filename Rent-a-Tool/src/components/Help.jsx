@@ -3,6 +3,9 @@ import register from '../assets/Help/register.png'; // Ensure the path is correc
 import SignUp from '../assets/Help/signUpPage.png'; // Ensure the path is correct
 import submit from '../assets/Help/submit.png'; // Ensure the path is correct
 import addicon from '../assets/Help/addicon.png'; // Ensure the path is correct
+import deleteok from '../assets/Help/deleteok.png'; // Ensure the path is correct
+import deletePic from '../assets/Help/delete.png'; // Ensure the path is correct
+import search from '../assets/Help/search.png'; // Ensure the path is correct
 
 const UserGuide = () => {
   const sections = [
@@ -48,9 +51,9 @@ const UserGuide = () => {
     {
       title: "Delete Tool",
       content: [
-        { text: "Navigate to the 'My Tools' section." ,imageUrl: SignUp},
-        { text: "Select the tool you want to delete." ,imageUrl: SignUp},
-        { text: "Click on the 'Delete' button and confirm the action." ,imageUrl: SignUp},
+        { text: "Navigate to the 'My Tools' section." },
+        { text: "Select the tool you want to delete." ,imageUrl: deletePic},
+        { text: "Click on the 'Delete' button and confirm the action." ,imageUrl: deleteok},
       ],
       videoUrl: "https://www.youtube.com/embed/example3",
     
@@ -58,9 +61,9 @@ const UserGuide = () => {
     {
       title: "Search Tool",
       content: [
-        { text: "Go to the 'Search Tool' section." ,imageUrl: SignUp},
-        { text: "Enter keywords or filters to find the desired tool.",imageUrl: SignUp },
-        { text: "Click on the search button to view results.",imageUrl: SignUp },
+        { text: "Go to the 'Search Tool' section." },
+        { text: "Enter keywords or filters to find the desired tool."},
+        { text: "Click on the search button to view results.",imageUrl: search },
       ],
       videoUrl: "https://www.youtube.com/embed/example4",
     
