@@ -9,6 +9,7 @@ import LoginModal from "./components/Login and Sign Up/Login";
 import SignUpModal from "./components/Login and Sign Up/SignUp";
 import SettingsModal from "./components/Dashboard/Modal";
 import MyTools from './components/Dashboard/MyTools';
+import AddUpdate from './components/Add-Update/AddUpdate'
 import Listing from './components/FeedBack and Help/Listing'
 import Help from './components/FeedBack and Help/Help'
 import FeedbackPage from './components/FeedBack and Help/FeedbackPage';
@@ -18,6 +19,8 @@ function App() {
   const [isSignUpOpen, setIsSignUpOpen] = React.useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
   const [isLoginClicked, setIsLoginClicked] = React.useState(false);
+
+  
 
   const openLoginModal = () => {
     setIsLoginOpen(true);
@@ -43,6 +46,9 @@ function App() {
     document.body.style.overflow = "hidden";
   };
 
+  // const Logout = ()=>{
+  //   setIsLogoutClicked(true);
+  // }
 
   return (
     <>
@@ -51,15 +57,20 @@ function App() {
         isLoginClicked={isLoginClicked}
         openLoginModal={openLoginModal}
         openSettingsModal={openSettingsModal}
+        setIsLoginClicked={setIsLoginClicked}
+        // isLogoutClicked={isLogoutClicked}
       />
 
-      {isLoginClicked?(<DashBoard/>):(<Home/>)}
+      {isLoginClicked?(<DashBoard/>):(<Home isLoginClicked={isLoginClicked} />)}
 
       {isLoginClicked?(<MyTools/>):(<Tools/>)}
 
       {/* <Listing/>
       <FeedbackPage/> */}
       {/* <Help/> */}
+
+          {/* <AddUpdate/> */}
+
 
       <Footer/>
 
