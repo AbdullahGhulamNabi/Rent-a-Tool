@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Routes, Route } from 'react-router-dom';
 import './App.css';
 import Navbar from './components/Nav and Footer/Navbar';
 import Footer from './components/Nav and Footer/Footer';
@@ -13,6 +14,10 @@ import FeedBackPage from "./components/FeedBack and Help/FeedbackPage"
 import Help from "./components/FeedBack and Help/Help"
 import Listing from "./components/FeedBack and Help/Listing"
 import ToolDescription from "./components/Tool-Description/ToolDetail"
+import ToolDetail from './components/Tool-Description/ToolDetail';
+import AddUpdate from './components/Add-Update/AddUpdate';
+import ChatInterface from './components/Chat-Module/ChatInterface';
+import SignUp from './components/Login and Sign Up/SignUp';
 
 function App() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
@@ -53,8 +58,21 @@ function App() {
         setIsLoginClicked={setIsLoginClicked}
       />
 
+      {/* Arslan code */}
+      {/* <Navbar />
+      <Routes>
+        <Route path='/' element={<Home />} />
+        <Route path='/dashboard' element={<DashBoard />} />
+        <Route path='/signup' element={<SignUp />} />
+        <Route path='/add_tool' element={<AddUpdate/>} />
+        <Route path='/tooldetail' element={<ToolDetail/>} />
+        <Route path='/chat' element={<ChatInterface/>} />
+      </Routes>
+      <Footer /> */}
+
       {isLoginClicked ? <DashBoard /> : <Home openLoginModal={openLoginModal} />}
       {isLoginClicked ? <MyTools /> : <Tools />}
+      <Footer />
 
 
 

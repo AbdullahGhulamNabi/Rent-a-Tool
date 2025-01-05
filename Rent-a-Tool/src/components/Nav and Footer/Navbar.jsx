@@ -6,10 +6,16 @@ import person from "../../assets/Tools/Person.jpg";
 import settings from "../../assets/Nav/settings.png";
 import login from "../../assets/Nav/user.png";
 import logout from "../../assets/Nav/logout.png";
+import LoginModal from "../Login and Sign Up/Login";
+import SignUpModal from "../Login and Sign Up/SignUp";
+import AddUpdateModal from '../Add-Update/AddUpdate'
+
+
 
 function Navbar({ isLoginClicked, openLoginModal, openSettingsModal, setIsLoginClicked }) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isLogoutClicked, setIsLogoutClicked] = useState(false);
+  const [isAddUpdateOpen, setIsAddUpateOpen] = useState(false);
 
 
   const handleLogout = () => {
@@ -38,6 +44,9 @@ function Navbar({ isLoginClicked, openLoginModal, openSettingsModal, setIsLoginC
 
       <div className="hidden sm:flex flex-row items-center justify-end">
         <img src={home} alt="Home" className="h-7 w-7 mx-2" />
+                    {/* <button onClick={openAddUpdateModal}>
+            <img src={add} alt="Add Tools" className="h-7 w-7 mx-2" />
+            </button> */}
         {isLoginClicked  ? (
           <>
             <img src={add} alt="Add Tools" className="h-7 w-7 mx-2" />
@@ -79,10 +88,14 @@ function Navbar({ isLoginClicked, openLoginModal, openSettingsModal, setIsLoginC
             )}
             {isLoginClicked && (
               <>
+                  {/* <button onClick={openAddUpdateModal}> */}
+                  <button >
                 <div className="flex items-center my-2">
                   <img src={add} alt="Add Tools" className="h-7 w-7 mr-4" />
                   <span className="text-sm font-medium">Add Tools</span>
                 </div>
+                  </button>
+
                 <div onClick={openSettingsModal} className="flex items-center my-2">
                   <img src={settings} alt="Settings" className="h-7 w-7 mr-4" />
                   <span className="text-sm font-medium">Settings</span>
@@ -102,6 +115,10 @@ function Navbar({ isLoginClicked, openLoginModal, openSettingsModal, setIsLoginC
           </div>
         </div>
       )}
+{/* 
+      {isLoginOpen && <LoginModal onClose={closeModals} onSignUpClick={openSignUpModal} onLoginSuccess={handleLogin} />}
+      {isSignUpOpen && <SignUpModal onClose={closeModals} onLoginClick={openLoginModal} />} */}
+      {isAddUpdateOpen && <AddUpdateModal onClose={closeModals} />}
     </div>
   );
 }
