@@ -11,9 +11,15 @@ function Navbar({ isLoginClicked, openLoginModal, openSettingsModal, setIsLoginC
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isLogoutClicked, setIsLogoutClicked] = useState(false);
 
+
   const handleLogout = () => {
     setIsLogoutClicked(true);
     setIsLoginClicked(false);
+  };
+
+  const handleLogin = () => {
+    setIsLogoutClicked(false); // Reset the logout state
+    openLoginModal();
   };
 
   return (
@@ -32,7 +38,7 @@ function Navbar({ isLoginClicked, openLoginModal, openSettingsModal, setIsLoginC
 
       <div className="hidden sm:flex flex-row items-center justify-end">
         <img src={home} alt="Home" className="h-7 w-7 mx-2" />
-        {isLoginClicked && !isLogoutClicked ? (
+        {isLoginClicked  ? (
           <>
             <img src={add} alt="Add Tools" className="h-7 w-7 mx-2" />
             <button onClick={openSettingsModal}>
@@ -44,7 +50,7 @@ function Navbar({ isLoginClicked, openLoginModal, openSettingsModal, setIsLoginC
             </button>
           </>
         ) : (
-          <button onClick={openLoginModal}>
+          <button onClick={handleLogin}>
             <img src={login} alt="Login" className="h-7 w-7 mx-2" />
           </button>
         )}
@@ -65,8 +71,8 @@ function Navbar({ isLoginClicked, openLoginModal, openSettingsModal, setIsLoginC
               <img src={home} alt="Home" className="h-7 w-7 mr-4" />
               <span className="text-sm font-medium">Home</span>
             </div>
-            {!isLoginClicked && !isLogoutClicked && (
-              <div onClick={openLoginModal} className="flex items-center my-2">
+            {!isLoginClicked &&  (
+              <div onClick={handleLogin} className="flex items-center my-2">
                 <img src={login} alt="Login" className="h-7 w-7 mr-4" />
                 <span className="text-sm font-medium">Login</span>
               </div>
