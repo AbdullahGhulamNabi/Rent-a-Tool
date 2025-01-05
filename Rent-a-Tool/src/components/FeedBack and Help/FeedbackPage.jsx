@@ -68,7 +68,7 @@ function FeedbackPage() {
 
       {/* Submit Button */}
       <button
-        className="w-full py-2 bg-green-600 text-white rounded-md"
+        className="w-full py-2 bg-imageBG text-white rounded-md" 
         onClick={handleSubmit}
       >
         Submit Feedback
@@ -76,7 +76,7 @@ function FeedbackPage() {
 
       {/* Submission Confirmation */}
       {submitted && (
-        <div className="mt-4 text-green-600">
+        <div className="mt-4 text-imageBG">
           <p>Thank you for your feedback! Your review has been submitted.</p>
         </div>
       )}
