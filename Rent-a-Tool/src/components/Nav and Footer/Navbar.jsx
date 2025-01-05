@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
 import logo from "../../assets/Nav/logo.png";
 import home from "../../assets/Nav/home.png";
 import add from "../../assets/Nav/more.png";
@@ -12,23 +11,15 @@ function Navbar({ isLoginClicked, openLoginModal, openSettingsModal, setIsLoginC
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isLogoutClicked, setIsLogoutClicked] = useState(false);
 
-  console.log(isLoginClicked+'login state received from home');
-  console.log(isLogoutClicked+'logout state received from nav');
-
   const handleLogout = () => {
-    // alert("clicked");
     setIsLogoutClicked(true);
-    // isLoginClicked = false;
     setIsLoginClicked(false);
-    
   };
-  
-  
-  return (
 
+  return (
     <div className="flex items-center justify-around h-[64px] bg-nav text-black sticky top-0 z-20">
       <div>
-        <img src={logo} alt="Logo" className="h-12 w-18 " />
+        <img src={logo} alt="Logo" className="h-12 w-18" />
       </div>
 
       <div>
@@ -41,17 +32,13 @@ function Navbar({ isLoginClicked, openLoginModal, openSettingsModal, setIsLoginC
 
       <div className="hidden sm:flex flex-row items-center justify-end">
         <img src={home} alt="Home" className="h-7 w-7 mx-2" />
-
-        {(isLoginClicked && !isLogoutClicked) ? (
+        {isLoginClicked && !isLogoutClicked ? (
           <>
             <img src={add} alt="Add Tools" className="h-7 w-7 mx-2" />
-            {/* <img src={message} alt="Requests" className="h-7 w-7 mx-2" /> */}
             <button onClick={openSettingsModal}>
               <img src={settings} alt="Settings" className="h-7 w-7 mx-2" />
             </button>
-
-            <img  src={person} alt="Login" className="h-10 w-11 mx-2 rounded-xl" />
-
+            <img src={person} alt="Login" className="h-10 w-11 mx-2 rounded-xl" />
             <button onClick={handleLogout}>
               <img src={logout} alt="LogOut" className="h-7 w-7 mx-2" />
             </button>
@@ -64,74 +51,42 @@ function Navbar({ isLoginClicked, openLoginModal, openSettingsModal, setIsLoginC
       </div>
 
       <div className="sm:hidden">
-        <button
-          onClick={() => setIsDrawerOpen(!isDrawerOpen)}
-          className="h-10 w-10 bg-gray-200 rounded-full"
-        >
+        <button onClick={() => setIsDrawerOpen(!isDrawerOpen)} className="h-10 w-10 bg-gray-200 rounded-full">
           ☰
         </button>
       </div>
 
       {isDrawerOpen && (
         <div className="fixed top-0 bottom-0 left-0 w-64 h-screen bg-white flex flex-col p-4">
-          <button onClick={() => setIsDrawerOpen(false)} className="self-end mb-4 text-black">
-            ✖
-          </button>
-
-          <div className="mb-6">
-            <img src={logo} alt="Logo" className="h-12 w-18 mr-4" />
-          </div>
-
+          <button onClick={() => setIsDrawerOpen(false)} className="self-end mb-4 text-black">✖</button>
+          <img src={logo} alt="Logo" className="h-12 w-18 mb-6" />
           <div className="flex flex-col">
             <div className="flex items-center my-2">
               <img src={home} alt="Home" className="h-7 w-7 mr-4" />
               <span className="text-sm font-medium">Home</span>
             </div>
-
-            {/* <div onClick={openLoginModal} className="flex items-center my-2">
-                <img
-                  
-                  src={login}
-                  alt="Login"
-                  className="h-7 w-7 mr-4"
-                />
-                <span className="text-sm font-medium">Login</span>
-              </div> */}
-
-            {!isLoginClicked && !isLogoutClicked &&(
+            {!isLoginClicked && !isLogoutClicked && (
               <div onClick={openLoginModal} className="flex items-center my-2">
-                <img
-                  
-                  src={login}
-                  alt="Login"
-                  className="h-7 w-7 mr-4"
-                />
+                <img src={login} alt="Login" className="h-7 w-7 mr-4" />
                 <span className="text-sm font-medium">Login</span>
               </div>
             )}
-
-            {isLoginClicked && !isLogoutClicked &&(
+            {isLoginClicked && !isLogoutClicked && (
               <>
                 <div className="flex items-center my-2">
                   <img src={add} alt="Add Tools" className="h-7 w-7 mr-4" />
                   <span className="text-sm font-medium">Add Tools</span>
                 </div>
-
-
-                  
                 <div onClick={openSettingsModal} className="flex items-center my-2">
-                  <img src={settings} alt="Settings" className="h-7 w-7 mr-4"/>
+                  <img src={settings} alt="Settings" className="h-7 w-7 mr-4" />
                   <span className="text-sm font-medium">Settings</span>
                 </div>
-                
-
                 <div className="flex items-center my-2">
                   <img src={person} alt="Profile" className="h-8 w-8 mr-4 rounded-full" />
                   <span className="text-sm font-medium">Profile</span>
                 </div>
-
                 <div onClick={handleLogout} className="flex items-center my-2">
-                  <button  className="flex items-center">
+                  <button className="flex items-center">
                     <img src={logout} alt="LogOut" className="h-7 w-7 mr-4" />
                     <span className="text-sm font-medium">Log Out</span>
                   </button>
