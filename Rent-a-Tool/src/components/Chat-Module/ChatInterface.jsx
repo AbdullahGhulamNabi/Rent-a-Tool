@@ -39,7 +39,7 @@ const ChatPage = () => {
   return (
     <div className="flex flex-col h-[400px] p-4 bg-gray-0 sm:h-[500px] ">
     {/* Profile Section */}
-    <div className="flex items-center p-2 sm:p-4 bg-[#7BAFA3] shadow rounded-t gap-3">
+    <div className="flex items-center p-2 sm:p-4 bg-[#7BAFA3] shadow rounded-t gap-2">
       <img
         src={chatUser.profilePicture}
         alt="Profile"
