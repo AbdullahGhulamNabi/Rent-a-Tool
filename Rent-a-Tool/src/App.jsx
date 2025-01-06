@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, createBrowserRouter,RouterProvider } from 'react-router-dom';
 import './App.css';
 import Navbar from './components/Nav and Footer/Navbar';
+import NavbarForLoggedIn from './components/Nav and Footer/NavbarForLoggedIn';
 import Footer from './components/Nav and Footer/Footer';
 import LoginModal from "./components/Login and Sign Up/Login";
 import SignUpModal from "./components/Login and Sign Up/SignUp";
@@ -19,94 +20,56 @@ import AddUpdate from './components/Add-Update/AddUpdate';
 import ChatInterface from './components/Chat-Module/ChatInterface';
 import SignUp from './components/Login and Sign Up/SignUp';
 
+const router = createBrowserRouter(
+  [
+    {
+      path:"/",
+      element:
+      <div>
+        <Navbar/>
+        <Home/>
+        <Tools/>
+        <Footer/>
+      </div>
+    },
+    {
+      path:"/Dashboard",
+      element:
+      <div>
+        <NavbarForLoggedIn/>
+        <DashBoard/>
+        <MyTools/>
+        <Footer/>
+      </div>
+    },
+    {
+      path:"/Listing",
+      element:
+      <div>
+        <NavbarForLoggedIn/>
+        <Listing/>
+        <Footer/>
+      </div>
+    },
+    {
+      path:"/FeedBackPage",
+      element:
+      <div>
+        <NavbarForLoggedIn/>
+        <FeedBackPage/>
+        <Footer/>
+      </div>
+    }
+  ]
+)
+
 function App() {
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
-  const [isSignUpOpen, setIsSignUpOpen] = useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [isLoginClicked, setIsLoginClicked] = useState(false);
-
-  const openLoginModal = () => {
-    setIsLoginOpen(true);
-    setIsSignUpOpen(false);
-    document.body.style.overflow = "hidden";
-  };
-
-  const openSignUpModal = () => {
-    setIsSignUpOpen(true);
-    setIsLoginOpen(false);
-    document.body.style.overflow = "hidden";
-  };
-
-  const closeModals = () => {
-    setIsLoginOpen(false);
-    setIsSignUpOpen(false);
-    setIsSettingsOpen(false);
-    document.body.style.overflow = "auto";
-  };
-
-  const openSettingsModal = () => {
-    setIsSettingsOpen(true);
-    document.body.style.overflow = "hidden";
-  };
+  
 
   return (
-    <>
-      <Navbar
-        isLoginClicked={isLoginClicked}
-        openLoginModal={openLoginModal}
-        openSettingsModal={openSettingsModal}
-        setIsLoginClicked={setIsLoginClicked}
-      />
-
-      {/* Arslan code */}
-      {/* <Navbar />
-      <Routes>
-        <Route path='/' element={<Home />} />
-        <Route path='/dashboard' element={<DashBoard />} />
-        <Route path='/signup' element={<SignUp />} />
-        <Route path='/add_tool' element={<AddUpdate/>} />
-        <Route path='/tooldetail' element={<ToolDetail/>} />
-        <Route path='/chat' element={<ChatInterface/>} />
-      </Routes>
-       */}
-
-      {isLoginClicked ? <DashBoard /> : <Home openLoginModal={openLoginModal} />}
-      {isLoginClicked ? <MyTools /> : <Tools />}
-
-
-
-        {/* <ToolDetail/> */}
-        {/* <Listing/> */}
-        {/* <Help/> */}
-        {/* <FeedBackPage/> */}
-        {/* <ChatInterface/> */}
-        {/* <AddUpdate/> */}
-
-
-      <Footer />
-
-
-
-      {isLoginOpen && (
-        <LoginModal
-          onClose={closeModals}
-          onSignUpClick={openSignUpModal}
-          goToDashboard={() => {
-            setIsLoginClicked(true);
-            closeModals();
-          }}
-        />
-      )}
-
-      {isSignUpOpen && (
-        <SignUpModal
-          onClose={closeModals}
-          onLoginClick={openLoginModal}
-        />
-      )}
-
-      {isSettingsOpen && <SettingsModal onClose={closeModals} />}
-    </>
+    <div>
+      <RouterProvider router={router}/>
+    </div>
   );
 }
 

@@ -1,7 +1,13 @@
 import React from "react";
 import SignUpModel from '../Login and Sign Up/SignUp'
+import { useNavigate } from "react-router-dom";
 
-function Login({goToDashboard ,onClose, onSignUpClick }) {
+function Login({onClose, onSignUpClick }) {
+  const navigate = useNavigate()
+
+  function handleClick(){
+    navigate('/Dashboard')
+  }
 
 
   return (
@@ -34,7 +40,7 @@ function Login({goToDashboard ,onClose, onSignUpClick }) {
           {/* <NavLink to="/dashboard" className="no-underline">  */}
         <button
             type="submit"
-            onClick={goToDashboard}
+            onClick={handleClick}
             className="w-full bg-HomeText text-white py-2 rounded"
           >
             Login

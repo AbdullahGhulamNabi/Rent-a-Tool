@@ -1,7 +1,13 @@
 import React from "react";
 import LoginModel from "./Login";
+import { useNavigate } from "react-router-dom";
 
 function SignUp({ onClose, onLoginClick }) {
+  const navigate = useNavigate()
+
+  function handleClick(){
+    navigate('/Dashboard')
+  }
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
         <div className="bg-white rounded-lg shadow-lg p-6 w-[380px] relative">
@@ -64,6 +70,7 @@ function SignUp({ onClose, onLoginClick }) {
               />
             </div>
             <button
+              onClick={handleClick}
               type="submit"
               className="w-full bg-HomeText text-white py-2 rounded"
             >
