@@ -5,10 +5,16 @@ import toolIcon from '../../assets/ToolDetail/toolsample.jpg'
 import ProfileIcon from '../../assets/ToolDetail/profile.jpeg'
 import ChatIcon from "@mui/icons-material/Chat";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import { NavLink } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 
 
 const ToolDetail = () => {
+  const navigate = useNavigate()
+  function handleNavigate(){
+    navigate("/DashBoard/ToolDescription/Chat")
+  }
+
+  
 
   const [value, setValue] = React.useState(5);
 
@@ -56,16 +62,16 @@ const ToolDetail = () => {
 
           </div>
           <div className='w-full flex justify-evenly mb-3'>
-            <NavLink to="/chat"><button className="w-[150px] sm:w-[270px] mt-4 bg-HomeText text-white py-2 rounded flex items-center justify-center space-x-2 gap-2">
+            <button onClick={handleNavigate} className="w-[150px] sm:w-[270px] mt-4 bg-HomeText text-white py-2 rounded flex items-center justify-center space-x-2 gap-2">
               <ChatIcon className="w-7 h-7 " />
               <span>Chat to Rent</span>
             </button>
-            </NavLink>
-            <NavLink to="/place_order"><button className="w-[150px] sm:w-[270px] mt-4 bg-HomeText text-white py-2 rounded flex items-center justify-center space-x-2 gap-2">
+            
+            <button className="w-[150px] sm:w-[270px] mt-4 bg-HomeText text-white py-2 rounded flex items-center justify-center space-x-2 gap-2">
               <ShoppingCartIcon className="w-7 h-7 " />
               <span>Place Order</span>
             </button>
-            </NavLink>
+            
            
 
           </div>

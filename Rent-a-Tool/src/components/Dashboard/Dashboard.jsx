@@ -1,6 +1,11 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function Dashboard() {
+  const navigate = useNavigate()
+  function handleClick(){
+      navigate('/Dashboard/Help')
+  }
   return (
     <div className="p-8 bg-imageBG">
       {/* Welcome Message */}
@@ -52,10 +57,12 @@ function Dashboard() {
             <h3 className="text-lg font-medium text-gray-800">My Rentals</h3>
             <p className="text-gray-600">View your current rentals and history.</p>
           </div>
+          <button onClick={handleClick}>
           <div className="bg-white shadow-md rounded-lg p-4 text-center">
             <h3 className="text-lg font-medium text-gray-800">Tutorials and Help</h3>
             <p className="text-gray-600">View the detailed tutorial to use app alongwith videos.</p>
           </div>
+          </button>
         </div>
       </div>
     </div>

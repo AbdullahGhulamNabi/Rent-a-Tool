@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Routes, Route, createBrowserRouter,RouterProvider } from 'react-router-dom';
+import { Routes, Route, createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
 import './App.css';
 import Navbar from './components/Nav and Footer/Navbar';
 import NavbarForLoggedIn from './components/Nav and Footer/NavbarForLoggedIn';
@@ -23,52 +23,71 @@ import SignUp from './components/Login and Sign Up/SignUp';
 const router = createBrowserRouter(
   [
     {
-      path:"/",
+      path: "/",
+      element:
+        <div>
+          <Navbar />
+          <Home />
+          <Tools />
+          <Footer />
+        </div>
+    },
+    {
+      path: "/Dashboard",
+      element: (
+        <div>
+          <NavbarForLoggedIn />
+          <Outlet />
+          <Footer />
+        </div>
+      ),
+      children: [
+        {
+          index: true, // Default content for "/dashboard"
+          element: (
+            <div>
+              <DashBoard />
+              <MyTools />
+            </div>
+          ),
+        },
+        {
+          path: "Listing",
+          element: <Listing />,
+        },
+        {
+          path: "Help",
+          element: <Help />,
+        },
+        {
+          path: "ToolDescription",
+          element : <ToolDetail/>
+        },
+        {
+          path: "ToolDescription/Chat",
+          element: <ChatInterface/>
+        }
+      ],
+    },
+    {
+      path: '/ToolDescription',
       element:
       <div>
         <Navbar/>
-        <Home/>
-        <Tools/>
-        <Footer/>
-      </div>
-    },
-    {
-      path:"/Dashboard",
-      element:
-      <div>
-        <NavbarForLoggedIn/>
-        <DashBoard/>
-        <MyTools/>
-        <Footer/>
-      </div>
-    },
-    {
-      path:"/Listing",
-      element:
-      <div>
-        <NavbarForLoggedIn/>
-        <Listing/>
-        <Footer/>
-      </div>
-    },
-    {
-      path:"/FeedBackPage",
-      element:
-      <div>
-        <NavbarForLoggedIn/>
-        <FeedBackPage/>
-        <Footer/>
+        <ToolDetail/>
+          <Footer />
       </div>
     }
+
   ]
 )
 
 function App() {
-  
+
 
   return (
     <div>
-      <RouterProvider router={router}/>
+      <RouterProvider router={router} />
     </div>
   );
 }

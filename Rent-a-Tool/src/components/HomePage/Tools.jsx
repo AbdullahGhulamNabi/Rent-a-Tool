@@ -13,6 +13,7 @@ import ratchet from '../../assets/Tools/Tools/ratchet.jpg'
 import Scissor from '../../assets/Tools/Tools/Scissor.jpg'
 import tape from '../../assets/Tools/Tools/tapemeasure.jpg'
 import person from '../../assets/Tools/person.jpg'
+import { useNavigate } from 'react-router-dom';
 
 const Tools = () => {
   const [visibleCount, setVisibleCount] = useState(8);
@@ -148,8 +149,12 @@ const Tools = () => {
       rating: 4.5,
       price: '$60',
     },
-    // Add more tool objects here
   ];
+
+  const navigate = useNavigate()
+  function handleNavigate(){
+    navigate("/ToolDescription")
+  }
 
   const showMore = () => {
     setVisibleCount((prev) => prev + 4);
@@ -158,7 +163,7 @@ const Tools = () => {
   return (
     <div className="p-4 w-[96%] m-auto">
       <div className='font-bold text-5xl text-HomeText w-[120px] m-auto my-5'>Tools</div>
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 cursor-pointer" onClick={handleNavigate}>
         {tools.slice(0, visibleCount).map((tool) => (
           <div
             key={tool.id}
