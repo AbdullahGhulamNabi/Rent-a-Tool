@@ -9,8 +9,6 @@ function Footer() {
     <div className="h-[300px] w-full bg-footer mt-4 flex justify-start flex-wrap">
       <div className="md:w-[300px] sm:w-[250px] w-[200px] flex flex-col ml-10 mt-5">
         <div className="font-bold mb-5">About Rent-a-Tool</div>
-        <div className="text-footerText">Sign up</div>
-        <div className="text-footerText">Login</div>
         <div className="text-footerText">Tutorial and Help</div>
         <div className="text-footerText">Terms and Conditions</div>
       </div>

@@ -70,9 +70,16 @@ const router = createBrowserRouter(
       element:
       <div>
         <Navbar/>
-        <ToolDetail/>
+        <Outlet/>
           <Footer />
-      </div>
+      </div>,
+      children:[{
+        index: true,
+        element: <ToolDetail/>     
+      },{
+        path:'Chat',
+        element: <ChatInterface/>
+      }]
     },
     {
       path: '/Tools',

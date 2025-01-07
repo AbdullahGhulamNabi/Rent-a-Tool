@@ -10,9 +10,9 @@ import { Outlet, useNavigate } from 'react-router-dom';
 
 const ToolDetail = () => {
   const navigate = useNavigate()
-  // function handleNavigate(){
-  //   navigate("/DashBoard/ToolDescription/Chat")
-  // }
+  function handleNavigate(){
+    navigate("/ToolDescription/Chat")
+  }
 
   
 
@@ -29,8 +29,8 @@ const ToolDetail = () => {
               src={toolIcon} alt="" />
           </div>
           <div className='mt-4'>
-            <h2 className='text-3xl font-bold '>Fietsendrager achterop for rent</h2>
-            <p className='text-lg mt-4 font-light'>Price Details:<b> 200rs first day</b> Lorem, ipsum dolor sit amet consectetur adipisicing elit. Incidunt, itaque!</p>
+            <h2 className='text-3xl font-bold '>Bicycle carrier on the back</h2>
+            <p className='text-lg mt-4 font-light'>Price Details: <b>PKR 500 to PKR 2,000 per day</b></p>
             <p className='text-lg mt-4 font-light'>Adress Lorem, ipsum dolor sit amet consectetur adipisicing elit. Incidunt, itaque!</p>
             <p className='text-lg mt-4 font-light'>Details Lorem, ipsum dolor sit amet consectetur adipisicing elit. Incidunt, itaque!</p>
             <hr className='mt-5 border-b-4 ' />
@@ -62,7 +62,7 @@ const ToolDetail = () => {
 
           </div>
           <div className='w-full flex justify-evenly mb-3'>
-            <button  className="w-[150px] sm:w-[270px] mt-4 bg-HomeText text-white py-2 rounded flex items-center justify-center space-x-2 gap-2">
+            <button onClick={handleNavigate} className="w-[150px] sm:w-[270px] mt-4 bg-HomeText text-white py-2 rounded flex items-center justify-center space-x-2 gap-2">
               <ChatIcon className="w-7 h-7 " />
               <span>Chat to Rent</span>
             </button>
