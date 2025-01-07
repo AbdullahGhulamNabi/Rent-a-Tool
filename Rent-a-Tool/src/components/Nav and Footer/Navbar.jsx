@@ -9,6 +9,7 @@ import logout from "../../assets/Nav/logout.png";
 import LoginModal from "../Login and Sign Up/Login";
 import SignUpModal from "../Login and Sign Up/SignUp";
 import AddUpdateModal from '../Add-Update/AddUpdate'
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -33,6 +34,14 @@ function Navbar() {
       setIsSignUpOpen(false);
       document.body.style.overflow = "auto";
     };
+    const navigate = useNavigate()
+    const [searchQuery, setSearchQuery] = React.useState("");
+    
+      const handleKeyDown = (e) => {
+        if (e.key === "Enter") {
+          navigate('/Tools');
+        }
+      }
   
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
   return (
@@ -45,6 +54,8 @@ function Navbar() {
         <input
           type="search"
           placeholder="Search..."
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyDown={handleKeyDown}
           className="md:w-[400px] sm:w-[300px] w-[200px] h-[45px] px-4 py-2 bg-white text-gray-400 placeholder-gray-400 border-2 border-slate-600 border-solid rounded-full focus:outline-none focus:ring-0"
         />
       </div>

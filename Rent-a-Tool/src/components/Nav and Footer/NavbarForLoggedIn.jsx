@@ -11,7 +11,7 @@ import SignUpModal from "../Login and Sign Up/SignUp";
 import Profile from "../../assets/ToolDetail/profile.jpeg";
 import Settings from "../Dashboard/Modal";
 import Add from "../Add-Update/AddUpdate";
-import { useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Dashboard from "../Dashboard/Dashboard";
 
 function NavbarForLoggedIn() {
@@ -40,16 +40,24 @@ function NavbarForLoggedIn() {
 
   const navigate = useNavigate()
 
-  function handleClick(){
+  function handleClick() {
     navigate('/Dashboard/Listing')
   }
 
-  function Dashboard(){
+  function Dashboard() {
     navigate('/Dashboard')
   }
 
-  function handleLogout(){
+  function handleLogout() {
     navigate('/')
+  }
+
+  const [searchQuery, setSearchQuery] = React.useState("");
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      navigate('/Dashboard/Tools');
+    }
   }
 
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
@@ -63,13 +71,15 @@ function NavbarForLoggedIn() {
         <input
           type="search"
           placeholder="Search..."
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyDown={handleKeyDown}
           className="md:w-[400px] sm:w-[300px] w-[200px] h-[45px] px-4 py-2 bg-white text-gray-400 placeholder-gray-400 border-2 border-slate-600 border-solid rounded-full focus:outline-none focus:ring-0"
         />
       </div>
 
       <div className="hidden sm:flex flex-row items-center justify-end">
         <button onClick={Dashboard}>
-        <img src={home} alt="Home" className="h-7 w-7 mx-2" />
+          <img src={home} alt="Home" className="h-7 w-7 mx-2" />
         </button>
         <button onClick={openAddToolModal}>
           <img src={add} alt="Add Tools" className="h-7 w-7 mx-2" />
@@ -113,11 +123,11 @@ function NavbarForLoggedIn() {
           </div>
 
           <div className="flex flex-col">
-          <button onClick={Dashboard}>
-            <div className="flex items-center my-2">
-              <img src={home} alt="Home" className="h-7 w-7 mr-4" />
-              <span className="text-sm font-medium">Home</span>
-            </div>
+            <button onClick={Dashboard}>
+              <div className="flex items-center my-2">
+                <img src={home} alt="Home" className="h-7 w-7 mr-4" />
+                <span className="text-sm font-medium">Home</span>
+              </div>
             </button>
 
             <button onClick={openAddToolModal}>
@@ -139,10 +149,10 @@ function NavbarForLoggedIn() {
               </div>
             </button>
             <button onClick={handleLogout}>
-            <div className="flex items-center my-2">
-              <img src={logout} alt="LogOut" className="h-7 w-7 mr-4" />
-              <span className="text-sm font-medium">Log Out</span>
-            </div>
+              <div className="flex items-center my-2">
+                <img src={logout} alt="LogOut" className="h-7 w-7 mr-4" />
+                <span className="text-sm font-medium">Log Out</span>
+              </div>
             </button>
           </div>
         </div>

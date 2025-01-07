@@ -60,12 +60,8 @@ const router = createBrowserRouter(
           element: <Help />,
         },
         {
-          path: "ToolDescription",
-          element : <ToolDetail/>
-        },
-        {
-          path: "ToolDescription/Chat",
-          element: <ChatInterface/>
+          path:"Tools",
+          element:<Tools/>
         }
       ],
     },
@@ -75,6 +71,15 @@ const router = createBrowserRouter(
       <div>
         <Navbar/>
         <ToolDetail/>
+          <Footer />
+      </div>
+    },
+    {
+      path: '/Tools',
+      element:
+      <div>
+        <Navbar/>
+        <Tools/>
           <Footer />
       </div>
     }

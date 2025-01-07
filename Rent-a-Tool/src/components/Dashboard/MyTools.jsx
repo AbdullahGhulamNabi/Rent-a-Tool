@@ -25,11 +25,6 @@ const MyTools = () => {
     }
   };
 
-  const navigate = useNavigate()
-  function handleNavigate(){
-    navigate("/DashBoard/ToolDescription")
-  }
-
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">My Tools</h1>
@@ -38,7 +33,6 @@ const MyTools = () => {
           <div
             key={tool.id}
             className="border rounded-lg shadow-md p-4 flex flex-col items-center cursor-pointer"
-            onClick={handleNavigate}
           >
 
             
