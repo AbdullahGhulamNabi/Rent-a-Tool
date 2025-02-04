@@ -1,7 +1,5 @@
-import UserGuide from './components/Help'
-import FeedbackPage from './components/FeedbackPage'
-import Listing from './components/Listing'
-import React, { useState } from 'react';
+import UserGuide from './components/FeedBack and Help/Help'
+import FeedbackPage from './components/Feedback and Help/FeedBackPage'
 import { Routes, Route, createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
 import './App.css';
 import Navbar from './components/Nav and Footer/Navbar';
@@ -14,9 +12,7 @@ import Tools from './components/HomePage/Tools';
 import DashBoard from './components/Dashboard/Dashboard';
 import MyTools from './components/Dashboard/MyTools';
 import SettingsModal from "./components/Dashboard/Modal";
-import FeedBackPage from "./components/FeedBack and Help/FeedbackPage"
 import Help from "./components/FeedBack and Help/Help"
-// import UserGuide from './components/Help'
 import Listing from "./components/FeedBack and Help/Listing"
 import ToolDetail from './components/Tool-Description/ToolDetail';
 import AddUpdate from './components/Add-Update/AddUpdate';
