@@ -1,3 +1,6 @@
+import UserGuide from './components/Help'
+import FeedbackPage from './components/FeedbackPage'
+import Listing from './components/Listing'
 import React, { useState } from 'react';
 import { Routes, Route, createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
 import './App.css';
