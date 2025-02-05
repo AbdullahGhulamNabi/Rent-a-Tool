@@ -19,6 +19,7 @@ import ToolDetail from './components/Tool-Description/ToolDetail';
 import AddUpdate from './components/Add-Update/AddUpdate';
 import ChatInterface from './components/Chat-Module/ChatInterface';
 import SignUp from './components/Login and Sign Up/SignUp';
+import Order  from './components/Order Tool/Order'
 
 const router = createBrowserRouter(
   [
@@ -79,6 +80,12 @@ const router = createBrowserRouter(
       },{
         path:'Chat',
         element: <ChatInterface/>
+      },{
+        path:'Order',
+        element: <Order/>
+      },{
+        path: "Listing",
+        element: <Listing />,
       }]
     },
     {

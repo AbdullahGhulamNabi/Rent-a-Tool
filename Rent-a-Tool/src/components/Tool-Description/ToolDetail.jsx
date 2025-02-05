@@ -14,6 +14,10 @@ const ToolDetail = () => {
     navigate("/ToolDescription/Chat")
   }
 
+  function orderTool(){
+    navigate("/ToolDescription/Order")
+  }
+
   
 
   const [value, setValue] = React.useState(5);
@@ -67,7 +71,7 @@ const ToolDetail = () => {
               <span>Chat to Rent</span>
             </button>
             
-            <button className="w-[150px] sm:w-[270px] mt-4 bg-HomeText text-white py-2 rounded flex items-center justify-center space-x-2 gap-2">
+            <button onClick={orderTool} className="w-[150px] sm:w-[270px] mt-4 bg-HomeText text-white py-2 rounded flex items-center justify-center space-x-2 gap-2">
               <ShoppingCartIcon className="w-7 h-7 " />
               <span>Place Order</span>
             </button>
