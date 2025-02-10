@@ -61,6 +61,10 @@ const router = createBrowserRouter(
         {
           path:"Tools",
           element:<Tools/>
+        },
+        {
+          path:"Feedback",
+          element:<FeedbackPage/>
         }
       ],
     },
