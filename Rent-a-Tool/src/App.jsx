@@ -87,7 +87,7 @@ const router = createBrowserRouter(
         element: <Listing />,
       },{
         path: "Feedback",
-        element : <FeedBackPage/>
+        element : <FeedbackPage/>
       }]
     },
     {
