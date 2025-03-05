@@ -1,106 +1,125 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import logo from "../../assets/Nav/logo.png";
 import home from "../../assets/Nav/home.png";
 import add from "../../assets/Nav/more.png";
-import person from "../../assets/Tools/Person.jpg";
+import message from "../../assets/Nav/message.png";
 import settings from "../../assets/Nav/settings.png";
 import login from "../../assets/Nav/user.png";
 import logout from "../../assets/Nav/logout.png";
+import Profile from "../../assets/ToolDetail/profile.jpeg";
 import LoginModal from "../Login and Sign Up/Login";
 import SignUpModal from "../Login and Sign Up/SignUp";
-import AddUpdateModal from '../Add-Update/AddUpdate'
-import { useNavigate } from "react-router-dom";
+import Settings from "../Dashboard/Modal";
+import Add from "../Add-Update/AddUpdate";
 
+function Navbar({ isLoggedIn, handleLogout }) {
+  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isSignUpOpen, setIsSignUpOpen] = useState(false);
+  const [isSettingOpen, setSettingOpen] = useState(false);
+  const [isAddToolOpen, setAddToolOpen] = useState(false);
 
+  const openLoginModal = () => {
+    setIsLoginOpen(true);
+    setIsSignUpOpen(false);
+    document.body.style.overflow = "hidden";
+  };
 
-function Navbar() {
-  const [isLoginOpen, setIsLoginOpen] = React.useState(false);
-    const [isSignUpOpen, setIsSignUpOpen] = React.useState(false);
-  
-    const openLoginModal = () => {
-      setIsLoginOpen(true);
-      setIsSignUpOpen(false); // Close SignUp modal if open
-      document.body.style.overflow = "hidden";
-    };
-  
-    const openSignUpModal = () => {
-      setIsSignUpOpen(true);
-      setIsLoginOpen(false); // Close Login modal if open
-      document.body.style.overflow = "hidden";
-    };
-  
-    const closeModals = () => {
-      setIsLoginOpen(false);
-      setIsSignUpOpen(false);
-      document.body.style.overflow = "auto";
-    };
-    const navigate = useNavigate()
-    const [searchQuery, setSearchQuery] = React.useState("");
-    
-      const handleKeyDown = (e) => {
-        if (e.key === "Enter") {
-          navigate('/Tools');
-        }
-      }
-  
-  const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
+  const openSignUpModal = () => {
+    setIsSignUpOpen(true);
+    setIsLoginOpen(false);
+    document.body.style.overflow = "hidden";
+  };
+
+  const closeModals = () => {
+    setIsLoginOpen(false);
+    setIsSignUpOpen(false);
+    document.body.style.overflow = "auto";
+  };
+
+  const openSettingModal = () => {
+    setSettingOpen(true);
+    document.body.style.overflow = "hidden";
+  };
+
+  const closeSettingModal = () => {
+    setSettingOpen(false);
+    document.body.style.overflow = "auto";
+  };
+
+  const openAddToolModal = () => {
+    setAddToolOpen(true);
+    document.body.style.overflow = "hidden";
+  };
+
+  const closeAddToolModal = () => {
+    setAddToolOpen(false);
+    document.body.style.overflow = "auto";
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      navigate(isLoggedIn ? '/Dashboard/Tools' : '/Tools');
+    }
+  };
+
   return (
     <div className="flex items-center justify-around h-[64px] bg-nav text-black sticky top-0 z-20">
-      <div className="">
-        <img src={logo} alt="Logo" className="h-12 w-18 " />
-      </div>
+      <img src={logo} alt="Logo" className="h-12 w-18" />
 
-      <div className="">
-        <input
-          type="search"
-          placeholder="Search..."
-          onChange={(e) => setSearchQuery(e.target.value)}
-          onKeyDown={handleKeyDown}
-          className="md:w-[400px] sm:w-[300px] w-[200px] h-[45px] px-4 py-2 bg-white text-gray-400 placeholder-gray-400 border-2 border-slate-600 border-solid rounded-full focus:outline-none focus:ring-0"
-        />
-      </div>
+      <input
+        type="search"
+        placeholder="Search..."
+        onChange={(e) => setSearchQuery(e.target.value)}
+        onKeyDown={handleKeyDown}
+        className="md:w-[400px] sm:w-[300px] w-[200px] h-[45px] px-4 py-2 bg-white text-gray-400 placeholder-gray-400 border-2 border-slate-600 rounded-full"
+      />
 
-      <div className="hidden sm:flex flex-row items-center justify-end">
+      <div className="hidden sm:flex items-center">
         <img src={home} alt="Home" className="h-7 w-7 mx-2" />
-        <button onClick={openLoginModal}><img src={login} alt="Login" className="h-7 w-7 mx-2" /></button>
+        {isLoggedIn ? (
+          <>
+            <button onClick={openAddToolModal}><img src={add} alt="Add" className="h-7 w-7 mx-2" /></button>
+            <button><img src={message} alt="Requests" className="h-7 w-7 mx-2" /></button>
+            <button onClick={openSettingModal}><img src={settings} alt="Settings" className="h-7 w-7 mx-2" /></button>
+            <img src={Profile} alt="Profile" className="h-7 w-7 mx-2 rounded-full" />
+            <button onClick={handleLogout}><img src={logout} alt="Logout" className="h-7 w-7 mx-2" /></button>
+          </>
+        ) : (
+          <button onClick={openLoginModal}><img src={login} alt="Login" className="h-7 w-7 mx-2" /></button>
+        )}
       </div>
 
-      <div className="sm:hidden">
-        <button
-          onClick={() => setIsDrawerOpen(!isDrawerOpen)}
-          className="h-10 w-10 bg-gray-200 rounded-full"
-        >
-          ☰
-        </button>
-      </div>
+      <button
+        onClick={() => setIsDrawerOpen(!isDrawerOpen)}
+        className="sm:hidden h-10 w-10 bg-gray-200 rounded-full"
+      >☰</button>
 
       {isDrawerOpen && (
         <div className="fixed top-0 bottom-0 left-0 w-64 h-screen bg-white flex flex-col p-4">
-          <button
-            onClick={() => setIsDrawerOpen(false)}
-            className="self-end mb-4 text-black"
-          >
-            ✖
-          </button>
-
-          <div className="mb-6">
-            <img src={logo} alt="Logo" className="h-12 w-18 mr-4" />
-          </div>
-
-          <div className="flex flex-col">
-            <div className="flex items-center my-2">
-              <img src={home} alt="Home" className="h-7 w-7 mr-4" />
-              <span className="text-sm font-medium">Home</span>
-            </div>
-            <button onClick={openLoginModal} className="flex items-center my-2">
-              <img src={login} alt="Login" className="h-7 w-7 mr-4" />
-              <span className="text-sm font-medium">Login</span>
-            </button>
-          </div>
+          <button onClick={() => setIsDrawerOpen(false)} className="self-end mb-4 text-black">✖</button>
+          <img src={logo} alt="Logo" className="h-12 w-18 mb-6" />
+          <img src={home} alt="Home" className="h-7 w-7 mr-4" />
+          {isLoggedIn ? (
+            <>
+              <button onClick={openAddToolModal}><img src={add} alt="Add Tools" className="h-7 w-7 mr-4" /></button>
+              <img src={message} alt="Requests" className="h-7 w-7 mr-4" />
+              <button onClick={openSettingModal}><img src={settings} alt="Settings" className="h-7 w-7 mr-4" /></button>
+              <button onClick={handleLogout}><img src={logout} alt="LogOut" className="h-7 w-7 mr-4" /></button>
+            </>
+          ) : (
+            <button onClick={openLoginModal}><img src={login} alt="Login" className="h-7 w-7 mr-4" /></button>
+          )}
         </div>
       )}
+
       {isLoginOpen && <LoginModal onClose={closeModals} onSignUpClick={openSignUpModal} />}
       {isSignUpOpen && <SignUpModal onClose={closeModals} onLoginClick={openLoginModal} />}
+      {isSettingOpen && <Settings onClose={closeSettingModal} />}
+      {isAddToolOpen && <Add onClose={closeAddToolModal} />}
     </div>
   );
 }

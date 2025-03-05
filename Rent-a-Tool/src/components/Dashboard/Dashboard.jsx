@@ -48,10 +48,10 @@ function Dashboard() {
           Quick Links
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          <div className="bg-white shadow-md rounded-lg p-4 text-center">
+          {/* <div className="bg-white shadow-md rounded-lg p-4 text-center">
             <h3 className="text-lg font-medium text-gray-800">Browse Tools</h3>
             <p className="text-gray-600">Explore tools available for rent.</p>
-          </div>
+          </div> */}
           <div className="bg-white shadow-md rounded-lg p-4 text-center">
             <h3 className="text-lg font-medium text-gray-800">Add Your Tools</h3>
             <p className="text-gray-600">List your tools for rent here.</p>

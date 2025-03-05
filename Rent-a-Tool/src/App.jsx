@@ -36,7 +36,8 @@ const router = createBrowserRouter(
       path: "/Dashboard",
       element: (
         <div>
-          <NavbarForLoggedIn />
+          <Navbar isLoggedIn={true} handleLogout={false}/>
+          {/* <NavbarForLoggedIn /> */}
           <Outlet />
           <Footer />
         </div>
@@ -87,7 +88,7 @@ const router = createBrowserRouter(
         element: <Listing />,
       },{
         path: "Feedback",
-        element : <FeedBackPage/>
+        element : <FeedbackPage/>
       }]
     },
     {
