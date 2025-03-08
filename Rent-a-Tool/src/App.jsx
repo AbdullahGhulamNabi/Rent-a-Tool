@@ -1,5 +1,5 @@
 import UserGuide from './components/FeedBack and Help/Help'
-import FeedbackPage from './components/Feedback and Help/FeedBackPage'
+import Feedback from './components/Feedback and Help/FeedBackPage'
 import { Routes, Route, createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
 import './App.css';
 import Navbar from './components/Nav and Footer/Navbar';
@@ -64,7 +64,7 @@ const router = createBrowserRouter(
         },
         {
           path:"Feedback",
-          element:<FeedbackPage/>
+          element:<Feedback/>
         }
       ],
     },

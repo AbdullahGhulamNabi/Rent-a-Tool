@@ -102,9 +102,9 @@ const UserGuide = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       {/* Main Container */}
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto sticky">
         {/* Header */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-8 ">
           <h1 className="text-4xl font-bold text-gray-800 mb-2">User Guide</h1>
           <p className="text-gray-600 text-lg">
             Step-by-step instructions to help you get started
@@ -112,7 +112,7 @@ const UserGuide = () => {
         </div>
 
         {/* Search Bar */}
-        <div className="flex justify-center items-center mb-8">
+        <div className="flex justify-center items-center mb-8 sticky">
           <div className="w-full max-w-lg relative">
             <input
               type="text"
@@ -158,7 +158,7 @@ const UserGuide = () => {
         {/* Content Grid */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {/* Sidebar */}
-          <div className="md:col-span-1 bg-white rounded-lg shadow-md p-6 sticky top-6 h-fit">
+          <div className="md:col-span-1 bg-white rounded-lg shadow-md p-6 sticky top-16 h-fit">
             <h2 className="text-xl font-bold text-gray-800 mb-4">Sections</h2>
             <ul className="space-y-2">
               {sections.map((section) => (
@@ -170,7 +170,7 @@ const UserGuide = () => {
                       behavior: "smooth",
                     })
                   }
-                  className="p-3 cursor-pointer rounded-md hover:bg-blue-50 hover:text-blue-700 transition-all duration-200 text-gray-700 font-medium"
+                  className="p-3 cursor-pointer rounded-md hover:bg-blue-50 hover:text-blue-700 text-gray-700 font-medium"
                 >
                   {section.title}
                 </li>
@@ -196,7 +196,7 @@ const UserGuide = () => {
                   {section.content.map((item, index) => (
                     <li key={index} className="text-gray-700">
                       <div className="flex items-start space-x-3">
-                        <span className="text-blue-500 text-[20px] text-center">{'=>'}</span>
+                        <span className="text-gray-700 text-[16px] text-center">{index+1}</span>
                         <span>{item.text}</span>
                       </div>
                       {/* Display Image after each step */}

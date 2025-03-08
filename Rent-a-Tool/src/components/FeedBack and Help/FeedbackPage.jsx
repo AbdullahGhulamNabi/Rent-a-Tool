@@ -1,10 +1,20 @@
-import React, { useState } from "react";
-
+import React, { useState, useEffect } from "react";
 function FeedbackPage() {
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [comment, setComment] = useState("");
   const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    if (submitted) {
+      const timer = setTimeout(() => {
+        setSubmitted(false);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [submitted]);
+
+
 
   const handleRating = (value) => {
     setRating(value);
@@ -20,6 +30,7 @@ function FeedbackPage() {
       return;
     }
     setSubmitted(true);
+    
   };
 
   return (
@@ -27,20 +38,18 @@ function FeedbackPage() {
       <div className="max-w-2xl w-full bg-white rounded-2xl shadow-lg p-8 transform transition-all duration-300 hover:shadow-xl">
         {/* Header Section */}
         <div className="text-center mb-8">
-          <h2 className="text-4xl font-bold text-gray-800 mb-2">
-            Feedback
-          </h2>
+          <h2 className="text-4xl font-bold text-gray-800 mb-2">Feedback</h2>
           <p className="text-gray-500 text-lg">
-            We value your opinion about our product
+            We value your opinion about product
           </p>
         </div>
 
         {/* Product Card */}
         <div className="bg-gray-50 p-6 rounded-xl mb-8 border border-gray-100 flex items-center space-x-4">
-          <div className="bg-teal-500 p-3 rounded-lg">
+          <div className="bg-nav p-3 rounded-lg">
             <svg
               className="w-8 h-8 text-white"
-              fill="none"
+              fill="fill"
               stroke="currentColor"
               viewBox="0 0 24 24"
             >
@@ -56,7 +65,7 @@ function FeedbackPage() {
             <h3 className="text-xl font-semibold text-gray-800">
               Wireless Bluetooth Headphones
             </h3>
-            <p className="text-gray-500">Order ID: #123456789</p>
+            <p className="text-gray-500">Request ID: #123456789</p>
           </div>
         </div>
 
@@ -72,10 +81,11 @@ function FeedbackPage() {
                 onMouseEnter={() => setHoverRating(star)}
                 onMouseLeave={() => setHoverRating(0)}
                 onClick={() => handleRating(star)}
-                className={`transform transition-all duration-200 ${rating >= star || hoverRating >= star
+                className={`transform transition-all duration-200 ${
+                  rating >= star || hoverRating >= star
                     ? "scale-125"
                     : "scale-100"
-                  }`}
+                }`}
               >
                 <svg
                   className="w-12 h-12"
@@ -116,7 +126,7 @@ function FeedbackPage() {
         {/* Submit Button */}
         <button
           onClick={handleSubmit}
-          className="w-full py-4 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl transform transition-all duration-300 hover:scale-[1.02] shadow-md hover:shadow-lg"
+          className="w-full py-4 bg-nav hover:bg-[#c6cbcc] text-black font-bold rounded-xl transform transition-all duration-300 hover:scale-[1.02] shadow-md hover:shadow-lg"
         >
           Submit Feedback
         </button>
@@ -140,15 +150,14 @@ function FeedbackPage() {
                   ></path>
                 </svg>
               </div>
-              <div className="text-green-700 font-medium">
-                Thank you! Your feedback helps us improve 🌟
-              </div>
+
+              <div>Thank you! Your feedback helps us improve 🌟</div>
             </div>
           </div>
         )}
       </div>
-    </div >
+    </div>
   );
-  }
+}
 
-  export default FeedbackPage;
+export default FeedbackPage;
