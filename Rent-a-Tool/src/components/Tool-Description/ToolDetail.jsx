@@ -65,7 +65,7 @@ const ToolDetail = () => {
             </div>
 
           </div>
-          <div className='w-full flex justify-evenly mb-3'>
+          <div className='w-full flex justify-evenly mb-4 gap-3'>
             <button onClick={handleNavigate} className="w-[150px] sm:w-[270px] mt-4 bg-HomeText text-white py-2 rounded flex items-center justify-center space-x-2 gap-2">
               <ChatIcon className="w-7 h-7 " />
               <span>Chat to Rent</span>

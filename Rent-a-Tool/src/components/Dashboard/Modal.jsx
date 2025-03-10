@@ -122,14 +122,18 @@ export default function Modal({ onClose }) {
               {["light", "dark", "system"].map((option) => (
                 <button
                   key={option}
-                  onClick={() => setTheme(option)}
+                  onClick={() => {
+                    setTheme(option);
+                    closeSubModal();
+                  }}
                   className={`w-full px-4 py-2 rounded-md transition border ${
                     theme === option
-                      ? "bg-nav text-white"
+                      ? "bg-imageBG text-white"
                       : "bg-gray-100 text-black"
                   }`}
                 >
                   {option.charAt(0).toUpperCase() + option.slice(1)} Theme
+                  
                 </button>
               ))}
             </div>

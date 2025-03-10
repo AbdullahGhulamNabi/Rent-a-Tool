@@ -11,6 +11,7 @@ import Profile from "../../assets/ToolDetail/profile.jpeg";
 import LoginModal from "../Login and Sign Up/Login";
 import SignUpModal from "../Login and Sign Up/SignUp";
 import Settings from "../Dashboard/Modal";
+import ProfileModal from "../Dashboard/Profile";
 import Add from "../Add-Update/AddUpdate";
 
 function Navbar({ isLoggedIn, handleLogout }) {
@@ -21,6 +22,7 @@ function Navbar({ isLoggedIn, handleLogout }) {
   const [isSignUpOpen, setIsSignUpOpen] = useState(false);
   const [isSettingOpen, setSettingOpen] = useState(false);
   const [isAddToolOpen, setAddToolOpen] = useState(false);
+  const [isProfileOpen, setProfileOpen] = useState(false);
 
   const openLoginModal = () => {
     setIsLoginOpen(true);
@@ -60,6 +62,28 @@ function Navbar({ isLoggedIn, handleLogout }) {
     document.body.style.overflow = "auto";
   };
 
+  const openProfileModal = () => {
+    setProfileOpen(true);
+    document.body.style.overflow = "hidden";
+  };
+
+  const closeProfileModal = () => {
+    setProfileOpen(false);
+    document.body.style.overflow = "auto";
+  };
+
+  function OpenRequests() {
+    navigate('/Dashboard/Listing')
+  }
+
+  function Dashboard() {
+    navigate('/Dashboard')
+  }
+
+  function handleLogout() {
+    navigate('/')
+  }
+
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       navigate(isLoggedIn ? '/Dashboard/Tools' : '/Tools');
@@ -68,7 +92,9 @@ function Navbar({ isLoggedIn, handleLogout }) {
 
   return (
     <div className="flex items-center justify-around h-[64px] bg-nav text-black sticky top-0 z-20">
-      <img src={logo} alt="Logo" className="h-12 w-18" />
+      <button onClick={Dashboard}>
+        <img src={logo} alt="Logo" className="h-12 w-18" />
+      </button>
 
       <input
         type="search"
@@ -79,13 +105,27 @@ function Navbar({ isLoggedIn, handleLogout }) {
       />
 
       <div className="hidden sm:flex items-center">
+
+        {/* <button onClick={Dashboard}>
+          <img src={home} alt="Home" className="h-7 w-7 mx-2" />
+        </button> */}
+
+        {isLoggedIn ? (<> 
+        <button onClick={Dashboard} >
         <img src={home} alt="Home" className="h-7 w-7 mx-2" />
+        </button>
+      </>):
+      (<button >
+        <img src={home} alt="Home" className="h-7 w-7 mx-2" />
+      </button>)}
+
+
         {isLoggedIn ? (
           <>
             <button onClick={openAddToolModal}><img src={add} alt="Add" className="h-7 w-7 mx-2" /></button>
-            <button><img src={message} alt="Requests" className="h-7 w-7 mx-2" /></button>
+            <button onClick={OpenRequests}><img src={message} alt="Requests" className="h-7 w-7 mx-2" /></button>
             <button onClick={openSettingModal}><img src={settings} alt="Settings" className="h-7 w-7 mx-2" /></button>
-            <img src={Profile} alt="Profile" className="h-7 w-7 mx-2 rounded-full" />
+            <button onClick={openProfileModal}><img src={Profile} alt="Profile" className="h-7 w-7 mx-2 rounded-full" /></button>
             <button onClick={handleLogout}><img src={logout} alt="Logout" className="h-7 w-7 mx-2" /></button>
           </>
         ) : (
@@ -98,28 +138,71 @@ function Navbar({ isLoggedIn, handleLogout }) {
         className="sm:hidden h-10 w-10 bg-gray-200 rounded-full"
       >☰</button>
 
-      {isDrawerOpen && (
-        <div className="fixed top-0 bottom-0 left-0 w-64 h-screen bg-white flex flex-col p-4">
-          <button onClick={() => setIsDrawerOpen(false)} className="self-end mb-4 text-black">✖</button>
-          <img src={logo} alt="Logo" className="h-12 w-18 mb-6" />
-          <img src={home} alt="Home" className="h-7 w-7 mr-4" />
-          {isLoggedIn ? (
-            <>
-              <button onClick={openAddToolModal}><img src={add} alt="Add Tools" className="h-7 w-7 mr-4" /></button>
-              <img src={message} alt="Requests" className="h-7 w-7 mr-4" />
-              <button onClick={openSettingModal}><img src={settings} alt="Settings" className="h-7 w-7 mr-4" /></button>
-              <button onClick={handleLogout}><img src={logout} alt="LogOut" className="h-7 w-7 mr-4" /></button>
-            </>
-          ) : (
-            <button onClick={openLoginModal}><img src={login} alt="Login" className="h-7 w-7 mr-4" /></button>
-          )}
-        </div>
+{isDrawerOpen && (
+  <div className="fixed top-0 bottom-0 left-0 w-40 h-screen bg-white flex flex-col p-4 shadow-lg text-black text-xl hover:text-black focus:outline-none">
+    <button onClick={() => setIsDrawerOpen(false)} className="self-end mb-4 text-black text-xl">
+      ✖
+    </button>
+
+    <img src={logo} alt="Logo" className="h-12 w-18 mb-6 self-center" />
+
+    <div className="space-y-4">
+
+      {isLoggedIn ? (<> 
+        <button onClick={Dashboard} className="flex items-center space-x-4 w-full text-left text-gray-700">
+        <img src={home} alt="Home" className="h-7 w-7" />
+        <span>Home</span>
+        </button>
+      </>):
+      (<button  className="flex items-center space-x-4 w-full text-left text-gray-700">
+        <img src={home} alt="Home" className="h-7 w-7" />
+        <span>Home</span>
+      </button>)}
+
+
+      {isLoggedIn ? (
+        <>
+          <button onClick={openAddToolModal} className="flex items-center space-x-4 w-full text-left text-gray-700">
+            <img src={add} alt="Add Tools" className="h-7 w-7" />
+            <span>Add Tool</span>
+          </button>
+
+          <button onClick={OpenRequests} className="flex items-center space-x-4 w-full text-left text-gray-700 ">
+            <img src={message} alt="Requests" className="h-7 w-7" />
+            <span>Requests</span>
+          </button>
+
+          <button onClick={openSettingModal} className="flex items-center space-x-4 w-full text-left text-gray-700 ">
+            <img src={settings} alt="Settings" className="h-7 w-7" />
+            <span>Settings</span>
+          </button>
+
+          <button onClick={openProfileModal} className="flex items-center space-x-4 w-full text-left text-gray-700">
+          <img src={Profile} alt="Profile" className="h-7 w-7  rounded-full" />
+            <span>Profile</span>
+          </button> 
+
+          <button onClick={handleLogout} className="flex items-center space-x-4 w-full text-left text-gray-700">
+            <img src={logout} alt="LogOut" className="h-7 w-7" />
+            <span>Logout</span>
+          </button>
+        </>
+      ) : (
+        <button onClick={openLoginModal} className="flex items-center space-x-4 w-full text-left text-gray-700 ">
+          <img src={login} alt="Login" className="h-7 w-7" />
+          <span>Login</span>
+        </button>
       )}
+    </div>
+  </div>
+)}
+
 
       {isLoginOpen && <LoginModal onClose={closeModals} onSignUpClick={openSignUpModal} />}
       {isSignUpOpen && <SignUpModal onClose={closeModals} onLoginClick={openLoginModal} />}
       {isSettingOpen && <Settings onClose={closeSettingModal} />}
       {isAddToolOpen && <Add onClose={closeAddToolModal} />}
+      {isProfileOpen && <ProfileModal onClose={closeProfileModal} />}
     </div>
   );
 }

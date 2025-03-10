@@ -34,7 +34,7 @@ const Tools = () => {
       imageName: hammer,
       toolName: 'Hammer',
       location: 'Karachi, Pakistan',
-      profileImage: person,
+      profileImage: hammer,
       personName: 'Ahmed',
       rating: 4.2,
       price: '$20',

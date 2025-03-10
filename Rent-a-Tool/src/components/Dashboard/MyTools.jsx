@@ -3,6 +3,8 @@ import hammer from '../../assets/Tools/Tools/hammer.jpg'
 import drill from '../../assets/Tools/Tools/drill.jpg'
 import ranch from '../../assets/Tools/Tools/ranch.jpg'
 import backsaw from '../../assets/Tools/Tools/backsaw.jpg'
+import chainsaw from '../../assets/Tools/Tools/chainsaw.jpg'
+import corkscrew from '../../assets/Tools/Tools/corkscrew.png'
 import { useNavigate } from "react-router-dom";
 
 
@@ -13,6 +15,8 @@ const MyTools = () => {
     { id: 2, name: "Drill Machine", description: "Cordless drill machine.",image:drill },
     { id: 3, name: "Wrench Set", description: "Complete set of wrenches.", image:ranch},
     { id: 4, name: "BackSaw", description: "Useful for mending wooden things.", image:backsaw},
+    { id: 5, name: "ChainSaw", description: "Great for cutting metal and wood items.",image:chainsaw },
+    { id: 6, name: "CorkScrew", description: "Useful for making wooden holes.", image:corkscrew},
   ]);
 
   const handleEdit = (id) => {
@@ -25,6 +29,11 @@ const MyTools = () => {
     }
   };
 
+  const navigate = useNavigate()
+  function handleNavigate(){
+    navigate("/ToolDescription")
+  }
+
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">My Tools</h1>
@@ -36,7 +45,7 @@ const MyTools = () => {
           >
 
             
-            <div className="w-full h-40 bg-gray-300 flex items-center justify-center rounded mb-4">
+            <div onClick={handleNavigate} className="w-full h-40 bg-gray-300 flex items-center justify-center rounded mb-4">
                 <img className="w-full h-full object-cover rounded" src={tool.image} alt="img" />
             </div>
 

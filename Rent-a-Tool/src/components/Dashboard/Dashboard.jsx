@@ -1,7 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Add from "../Add-Update/AddUpdate";
 
 function Dashboard() {
+  const [isAddToolOpen, setAddToolOpen] = useState(false);
+  const openAddToolModal = () => {
+    setAddToolOpen(true);
+    document.body.style.overflow = "hidden";
+  };
+
+  const closeAddToolModal = () => {
+    setAddToolOpen(false);
+    document.body.style.overflow = "auto";
+  };
+
   const navigate = useNavigate()
   function handleClick(){
       navigate('/Dashboard/Help')
@@ -48,29 +60,32 @@ function Dashboard() {
           Quick Links
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {/* <div className="bg-white shadow-md rounded-lg p-4 text-center">
-            <h3 className="text-lg font-medium text-gray-800">Browse Tools</h3>
-            <p className="text-gray-600">Explore tools available for rent.</p>
-          </div> */}
-          <div className="bg-white shadow-md rounded-lg p-4 text-center">
-            <h3 className="text-lg font-medium text-gray-800">Add Your Tools</h3>
-            <p className="text-gray-600">List your tools for rent here.</p>
-          </div>
-          <button onClick={handleRentals}>
-          <div className="bg-white shadow-md rounded-lg p-4 text-center">
-            <h3 className="text-lg font-medium text-gray-800">My Rentals</h3>
-            <p className="text-gray-600">View your current rentals and history.</p>
-          </div>
-          </button>
-          <button onClick={handleClick}>
-          <div className="bg-white shadow-md rounded-lg p-4 text-center">
-            <h3 className="text-lg font-medium text-gray-800">Tutorials and Help</h3>
-            <p className="text-gray-600">View the detailed tutorial to use app alongwith videos.</p>
-          </div>
-          </button>
-        </div>
-      </div>
+  <div className="bg-white shadow-md rounded-lg p-4 text-center">
+    <button onClick={openAddToolModal} className="w-full h-full flex flex-col justify-center">
+      <h3 className="text-lg font-medium text-gray-800">Add Your Tools</h3>
+      <p className="text-gray-600">List your tools for rent here.</p>
+    </button>
+  </div>
+
+  <button onClick={handleRentals} className="w-full h-full">
+    <div className="bg-white shadow-md rounded-lg p-4 text-center h-full flex flex-col justify-center">
+      <h3 className="text-lg font-medium text-gray-800">My Rentals</h3>
+      <p className="text-gray-600">View your current rentals and history.</p>
     </div>
+  </button>
+
+  <button onClick={handleClick} className="w-full h-full">
+    <div className="bg-white shadow-md rounded-lg p-4 text-center h-full flex flex-col justify-center">
+      <h3 className="text-lg font-medium text-gray-800">Tutorials and Help</h3>
+      <p className="text-gray-600">View the detailed tutorial to use the app along with videos.</p>
+    </div>
+  </button>
+</div>
+
+      </div>
+      {isAddToolOpen && <Add onClose={closeAddToolModal} />}
+    </div>
+
   );
 }
 
