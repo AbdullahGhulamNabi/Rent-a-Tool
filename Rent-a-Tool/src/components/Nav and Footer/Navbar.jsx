@@ -13,7 +13,7 @@ import SignUpModal from "../Login and Sign Up/SignUp";
 import Settings from "../Dashboard/Modal";
 import Add from "../Add-Update/AddUpdate";
 
-function Navbar({ isLoggedIn, handleLogout }) {
+function Navbar({ isLoggedIn, handleLogout}) {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -86,7 +86,11 @@ function Navbar({ isLoggedIn, handleLogout }) {
             <button><img src={message} alt="Requests" className="h-7 w-7 mx-2" /></button>
             <button onClick={openSettingModal}><img src={settings} alt="Settings" className="h-7 w-7 mx-2" /></button>
             <img src={Profile} alt="Profile" className="h-7 w-7 mx-2 rounded-full" />
-            <button onClick={handleLogout}><img src={logout} alt="Logout" className="h-7 w-7 mx-2" /></button>
+            <button onClick={()=>{
+                console.log("Logout")
+                handleLogout();
+                console.log("Logout")
+              }}><img src={logout} alt="Logout" className="h-7 w-7 mx-2" /></button>
           </>
         ) : (
           <button onClick={openLoginModal}><img src={login} alt="Login" className="h-7 w-7 mx-2" /></button>
@@ -108,7 +112,11 @@ function Navbar({ isLoggedIn, handleLogout }) {
               <button onClick={openAddToolModal}><img src={add} alt="Add Tools" className="h-7 w-7 mr-4" /></button>
               <img src={message} alt="Requests" className="h-7 w-7 mr-4" />
               <button onClick={openSettingModal}><img src={settings} alt="Settings" className="h-7 w-7 mr-4" /></button>
-              <button onClick={handleLogout}><img src={logout} alt="LogOut" className="h-7 w-7 mr-4" /></button>
+              <button onClick={()=>{
+                console.log("Logout")
+                handleLogout();
+                console.log("Logout")
+              }}><img src={logout} alt="LogOut" className="h-7 w-7 mr-4" /></button>
             </>
           ) : (
             <button onClick={openLoginModal}><img src={login} alt="Login" className="h-7 w-7 mr-4" /></button>
