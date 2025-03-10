@@ -9,6 +9,8 @@ import deletePic from '../../assets/Help/delete.png'; // Ensure the path is corr
 import search from '../../assets/Help/search.png'; // Ensure the path is correct
 
 const UserGuide = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   const sections = [
     {
       title: "Register User",
@@ -106,84 +108,38 @@ const UserGuide = () => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-130px)] bg-gray-50"> {/* Adjust 130px based on navbar+footer height */}
+    <div className="min-h-[calc(100vh-130px)] bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Page Header */}
         <div className="pt-8 pb-4 sticky top-0 bg-gray-50 z-10">
           <div className="text-center">
             <h1 className="text-3xl font-bold text-gray-900">User Guide</h1>
-            <p className="mt-2 text-gray-600">
-              Step-by-step instructions to help you get started
-            </p>
-          </div>
-
-          {/* Search Bar */}
-          <div className="mt-6 max-w-2xl mx-auto">
-            <div className="relative">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search sections..."
-                className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-              />
-              <svg
-                className="w-5 h-5 absolute left-3 top-2.5 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-              <button
-                onClick={handleSearch}
-                className="absolute right-2 top-1.5 p-1.5 text-gray-500 hover:text-blue-600 transition-colors"
-              >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </button>
-            </div>
+            <p className="mt-2 text-gray-600">Step-by-step instructions to help you get started</p>
           </div>
         </div>
-
-        {/* Content Layout */}
+        
+        {/* Sidebar Toggle Button for Mobile */}
+        <button 
+          className="lg:hidden bg-blue-500 text-white px-4 py-2 rounded-md mb-4"
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+        >
+          {isSidebarOpen ? "Hide Sections" : "Show Sections"}
+        </button>
+        
         <div className="flex flex-col lg:flex-row gap-8 pb-8">
           {/* Sidebar Navigation */}
-          <div className="lg:w-64 lg:sticky lg:top-[160px] lg:h-[calc(100vh-200px)] lg:overflow-y-auto">
-            <nav className="bg-white rounded-lg p-4 shadow-sm">
+          <div className={`lg:w-64 lg:sticky lg:top-[160px] lg:h-[calc(100vh-200px)] lg:overflow-y-auto bg-white rounded-lg p-4 shadow-sm ${isSidebarOpen ? "block" : "hidden lg:block"}`}>
+            <nav>
               <h2 className="text-lg font-semibold text-gray-800 mb-3">Sections</h2>
               <ul className="space-y-2">
                 {sections.map((section) => (
                   <li
                     key={section.title}
                     onClick={() => {
-                      const container = mainContentRef.current;
                       const sectionElement = sectionRefs[section.title].current;
-                      if (container && sectionElement) {
-                        const yOffset = 100; // Match search yOffset
-                        const scrollPosition = sectionElement.offsetTop - container.offsetTop - yOffset;
-                        container.scrollTo({
-                          top: scrollPosition,
-                          behavior: "smooth"
-                        });
+                      if (sectionElement && mainContentRef.current) {
+                        sectionElement.scrollIntoView({ behavior: "smooth", block: "start" });
                       }
+                      setIsSidebarOpen(false); // Close sidebar on mobile after clicking
                     }}
                     className="px-3 py-2 rounded-md hover:bg-blue-50 cursor-pointer text-gray-700 hover:text-blue-700 transition-colors"
                   >
@@ -193,13 +149,9 @@ const UserGuide = () => {
               </ul>
             </nav>
           </div>
-
+          
           {/* Main Content */}
-          <div 
-            className="flex-1 overflow-y-auto" 
-            ref={mainContentRef}
-            style={{ maxHeight: 'calc(100vh - 200px)' }} // Adjust based on your needs
-          >
+          <div className="flex-1 overflow-y-auto" ref={mainContentRef}>
             <div className="space-y-8">
               {sections.map((section) => (
                 <section
@@ -207,32 +159,15 @@ const UserGuide = () => {
                   ref={sectionRefs[section.title]}
                   className="bg-white rounded-xl shadow-sm p-6 scroll-mt-24"
                 >
-                  <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                    {section.title}
-                  </h2>
-                  
+                  <h2 className="text-2xl font-bold text-gray-800 mb-4">{section.title}</h2>
                   <div className="space-y-6">
                     {section.content.map((item, index) => (
                       <div key={index} className="text-gray-700">
-                        <div className="flex items-start gap-3 mb-3">
-                          <div className="w-6 flex-shrink-0">
-                            <span className="text-blue-500 font-medium">{index + 1}.</span>
-                          </div>
-                          <p className="flex-1">{item.text}</p>
-                        </div>
-                        {item.imageUrl && (
-                          <div className="ml-9 mb-6">
-                            <img
-                              src={item.imageUrl}
-                              alt={`Step ${index + 1}`}
-                              className="rounded-lg border shadow-sm max-w-full h-auto"
-                            />
-                          </div>
-                        )}
+                        <p className="flex-1 mb-3">{item.text}</p>
+                        {item.imageUrl && <img src={item.imageUrl} alt={item.text} className="rounded-lg border shadow-sm max-w-full h-auto" />}
                       </div>
                     ))}
                   </div>
-
                   {section.videoUrl && (
                     <div className="mt-8">
                       <h3 className="text-lg font-semibold text-gray-800 mb-4">
