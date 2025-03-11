@@ -14,7 +14,7 @@ import Settings from "../Dashboard/Modal";
 import ProfileModal from "../Dashboard/Profile";
 import Add from "../Add-Update/AddUpdate";
 
-function Navbar({ isLoggedIn, handleLogout }) {
+function Navbar({ isLoggedIn, handleLogout}) {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);

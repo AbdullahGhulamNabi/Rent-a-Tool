@@ -1,7 +1,7 @@
 const { Router } = require("express");
-const { User } = require("../DB/db_models");
-const { jwt_secret } = require("../config")
-const jwt = require("jsonwebtoken")
+const { User , Tool, FeedBack } = require("../DB/db_models");
+const { jwt_secret } = require("../config");
+const jwt = require("jsonwebtoken");
 const router = Router();
 const bcrypt = require("bcrypt");
 
@@ -51,15 +51,32 @@ router.post("/login", async (req, res) => {
     return;
   }
 
-  const token = jwt.sign({email},jwt_secret)
+  const token = jwt.sign({ email }, jwt_secret);
 
   res.json({
-    token,
+    token: `Bearer ${token}`,
   });
-
-
 });
 
+router.get("/products", async (req, res) => {
+  const tools = await Tool.find()
 
+  const formattedTools = await Promise.all(
+    tools.map(async (tool) => {
+      const owner = await User.findOne({ toolsUploaded: tool._id })
+      const feedback = await FeedBack.find({ toolId: tool._id })
+     
+
+      return {
+        imageName: tool.image.data.toString("base64"),
+        toolName: tool.name,
+        location: owner.address,
+        personName: owner.firstName,
+        rating: feedback.rating, 
+        price: `$${tool.price}`,
+      };
+    })
+  );
+});
 
 module.exports = router;
