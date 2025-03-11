@@ -3,7 +3,6 @@ import FeedbackPage from './components/Feedback and Help/FeedBackPage'
 import { Routes, Route, createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
 import './App.css';
 import Navbar from './components/Nav and Footer/Navbar';
-import NavbarForLoggedIn from './components/Nav and Footer/NavbarForLoggedIn';
 import Footer from './components/Nav and Footer/Footer';
 import LoginModal from "./components/Login and Sign Up/Login";
 import SignUpModal from "./components/Login and Sign Up/SignUp";
@@ -19,94 +18,103 @@ import AddUpdate from './components/Add-Update/AddUpdate';
 import ChatInterface from './components/Chat-Module/ChatInterface';
 import SignUp from './components/Login and Sign Up/SignUp';
 import Order  from './components/Order Tool/Order'
+import { useState } from 'react';
 
-const router = createBrowserRouter(
-  [
-    {
-      path: "/",
-      element:
-        <div>
-          <Navbar />
-          <Home />
-          <Tools />
-          <Footer />
-        </div>
-    },
-    {
-      path: "/Dashboard",
-      element: (
-        <div>
-          <Navbar isLoggedIn={true} handleLogout={false}/>
-          {/* <NavbarForLoggedIn /> */}
-          <Outlet />
-          <Footer />
-        </div>
-      ),
-      children: [
-        {
-          index: true, // Default content for "/dashboard"
-          element: (
-            <div>
-              <DashBoard />
-              <MyTools />
-            </div>
-          ),
-        },
-        {
-          path: "Listing",
-          element: <Listing />,
-        },
-        {
-          path: "Help",
-          element: <Help />,
-        },
-        {
-          path:"Tools",
-          element:<Tools/>
-        }
-      ],
-    },
-    {
-      path: '/ToolDescription',
-      element:
-      <div>
-        <Navbar/>
-        <Outlet/>
-          <Footer />
-      </div>,
-      children:[{
-        index: true,
-        element: <ToolDetail/>     
-      },{
-        path:'Chat',
-        element: <ChatInterface/>
-      },{
-        path:'Order',
-        element: <Order/>
-      },{
-        path: "Listing",
-        element: <Listing />,
-      },{
-        path: "Feedback",
-        element : <FeedbackPage/>
-      }]
-    },
-    {
-      path: '/Tools',
-      element:
-      <div>
-        <Navbar/>
-        <Tools/>
-          <Footer />
-      </div>
-    }
-
-  ]
-)
 
 function App() {
 
+  const [isLoggedIn,setIsLoggedIn] = useState(false);
 
+  function handleLogin(){
+    setIsLoggedIn(true);
+  }
+  function handleLogout(){
+    setIsLoggedIn(false);
+  }
+
+  const router = createBrowserRouter(
+    [
+      {
+        path: "/",
+        element:
+          <div>
+            <Navbar isLoggedIn={isLoggedIn} handleLogout={handleLogout} handleLogin={handleLogin}/>
+            <Home />
+            <Tools />
+            <Footer />
+          </div>
+      },
+      {
+        path: "/Dashboard",
+        element: (
+          <div>
+            <Navbar isLoggedIn={isLoggedIn} handleLogout={handleLogout} handleLogin={handleLogin}/>
+            <Outlet />
+            <Footer />
+          </div>
+        ),
+        children: [
+          {
+            index: true, // Default content for "/dashboard"
+            element: (
+              <div>
+                <DashBoard />
+                <MyTools />
+              </div>
+            ),
+          },
+          {
+            path: "Listing",
+            element: <Listing />,
+          },
+          {
+            path: "Help",
+            element: <Help />,
+          },
+          {
+            path:"Tools",
+            element:<Tools/>
+          }
+        ],
+      },
+      {
+        path: '/ToolDescription',
+        element:
+        <div>
+          <Navbar/>
+          <Outlet/>
+            <Footer />
+        </div>,
+        children:[{
+          index: true,
+          element: <ToolDetail/>     
+        },{
+          path:'Chat',
+          element: <ChatInterface/>
+        },{
+          path:'Order',
+          element: <Order/>
+        },{
+          path: "Listing",
+          element: <Listing />,
+        },{
+          path: "Feedback",
+          element : <FeedbackPage/>
+        }]
+      },
+      {
+        path: '/Tools',
+        element:
+        <div>
+          <Navbar/>
+          <Tools/>
+            <Footer />
+        </div>
+      }
+  
+    ]
+  )
+  
   return (
     <div>
       <RouterProvider router={router} />
