@@ -12,7 +12,7 @@ app.use(cors({
 const port = 3000
 
 app.use("/",guestUserRoutes)
-app.use("/dashboard",loggedInUserRoutes)
+// app.use("/dashboard",loggedInUserRoutes)
 
 
 
