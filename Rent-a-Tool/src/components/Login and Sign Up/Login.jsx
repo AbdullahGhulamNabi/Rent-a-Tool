@@ -31,7 +31,7 @@ function Login({onClose, onSignUpClick }) {
       if (response.ok) {
         localStorage.setItem("jwt_token", data.token); 
         dispatch({type:'USER' , payload:true})
-        onClose
+        onClose()
         navigate("/Dashboard"); 
       } else {
         setError(data.message || "Login failed. Please try again.");
