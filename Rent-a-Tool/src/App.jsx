@@ -6,7 +6,7 @@ import {
   createBrowserRouter,
   RouterProvider,
   Outlet,
-  Navigate
+  Navigate,
 } from "react-router-dom";
 import "./App.css";
 import Navbar from "./components/Nav and Footer/Navbar";
@@ -31,11 +31,6 @@ import { createContext, useReducer, useState } from "react";
 function PrivateRoute({ children }) {
   const token = localStorage.getItem("jwt_token");
   return token ? children : <Navigate to="/" />;
-}
-
-function PrivateRouteToolDescription({ children }) {
-  const token = localStorage.getItem("jwt_token");
-  return token ? children : <Navigate to="/ToolDescription" />;
 }
 
 const RoutesOfRent_a_Tool = createBrowserRouter([
@@ -92,9 +87,9 @@ const RoutesOfRent_a_Tool = createBrowserRouter([
             path: "Chat",
             element: (
               <>
-                <PrivateRouteToolDescription>
-                  <ChatInterface />
-                </PrivateRouteToolDescription>
+              <PrivateRoute>
+              <ChatInterface />
+              </PrivateRoute>
               </>
             ),
           },
@@ -102,10 +97,9 @@ const RoutesOfRent_a_Tool = createBrowserRouter([
             path: "Order",
             element: (
               <>
-                <PrivateRouteToolDescription>
-                  {" "}
-                  <Order />
-                </PrivateRouteToolDescription>
+              <PrivateRoute>
+              <Order />
+              </PrivateRoute>
               </>
             ),
           },
@@ -113,9 +107,9 @@ const RoutesOfRent_a_Tool = createBrowserRouter([
             path: "Listing",
             element: (
               <>
-                <PrivateRouteToolDescription>
-                  <Listing />{" "}
-                </PrivateRouteToolDescription>
+              <PrivateRoute>
+              <Listing />
+              </PrivateRoute>
               </>
             ),
           },
@@ -123,9 +117,9 @@ const RoutesOfRent_a_Tool = createBrowserRouter([
             path: "Feedback",
             element: (
               <>
-                <PrivateRouteToolDescription>
-                  <FeedbackPage />
-                </PrivateRouteToolDescription>
+              <PrivateRoute>
+              <FeedbackPage />
+              </PrivateRoute>
               </>
             ),
           },
@@ -139,23 +133,23 @@ const RoutesOfRent_a_Tool = createBrowserRouter([
   },
 ]);
 
-const reducer = (state , action) =>{
-  if(action.type === 'USER'){
-    return action.payload
+const reducer = (state, action) => {
+  if (action.type === "USER") {
+    return action.payload;
   }
-  return state
-}
+  return state;
+};
 
-const initialState = null
+const initialState = null;
 
-export const UserContext = createContext()
+export const UserContext = createContext();
 function App() {
-  const [state , dispatch] = useReducer(reducer , initialState)
+  const [state, dispatch] = useReducer(reducer, initialState);
   return (
     <>
-    <UserContext.Provider value={{state, dispatch}}>
-      <RouterProvider router={RoutesOfRent_a_Tool} />
-    </UserContext.Provider>
+      <UserContext.Provider value={{ state, dispatch }}>
+        <RouterProvider router={RoutesOfRent_a_Tool} />
+      </UserContext.Provider>
     </>
   );
 }
