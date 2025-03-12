@@ -4,6 +4,7 @@ import HomePageOffset from "../../assets/Home/HomePage-80.png";
 import logo from "../../assets/Home/logo.png";
 import LoginModal from "../Login and Sign Up/Login";
 import SignUpModal from "../Login and Sign Up/SignUp"
+import { useEffect } from "react";
 
 export default function Home() {
   const [isLoginOpen, setIsLoginOpen] = React.useState(false);
@@ -26,6 +27,7 @@ export default function Home() {
     setIsSignUpOpen(false);
     document.body.style.overflow = "auto";
   };
+
 
   return (
     <div>

@@ -38,7 +38,7 @@ router.post("/login", async (req, res) => {
 
   if (!user) {
     res.status(400).json({
-      msg: "User does not exist",
+      message : "User does not exist",
     });
     return;
   }
@@ -46,7 +46,7 @@ router.post("/login", async (req, res) => {
   const match_password = await bcrypt.compare(password, user.password);
   if (!match_password) {
     res.status(400).json({
-      msg: "Invalid credentials",
+      message : "Invalid credentials",
     });
     return;
   }
@@ -55,6 +55,7 @@ router.post("/login", async (req, res) => {
 
   res.json({
     token: `Bearer ${token}`,
+    message: "Login Succesful"
   });
 });
 

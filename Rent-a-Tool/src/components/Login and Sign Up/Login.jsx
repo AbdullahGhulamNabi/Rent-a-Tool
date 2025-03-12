@@ -1,13 +1,47 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import SignUpModel from '../Login and Sign Up/SignUp'
 import { useNavigate } from "react-router-dom";
+import {Api_Route} from '../../config'
+import { UserContext } from "../../App";
 
 function Login({onClose, onSignUpClick }) {
-  const navigate = useNavigate()
+  const {state , dispatch} = useContext(UserContext)
 
-  function handleClick(){
-    navigate('/Dashboard')
+  const navigate = useNavigate()
+  const [email , setEmail] = useState("")
+  const [password , setPassword] = useState("")
+  const [error, setError] = useState("");
+
+
+  async function handleLogin(event) {
+    event.preventDefault(); 
+
+    try {
+    
+      const response = await fetch(`${Api_Route}/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem("jwt_token", data.token); 
+        dispatch({type:'USER' , payload:true})
+        onClose()
+        navigate("/Dashboard"); 
+      } else {
+        setError(data.message || "Login failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error during login:", error);
+      setError("An error occurred. Please try again later.");
+    }
   }
+
 
 
   return (
@@ -20,13 +54,17 @@ function Login({onClose, onSignUpClick }) {
           ✕
         </button>
         <h2 className="text-xl font-bold mb-4">Login</h2>
-        <form>
+        {error && <p className="text-red-500 text-sm">{error}</p>}
+        <form onSubmit={handleLogin}>
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1">Email</label>
             <input
               type="email"
               className="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:border-imageBG"
               placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
             />
           </div>
           <div className="mb-4">
@@ -35,12 +73,17 @@ function Login({onClose, onSignUpClick }) {
               type="password"
               className="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:border-imageBG"
               placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
             />
           </div>
           {/* <NavLink to="/dashboard" className="no-underline">  */}
         <button
             type="submit"
-            onClick={handleClick}
+            onClick={()=>{
+              document.body.style.overflow = "auto"
+            }}
             className="w-full bg-HomeText text-white py-2 rounded"
           >
             Login

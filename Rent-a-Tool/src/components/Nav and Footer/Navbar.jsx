@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../../assets/Nav/logo.png";
 import home from "../../assets/Nav/home.png";
@@ -13,8 +13,13 @@ import SignUpModal from "../Login and Sign Up/SignUp";
 import Settings from "../Dashboard/Modal";
 import ProfileModal from "../Dashboard/Profile";
 import Add from "../Add-Update/AddUpdate";
+import {UserContext} from "../../App"
+import { useContext } from "react";
 
-function Navbar({ isLoggedIn, handleLogout}) {
+function Navbar({ isLoggedIn}) {
+  const {state , dispatch} = useContext(UserContext)
+
+
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -24,6 +29,23 @@ function Navbar({ isLoggedIn, handleLogout}) {
   const [isAddToolOpen, setAddToolOpen] = useState(false);
   const [isProfileOpen, setProfileOpen] = useState(false);
 
+  function handleLogout() {
+    localStorage.removeItem("jwt_token"); 
+    dispatch({type:'USER' , payload:false})
+    navigate("/", { replace: true })
+  }
+
+  useEffect(() => {
+    const token = localStorage.getItem("jwt_token");
+    if (!token) {
+      dispatch({type:'USER' , payload:false})
+      window.history.pushState(null, "", window.location.href);
+      window.history.replaceState(null, "", window.location.href);
+      navigate("/", { replace: true }); 
+    }
+  }, [navigate])
+
+  isLoggedIn = true
   const openLoginModal = () => {
     setIsLoginOpen(true);
     setIsSignUpOpen(false);
@@ -80,13 +102,10 @@ function Navbar({ isLoggedIn, handleLogout}) {
     navigate('/Dashboard')
   }
 
-  function handleLogout() {
-    navigate('/')
-  }
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
-      navigate(isLoggedIn ? '/Dashboard/Tools' : '/Tools');
+      navigate(state ? '/Dashboard/Tools' : '/Tools');
     }
   };
 
@@ -110,7 +129,7 @@ function Navbar({ isLoggedIn, handleLogout}) {
           <img src={home} alt="Home" className="h-7 w-7 mx-2" />
         </button> */}
 
-        {isLoggedIn ? (<> 
+        {state ? (<> 
         <button onClick={Dashboard} >
         <img src={home} alt="Home" className="h-7 w-7 mx-2" />
         </button>
@@ -120,7 +139,7 @@ function Navbar({ isLoggedIn, handleLogout}) {
       </button>)}
 
 
-        {isLoggedIn ? (
+        {state ? (
           <>
             <button onClick={openAddToolModal}><img src={add} alt="Add" className="h-7 w-7 mx-2" /></button>
             <button onClick={OpenRequests}><img src={message} alt="Requests" className="h-7 w-7 mx-2" /></button>
@@ -148,7 +167,7 @@ function Navbar({ isLoggedIn, handleLogout}) {
 
     <div className="space-y-4">
 
-      {isLoggedIn ? (<> 
+      {state ? (<> 
         <button onClick={Dashboard} className="flex items-center space-x-4 w-full text-left text-gray-700">
         <img src={home} alt="Home" className="h-7 w-7" />
         <span>Home</span>
@@ -160,7 +179,7 @@ function Navbar({ isLoggedIn, handleLogout}) {
       </button>)}
 
 
-      {isLoggedIn ? (
+      {state ? (
         <>
           <button onClick={openAddToolModal} className="flex items-center space-x-4 w-full text-left text-gray-700">
             <img src={add} alt="Add Tools" className="h-7 w-7" />
