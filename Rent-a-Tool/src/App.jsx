@@ -87,9 +87,9 @@ const RoutesOfRent_a_Tool = createBrowserRouter([
             path: "Chat",
             element: (
               <>
-              <PrivateRoute>
-              <ChatInterface />
-              </PrivateRoute>
+                <PrivateRoute>
+                  <ChatInterface />
+                </PrivateRoute>
               </>
             ),
           },
@@ -97,9 +97,9 @@ const RoutesOfRent_a_Tool = createBrowserRouter([
             path: "Order",
             element: (
               <>
-              <PrivateRoute>
-              <Order />
-              </PrivateRoute>
+                <PrivateRoute>
+                  <Order />
+                </PrivateRoute>
               </>
             ),
           },
@@ -107,9 +107,9 @@ const RoutesOfRent_a_Tool = createBrowserRouter([
             path: "Listing",
             element: (
               <>
-              <PrivateRoute>
-              <Listing />
-              </PrivateRoute>
+                <PrivateRoute>
+                  <Listing />
+                </PrivateRoute>
               </>
             ),
           },
@@ -117,9 +117,9 @@ const RoutesOfRent_a_Tool = createBrowserRouter([
             path: "Feedback",
             element: (
               <>
-              <PrivateRoute>
-              <FeedbackPage />
-              </PrivateRoute>
+                <PrivateRoute>
+                  <FeedbackPage />
+                </PrivateRoute>
               </>
             ),
           },
@@ -137,6 +137,11 @@ const reducer = (state, action) => {
   if (action.type === "USER") {
     return action.payload;
   }
+
+  if(action.type == "SET_PROFILE_IMAGE"){
+    return { ...state, profileImage: action.payload }
+  }
+
   return state;
 };
 

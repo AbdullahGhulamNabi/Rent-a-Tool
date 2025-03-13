@@ -9,10 +9,12 @@ app.use(express.json())
 app.use(cors({
     origin : 'http://localhost:5173'
 }))
+app.use(express.static('public'))
 const port = 3000
 
 app.use("/",guestUserRoutes)
-// app.use("/dashboard",loggedInUserRoutes)
+app.use("/dashboard",loggedInUserRoutes)
+
 
 
 

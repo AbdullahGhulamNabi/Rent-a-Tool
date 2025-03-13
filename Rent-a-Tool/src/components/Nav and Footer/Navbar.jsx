@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../../assets/Nav/logo.png";
 import home from "../../assets/Nav/home.png";
@@ -13,12 +13,12 @@ import SignUpModal from "../Login and Sign Up/SignUp";
 import Settings from "../Dashboard/Modal";
 import ProfileModal from "../Dashboard/Profile";
 import Add from "../Add-Update/AddUpdate";
-import {UserContext} from "../../App"
+import { UserContext } from "../../App";
 import { useContext } from "react";
+import { Api_Route } from "../../config";
 
-function Navbar({ isLoggedIn}) {
-  const {state , dispatch} = useContext(UserContext)
-
+function Navbar({ isLoggedIn }) {
+  const { state, dispatch } = useContext(UserContext);
 
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
@@ -28,24 +28,43 @@ function Navbar({ isLoggedIn}) {
   const [isSettingOpen, setSettingOpen] = useState(false);
   const [isAddToolOpen, setAddToolOpen] = useState(false);
   const [isProfileOpen, setProfileOpen] = useState(false);
+  const [image, setImage] = useState();
 
   function handleLogout() {
-    localStorage.removeItem("jwt_token"); 
-    dispatch({type:'USER' , payload:false})
-    navigate("/", { replace: true })
+    localStorage.removeItem("jwt_token");
+    dispatch({ type: "USER", payload: false });
+    navigate("/", { replace: true });
   }
 
   useEffect(() => {
     const token = localStorage.getItem("jwt_token");
     if (!token) {
-      dispatch({type:'USER' , payload:false})
+      dispatch({ type: "USER", payload: false });
       window.history.pushState(null, "", window.location.href);
       window.history.replaceState(null, "", window.location.href);
-      navigate("/", { replace: true }); 
+      navigate("/", { replace: true });
     }
-  }, [navigate])
+  }, [navigate]);
 
-  isLoggedIn = true
+  useEffect(() => {
+    const token = localStorage.getItem("jwt_token");
+    if (!token) return;
+
+    fetch(`${Api_Route}/dashboard/getProfilePhoto`, {
+      headers: {
+        Authorization: localStorage.getItem("jwt_token"),
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.profilePhoto) {
+          setImage(data.profilePhoto);
+          console.log(data.profilePhoto + "Hello");
+        }
+      })
+      .catch((error) => console.error("Error fetching image:", error));
+  }, [state]);
+
   const openLoginModal = () => {
     setIsLoginOpen(true);
     setIsSignUpOpen(false);
@@ -95,17 +114,16 @@ function Navbar({ isLoggedIn}) {
   };
 
   function OpenRequests() {
-    navigate('/Dashboard/Listing')
+    navigate("/Dashboard/Listing");
   }
 
   function Dashboard() {
-    navigate('/Dashboard')
+    navigate("/Dashboard");
   }
-
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
-      navigate(state ? '/Dashboard/Tools' : '/Tools');
+      navigate(state ? "/Dashboard/Tools" : "/Tools");
     }
   };
 
@@ -124,101 +142,152 @@ function Navbar({ isLoggedIn}) {
       />
 
       <div className="hidden sm:flex items-center">
-
         {/* <button onClick={Dashboard}>
           <img src={home} alt="Home" className="h-7 w-7 mx-2" />
         </button> */}
 
-        {state ? (<> 
-        <button onClick={Dashboard} >
-        <img src={home} alt="Home" className="h-7 w-7 mx-2" />
-        </button>
-      </>):
-      (<button >
-        <img src={home} alt="Home" className="h-7 w-7 mx-2" />
-      </button>)}
-
+        {state ? (
+          <>
+            <button onClick={Dashboard}>
+              <img src={home} alt="Home" className="h-7 w-7 mx-2" />
+            </button>
+          </>
+        ) : (
+          <button>
+            <img src={home} alt="Home" className="h-7 w-7 mx-2" />
+          </button>
+        )}
 
         {state ? (
           <>
-            <button onClick={openAddToolModal}><img src={add} alt="Add" className="h-7 w-7 mx-2" /></button>
-            <button onClick={OpenRequests}><img src={message} alt="Requests" className="h-7 w-7 mx-2" /></button>
-            <button onClick={openSettingModal}><img src={settings} alt="Settings" className="h-7 w-7 mx-2" /></button>
-            <button onClick={openProfileModal}><img src={Profile} alt="Profile" className="h-7 w-7 mx-2 rounded-full" /></button>
-            <button onClick={handleLogout}><img src={logout} alt="Logout" className="h-7 w-7 mx-2" /></button>
+            <button onClick={openAddToolModal}>
+              <img src={add} alt="Add" className="h-7 w-7 mx-2" />
+            </button>
+            <button onClick={OpenRequests}>
+              <img src={message} alt="Requests" className="h-7 w-7 mx-2" />
+            </button>
+            <button onClick={openSettingModal}>
+              <img src={settings} alt="Settings" className="h-7 w-7 mx-2" />
+            </button>
+            <button onClick={openProfileModal}>
+              <img
+                src={`${Api_Route}/Images/${image}`}
+                alt="Profile"
+                className="h-7 w-7 mx-2 rounded-full"
+              />
+            </button>
+            <button onClick={handleLogout}>
+              <img src={logout} alt="Logout" className="h-7 w-7 mx-2" />
+            </button>
           </>
         ) : (
-          <button onClick={openLoginModal}><img src={login} alt="Login" className="h-7 w-7 mx-2" /></button>
+          <button onClick={openLoginModal}>
+            <img src={login} alt="Login" className="h-7 w-7 mx-2" />
+          </button>
         )}
       </div>
 
       <button
         onClick={() => setIsDrawerOpen(!isDrawerOpen)}
         className="sm:hidden h-10 w-10 bg-gray-200 rounded-full"
-      >☰</button>
+      >
+        ☰
+      </button>
 
-{isDrawerOpen && (
-  <div className="fixed top-0 bottom-0 left-0 w-40 h-screen bg-white flex flex-col p-4 shadow-lg text-black text-xl hover:text-black focus:outline-none">
-    <button onClick={() => setIsDrawerOpen(false)} className="self-end mb-4 text-black text-xl">
-      ✖
-    </button>
-
-    <img src={logo} alt="Logo" className="h-12 w-18 mb-6 self-center" />
-
-    <div className="space-y-4">
-
-      {state ? (<> 
-        <button onClick={Dashboard} className="flex items-center space-x-4 w-full text-left text-gray-700">
-        <img src={home} alt="Home" className="h-7 w-7" />
-        <span>Home</span>
-        </button>
-      </>):
-      (<button  className="flex items-center space-x-4 w-full text-left text-gray-700">
-        <img src={home} alt="Home" className="h-7 w-7" />
-        <span>Home</span>
-      </button>)}
-
-
-      {state ? (
-        <>
-          <button onClick={openAddToolModal} className="flex items-center space-x-4 w-full text-left text-gray-700">
-            <img src={add} alt="Add Tools" className="h-7 w-7" />
-            <span>Add Tool</span>
+      {isDrawerOpen && (
+        <div className="fixed top-0 bottom-0 left-0 w-40 h-screen bg-white flex flex-col p-4 shadow-lg text-black text-xl hover:text-black focus:outline-none">
+          <button
+            onClick={() => setIsDrawerOpen(false)}
+            className="self-end mb-4 text-black text-xl"
+          >
+            ✖
           </button>
 
-          <button onClick={OpenRequests} className="flex items-center space-x-4 w-full text-left text-gray-700 ">
-            <img src={message} alt="Requests" className="h-7 w-7" />
-            <span>Requests</span>
-          </button>
+          <img src={logo} alt="Logo" className="h-12 w-18 mb-6 self-center" />
 
-          <button onClick={openSettingModal} className="flex items-center space-x-4 w-full text-left text-gray-700 ">
-            <img src={settings} alt="Settings" className="h-7 w-7" />
-            <span>Settings</span>
-          </button>
+          <div className="space-y-4">
+            {state ? (
+              <>
+                <button
+                  onClick={Dashboard}
+                  className="flex items-center space-x-4 w-full text-left text-gray-700"
+                >
+                  <img src={home} alt="Home" className="h-7 w-7" />
+                  <span>Home</span>
+                </button>
+              </>
+            ) : (
+              <button className="flex items-center space-x-4 w-full text-left text-gray-700">
+                <img src={home} alt="Home" className="h-7 w-7" />
+                <span>Home</span>
+              </button>
+            )}
 
-          <button onClick={openProfileModal} className="flex items-center space-x-4 w-full text-left text-gray-700">
-          <img src={Profile} alt="Profile" className="h-7 w-7  rounded-full" />
-            <span>Profile</span>
-          </button> 
+            {state ? (
+              <>
+                <button
+                  onClick={openAddToolModal}
+                  className="flex items-center space-x-4 w-full text-left text-gray-700"
+                >
+                  <img src={add} alt="Add Tools" className="h-7 w-7" />
+                  <span>Add Tool</span>
+                </button>
 
-          <button onClick={handleLogout} className="flex items-center space-x-4 w-full text-left text-gray-700">
-            <img src={logout} alt="LogOut" className="h-7 w-7" />
-            <span>Logout</span>
-          </button>
-        </>
-      ) : (
-        <button onClick={openLoginModal} className="flex items-center space-x-4 w-full text-left text-gray-700 ">
-          <img src={login} alt="Login" className="h-7 w-7" />
-          <span>Login</span>
-        </button>
+                <button
+                  onClick={OpenRequests}
+                  className="flex items-center space-x-4 w-full text-left text-gray-700 "
+                >
+                  <img src={message} alt="Requests" className="h-7 w-7" />
+                  <span>Requests</span>
+                </button>
+
+                <button
+                  onClick={openSettingModal}
+                  className="flex items-center space-x-4 w-full text-left text-gray-700 "
+                >
+                  <img src={settings} alt="Settings" className="h-7 w-7" />
+                  <span>Settings</span>
+                </button>
+
+                <button
+                  onClick={openProfileModal}
+                  className="flex items-center space-x-4 w-full text-left text-gray-700"
+                >
+                  <img
+                    src={`${Api_Route}/Images/${image}`}
+                    alt="Profile"
+                    className="h-7 w-7  rounded-full"
+                  />
+                  <span>Profile</span>
+                </button>
+
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center space-x-4 w-full text-left text-gray-700"
+                >
+                  <img src={logout} alt="LogOut" className="h-7 w-7" />
+                  <span>Logout</span>
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={openLoginModal}
+                className="flex items-center space-x-4 w-full text-left text-gray-700 "
+              >
+                <img src={login} alt="Login" className="h-7 w-7" />
+                <span>Login</span>
+              </button>
+            )}
+          </div>
+        </div>
       )}
-    </div>
-  </div>
-)}
 
-
-      {isLoginOpen && <LoginModal onClose={closeModals} onSignUpClick={openSignUpModal} />}
-      {isSignUpOpen && <SignUpModal onClose={closeModals} onLoginClick={openLoginModal} />}
+      {isLoginOpen && (
+        <LoginModal onClose={closeModals} onSignUpClick={openSignUpModal} />
+      )}
+      {isSignUpOpen && (
+        <SignUpModal onClose={closeModals} onLoginClick={openLoginModal} />
+      )}
       {isSettingOpen && <Settings onClose={closeSettingModal} />}
       {isAddToolOpen && <Add onClose={closeAddToolModal} />}
       {isProfileOpen && <ProfileModal onClose={closeProfileModal} />}

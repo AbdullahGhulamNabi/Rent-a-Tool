@@ -1,9 +1,12 @@
 const mongoose = require("mongoose");
-const bcrypt = require('bcrypt')
+const fs = require("fs");
+const bcrypt = require("bcrypt");
+const path = require("path");
 
 mongoose.connect(
   "mongodb+srv://admin:4jnNaYlQQSXi7hLT@cluster0.8rwzo.mongodb.net/Rent-a-Tool"
 );
+
 
 const users = new mongoose.Schema({
   firstName: String,
@@ -13,6 +16,10 @@ const users = new mongoose.Schema({
   phoneNumber: String,
   address: String,
   postalCode: Number,
+  profilePhoto: {
+    type : String,
+    default: 'Default_ProfilePic.png'
+  },
   toolsUploaded: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -28,21 +35,25 @@ const users = new mongoose.Schema({
 });
 
 users.pre("save", async function (next) {
-  if (!this.isModified("password")){
-     return next()
+  if (!this.isModified("password")) {
+    return next();
   }
 
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
   next();
-})
+});
 
 const tools = new mongoose.Schema({
   name: String,
   description: String,
   image: {
-    data: Buffer,
-    contentType: String,
+    data: {
+      type: String,
+    },
+    contentType: {
+      type: String,
+    },
   },
   price: {
     type: Number,

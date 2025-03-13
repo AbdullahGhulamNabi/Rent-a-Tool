@@ -54,7 +54,7 @@ function Login({onClose, onSignUpClick }) {
           ✕
         </button>
         <h2 className="text-xl font-bold mb-4">Login</h2>
-        {error && <p className="text-red-500 text-sm">{error}</p>}
+        {error && <p className="text-red-500 text-sm font-bold">{error}</p>}
         <form onSubmit={handleLogin}>
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1">Email</label>
