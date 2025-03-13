@@ -5,7 +5,7 @@ import axios from "axios";
 import { data } from "react-router-dom";
 import { UserContext } from "../../App";
 
-export default function ProfileModal({ onClose }) {
+export default function ProfileModal({ updateRerender , onClose }) {
   const {state , dispatch} = useContext(UserContext)
   const [username, setUsername] = useState("");
   const [image, setImage] = useState();
@@ -37,6 +37,7 @@ export default function ProfileModal({ onClose }) {
       if (result.data.status === "ok") {
         console.log("Image uploaded successfully!");
         dispatch({ type: "SET_PROFILE_IMAGE", payload: result.data.profilePhoto })
+        updateRerender()
         handleSave();
         setImage(null); // Clear the input field
       } else {

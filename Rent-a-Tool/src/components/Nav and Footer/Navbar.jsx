@@ -29,6 +29,7 @@ function Navbar({ isLoggedIn }) {
   const [isAddToolOpen, setAddToolOpen] = useState(false);
   const [isProfileOpen, setProfileOpen] = useState(false);
   const [image, setImage] = useState();
+  const [rerender, setRerender] = useState(false);
 
   function handleLogout() {
     localStorage.removeItem("jwt_token");
@@ -63,8 +64,11 @@ function Navbar({ isLoggedIn }) {
         }
       })
       .catch((error) => console.error("Error fetching image:", error));
-  }, [state?.profileImage, state]);
+  }, [state?.profileImage, state , rerender]);
 
+  const updateRerender = () =>{
+    setRerender(true)
+  }
   const openLoginModal = () => {
     setIsLoginOpen(true);
     setIsSignUpOpen(false);
@@ -290,7 +294,7 @@ function Navbar({ isLoggedIn }) {
       )}
       {isSettingOpen && <Settings onClose={closeSettingModal} />}
       {isAddToolOpen && <Add onClose={closeAddToolModal} />}
-      {isProfileOpen && <ProfileModal onClose={closeProfileModal} />}
+      {isProfileOpen && <ProfileModal updateRerender={updateRerender} onClose={closeProfileModal} />}
     </div>
   );
 }
