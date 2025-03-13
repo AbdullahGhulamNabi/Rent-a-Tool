@@ -1,10 +1,12 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useContext } from "react";
 import { Api_Route } from "../../config";
 import imageCompression from "browser-image-compression";
 import axios from "axios";
 import { data } from "react-router-dom";
+import { UserContext } from "../../App";
 
 export default function ProfileModal({ onClose }) {
+  const {state , dispatch} = useContext(UserContext)
   const [username, setUsername] = useState("");
   const [image, setImage] = useState();
   const [file, setFile] = useState();
@@ -34,6 +36,7 @@ export default function ProfileModal({ onClose }) {
       );
       if (result.data.status === "ok") {
         console.log("Image uploaded successfully!");
+        dispatch({ type: "SET_PROFILE_IMAGE", payload: result.data.profilePhoto })
         handleSave();
         setImage(null); // Clear the input field
       } else {
@@ -85,6 +88,7 @@ export default function ProfileModal({ onClose }) {
             />
           </div>
           <button
+            disabled={!file}
             onClick={handleUpload}
             className="mt-4 bg-imageBG text-white px-4 py-2 w-[100] rounded-md"
           >

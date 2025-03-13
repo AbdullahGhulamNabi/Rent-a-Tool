@@ -63,7 +63,7 @@ function Navbar({ isLoggedIn }) {
         }
       })
       .catch((error) => console.error("Error fetching image:", error));
-  }, [state]);
+  }, [state?.profileImage, state]);
 
   const openLoginModal = () => {
     setIsLoginOpen(true);

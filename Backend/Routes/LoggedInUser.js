@@ -17,7 +17,6 @@ const upload = multer({ storage })
 
 router.post("/uploadProfilePhoto", authentication, upload.single("image"), async (req, res) => {
   const email = req.email;
-  console.log("Uploaded file details:", req.file)
   const imageName = req.file.filename;
   try{
     await User.updateOne({
