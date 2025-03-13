@@ -47,14 +47,7 @@ users.pre("save", async function (next) {
 const tools = new mongoose.Schema({
   name: String,
   description: String,
-  image: {
-    data: {
-      type: String,
-    },
-    contentType: {
-      type: String,
-    },
-  },
+  image: String,
   price: {
     type: Number,
     default: 0,
