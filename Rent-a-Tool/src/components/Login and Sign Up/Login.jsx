@@ -3,6 +3,8 @@ import SignUpModel from '../Login and Sign Up/SignUp'
 import { useNavigate } from "react-router-dom";
 import {Api_Route} from '../../config'
 import { UserContext } from "../../App";
+// import { Eye, EyeOff } from "lucide-react";
+// use npm install lucide-react
 
 function Login({onClose, onSignUpClick }) {
   const {state , dispatch} = useContext(UserContext)
@@ -11,6 +13,7 @@ function Login({onClose, onSignUpClick }) {
   const [email , setEmail] = useState("")
   const [password , setPassword] = useState("")
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
 
   async function handleLogin(event) {
@@ -77,6 +80,13 @@ function Login({onClose, onSignUpClick }) {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
+            {/* <button
+          type="button"
+          className="absolute inset-y-0 right-3 flex items-center text-gray-600"
+          onClick={() => setShowPassword(!showPassword)}
+        >
+          {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+        </button> */}
           </div>
           {/* <NavLink to="/dashboard" className="no-underline">  */}
         <button

@@ -1,16 +1,47 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect  } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Add from "../Add-Update/AddUpdate";
+import {Api_Route} from '../../config'
 
 function Dashboard() {
   const [isAddToolOpen, setAddToolOpen] = useState(false);
+  const [toolCount, setToolCount] = useState(0);
+
+  async function showTotalToolsCount() {
+    try {
+
+        const token = localStorage.getItem("jwt_token");
+        if (!token) return;
+        
+        console.log("Working")
+        const response = await fetch(`${Api_Route}/dashboard/getToolCount`, {
+          headers: {
+            Authorization: localStorage.getItem("jwt_token"),
+          },
+        })
+
+        const data = await response.json();
+        if (data.success) {
+          setToolCount(data.toolCount); 
+        } else {
+          console.error("Failed to fetch tool count:", data.msg);
+        }
+      } catch (error) {
+        console.error("Error fetching tool count:", error);
+      }
+  }
+
+    
+  useEffect(() => {
+    showTotalToolsCount();
+  }, []);
+
+
   const openAddToolModal = () => {
     setAddToolOpen(true);
     document.body.style.overflow = "hidden";
-  };
-
+    };
   
-
   const closeAddToolModal = () => {
     setAddToolOpen(false);
     document.body.style.overflow = "auto";
@@ -43,10 +74,12 @@ function Dashboard() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           <div className="bg-white shadow-md rounded-lg p-4 text-center">
             <h3 className="text-lg font-medium text-gray-800">Total Tools Listed</h3>
-            <p className="text-2xl font-bold text-blue-600">15</p>
+            <p className="text-2xl font-bold text-blue-600">{toolCount}</p>
           </div>
           <div className="bg-white shadow-md rounded-lg p-4 text-center">
-            <h3 className="text-lg font-medium text-gray-800">Active Rentals</h3>
+            {/* <button onClick={showActiveRentals}> */}
+              <h3 className="text-lg font-medium text-gray-800">Active Rentals</h3>
+            {/* </button> */}
             <p className="text-2xl font-bold text-green-600">4</p>
           </div>
           <div className="bg-white shadow-md rounded-lg p-4 text-center">
