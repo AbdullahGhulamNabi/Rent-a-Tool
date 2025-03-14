@@ -33,6 +33,7 @@ function Navbar({ isLoggedIn }) {
 
   function handleLogout() {
     localStorage.removeItem("jwt_token");
+    localStorage.removeItem("userState")
     dispatch({ type: "USER", payload: false });
     navigate("/", { replace: true });
   }

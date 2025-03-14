@@ -25,7 +25,8 @@ import AddUpdate from "./components/Add-Update/AddUpdate";
 import ChatInterface from "./components/Chat-Module/ChatInterface";
 import SignUp from "./components/Login and Sign Up/SignUp";
 import Order from "./components/Order Tool/Order";
-import { createContext, useReducer, useState } from "react";
+import { createContext, useReducer, useState, useEffect} from "react";
+import { reducer, initialState } from "./Reducer/reducer"; 
 // import { create } from "@mui/material/styles/createTransitions";
 
 function PrivateRoute({ children }) {
@@ -133,23 +134,16 @@ const RoutesOfRent_a_Tool = createBrowserRouter([
   },
 ]);
 
-const reducer = (state, action) => {
-  if (action.type === "USER") {
-    return action.payload;
-  }
 
-  if(action.type == "SET_PROFILE_IMAGE"){
-    return { ...state, profileImage: action.payload }
-  }
-
-  return state;
-};
-
-const initialState = null;
 
 export const UserContext = createContext();
 function App() {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const storedState = JSON.parse(localStorage.getItem("userState"));
+  const [state, dispatch] = useReducer(reducer, storedState || initialState);
+  
+  useEffect(() => {
+    localStorage.setItem("userState", JSON.stringify(state));
+  }, [state])
   return (
     <>
       <UserContext.Provider value={{ state, dispatch }}>
