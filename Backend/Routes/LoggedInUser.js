@@ -53,4 +53,24 @@ router.get("/getProfilePhoto", authentication, async (req, res) => {
   })
 
 
+
+  router.get("/getToolCount", async(req, res)=>{
+    try {
+      const userEmail = req.Email
+      console.log(userEmail);
+      const toolCount = await Tool.countDocuments({"email":userEmail});
+
+      res.json({
+        success: true,
+        toolCount: toolCount,
+      });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ msg: "Error fetching tool count", error });     
+      }
+  });
+
+
+
 module.exports = router;
