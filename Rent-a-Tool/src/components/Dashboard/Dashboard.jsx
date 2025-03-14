@@ -9,13 +9,17 @@ function Dashboard() {
 
   async function showTotalToolsCount() {
     try {
+
+        const token = localStorage.getItem("jwt_token");
+        if (!token) return;
+        
+        console.log("Working")
         const response = await fetch(`${Api_Route}/dashboard/getToolCount`, {
-          method: "GET",
-          credentials: "include",
           headers: {
-            "Content-Type": "application/json",
+            Authorization: localStorage.getItem("jwt_token"),
           },
-        });
+        })
+
         const data = await response.json();
         if (data.success) {
           setToolCount(data.toolCount); 
@@ -26,7 +30,6 @@ function Dashboard() {
         console.error("Error fetching tool count:", error);
       }
   }
-
 
     
   useEffect(() => {
