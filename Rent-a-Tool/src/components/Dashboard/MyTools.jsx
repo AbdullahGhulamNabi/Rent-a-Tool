@@ -29,10 +29,10 @@ const MyTools = () => {
     }
   };
 
-  const navigate = useNavigate()
-  function handleNavigate(){
-    navigate("/ToolDescription")
-  }
+  // const navigate = useNavigate()
+  // function handleNavigate(){
+  //   navigate("/ToolDescription")
+  // }
 
   return (
     <div className="p-4">
@@ -45,7 +45,8 @@ const MyTools = () => {
           >
 
             
-            <div onClick={handleNavigate} className="w-full h-40 bg-gray-300 flex items-center justify-center rounded mb-4">
+            {/* <div onClick={handleNavigate} className="w-full h-40 bg-gray-300 flex items-center justify-center rounded mb-4"> */}
+            <div  className="w-full h-40 bg-gray-300 flex items-center justify-center rounded mb-4">
                 <img className="w-full h-full object-cover rounded" src={tool.image} alt="img" />
             </div>
 
