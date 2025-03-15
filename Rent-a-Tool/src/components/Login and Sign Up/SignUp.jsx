@@ -15,9 +15,52 @@ function SignUp({ onClose, onLoginClick }) {
   const [address, setAddress] = useState("");
   const [postalCode, setPostelCode] = useState(0);
   const [error, setError] = useState("");
+  const [errors, setErrors] = useState({})
+
+  const validateForm = () => {
+    let newErrors = {};
+  
+    if (!firstName.trim()) newErrors.firstName = "First Name is required.";
+    if (!lastName.trim()) newErrors.lastName = "Last Name is required.";
+  
+    if (!email) {
+      newErrors.email = "Email is required.";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      newErrors.email = "Enter a valid email address.";
+    }
+  
+    if (!phoneNumber) {
+      newErrors.phoneNumber = "Phone Number is required.";
+    } else if (!/^\d{10,15}$/.test(phoneNumber)) {
+      newErrors.phoneNumber = "Enter a valid phone number (10-15 digits).";
+    }
+  
+    if (!address.trim()) newErrors.address = "Address is required.";
+  
+    if (!postalCode) {
+      newErrors.postalCode = "Postal Code is required.";
+    } else if (!/^\d+$/.test(postalCode)) {
+      newErrors.postalCode = "Postal Code should contain only numbers.";
+    }
+  
+    if (!password) {
+      newErrors.password = "Password is required.";
+    } else if (password.length < 8) {
+      newErrors.password = "Password must be at least 8 characters long.";
+    } else if (!/\d/.test(password)) {
+      newErrors.password = "Password must contain at least one number.";
+    } else if (!/[!@#$%^&*]/.test(password)) {
+      newErrors.password = "Password must contain at least one special character (!@#$%^&*).";
+    }
+  
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  }
 
   async function handleSignIn(event) {
     event.preventDefault();
+
+    if (!validateForm()) return
 
     try {
       const response = await fetch(`${Api_Route}/signUp`, {
@@ -43,19 +86,19 @@ function SignUp({ onClose, onLoginClick }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
-      <div className="bg-white rounded-lg shadow-lg p-6 w-[380px] relative ">
+      <div className="bg-white rounded-lg shadow-lg p-4 w-[380px] relative ">
         <button
           onClick={onClose}
           className="absolute top-2 right-3 text-gray-500 hover:text-black"
         >
           ✕
         </button>
-        <h2 className="text-xl font-bold mb-4">Sign Up</h2>
+        <h2 className="text-xl font-bold mb-2">Sign Up</h2>
         <form onSubmit={handleSignIn}>
         {error && <p className="text-red-500 text-sm font-bold">{error}</p>}
-          <div className="flex justify-between mb-2">
+          <div className="flex justify-between mb-0.5">
             <div className="w-[45%]">
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-medium mb-0.5">
                 First Name
               </label>
               <input
@@ -65,9 +108,10 @@ function SignUp({ onClose, onLoginClick }) {
                 value={firstName}
                 onChange={(e)=> setFirstName(e.target.value)}
               />
+              {errors.firstName && <p className="text-red-500 text-xs">{errors.firstName}</p>}
             </div>
             <div className="w-[45%]">
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-medium mb-0.5">
                 Last Name
               </label>
               <input
@@ -77,10 +121,11 @@ function SignUp({ onClose, onLoginClick }) {
                 value={lastName}
                 onChange={(e)=> setLastName(e.target.value)}
               />
+              {errors.lastName && <p className="text-red-500 text-xs">{errors.lastName}</p>}
             </div>
           </div>
-          <div className="mb-2">
-            <label className="block text-sm font-medium mb-1">Email</label>
+          <div className="mb-0.5">
+            <label className="block text-sm font-medium mb-0.5">Email</label>
             <input
               type="email"
               className="w-full px-3 py-1 border rounded focus:outline-none focus:ring focus:border-imageBG"
@@ -88,9 +133,10 @@ function SignUp({ onClose, onLoginClick }) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
+            {errors.email && <p className="text-red-500 text-xs">{errors.email}</p>}
           </div>
-          <div className="mb-2">
-            <label className="block text-sm font-medium mb-1">
+          <div className="mb-0.5">
+            <label className="block text-sm font-medium mb-0.5">
               Phone Number
             </label>
             <input
@@ -100,9 +146,10 @@ function SignUp({ onClose, onLoginClick }) {
               value={phoneNumber}
               onChange={(e)=> setPhoneNumber(e.target.value)}
             />
+            {errors.phoneNumber && <p className="text-red-500 text-xs">{errors.phoneNumber}</p>}
           </div>
-          <div className="mb-2">
-            <label className="block text-sm font-medium mb-1">Address</label>
+          <div className="mb-0.5">
+            <label className="block text-sm font-medium mb-0.5">Address</label>
             <input
               type="text"
               className="w-full px-3 py-1 border rounded focus:outline-none focus:ring focus:border-imageBG"
@@ -110,9 +157,10 @@ function SignUp({ onClose, onLoginClick }) {
               value={address}
               onChange={(e)=> setAddress(e.target.value)}
             />
+            {errors.address && <p className="text-red-500 text-xs">{errors.address}</p>}
           </div>
-          <div className="mb-2">
-            <label className="block text-sm font-medium mb-1">
+          <div className="mb-0.5">
+            <label className="block text-sm font-medium mb-0.5">
               Postal Code
             </label>
             <input
@@ -122,9 +170,10 @@ function SignUp({ onClose, onLoginClick }) {
               value={postalCode}
               onChange={(e)=> setPostelCode(e.target.value)}
             />
+            {errors.postalCode && <p className="text-red-500 text-xs">{errors.postalCode}</p>}
           </div>
-          <div className="mb-2">
-            <label className="block text-sm font-medium mb-1">Password</label>
+          <div className="mb-1.5">
+            <label className="block text-sm font-medium mb-0.5">Password</label>
             <input
               type="password"
               className="w-full px-3 py-1 border rounded focus:outline-none focus:ring focus:border-imageBG"
@@ -132,6 +181,7 @@ function SignUp({ onClose, onLoginClick }) {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
+            {errors.password && <p className="text-red-500 text-xs">{errors.password}</p>}
           </div>
           <button
             type="submit"

@@ -6,16 +6,22 @@ import {Api_Route} from '../../config'
 function Dashboard() {
   const [isAddToolOpen, setAddToolOpen] = useState(false);
   const [toolCount, setToolCount] = useState(0);
+  const [rentalCount, setRentalCount] = useState(0);
+  const [pendingCount, setPendingCount] = useState(0);
 
   async function showTotalToolsCount() {
     try {
+
+        const token = localStorage.getItem("jwt_token");
+        if (!token) return;
+        
+        console.log("Working")
         const response = await fetch(`${Api_Route}/dashboard/getToolCount`, {
-          method: "GET",
-          credentials: "include",
           headers: {
-            "Content-Type": "application/json",
+            Authorization: localStorage.getItem("jwt_token"),
           },
-        });
+        })
+
         const data = await response.json();
         if (data.success) {
           setToolCount(data.toolCount); 
@@ -27,10 +33,59 @@ function Dashboard() {
       }
   }
 
+  async function showActiveRental() {
+    try {
+
+        const token = localStorage.getItem("jwt_token");
+        if (!token) return;
+        
+        console.log("Working")
+        const response = await fetch(`${Api_Route}/dashboard/getRentalCount`, {
+          headers: {
+            Authorization: localStorage.getItem("jwt_token"),
+          },
+        })
+
+        const data = await response.json();
+        if (data.success) {
+          setRentalCount(data.toolRentalCount); 
+        } else {
+          console.error("Failed to fetch tool rental count:", data.msg);
+        }
+      } catch (error) {
+        console.error("Error fetching tool rental count:", error);
+      }
+  }
+
+  async function showPendingRequestCount() {
+    try {
+
+        const token = localStorage.getItem("jwt_token");
+        if (!token) return;
+        
+        console.log("Working")
+        const response = await fetch(`${Api_Route}/dashboard/getPendingRequestCount`, {
+          headers: {
+            Authorization: localStorage.getItem("jwt_token"),
+          },
+        })
+
+        const data = await response.json();
+        if (data.success) {
+          setPendingCount(data.pendingRequests); 
+        } else {
+          console.error("Failed to fetch tool rental count:", data.msg);
+        }
+      } catch (error) {
+        console.error("Error fetching tool rental count:", error);
+      }
+  }
 
     
   useEffect(() => {
     showTotalToolsCount();
+    showActiveRental();
+    showPendingRequestCount();
   }, []);
 
 
@@ -77,11 +132,11 @@ function Dashboard() {
             {/* <button onClick={showActiveRentals}> */}
               <h3 className="text-lg font-medium text-gray-800">Active Rentals</h3>
             {/* </button> */}
-            <p className="text-2xl font-bold text-green-600">4</p>
+            <p className="text-2xl font-bold text-green-600">{rentalCount}</p>
           </div>
           <div className="bg-white shadow-md rounded-lg p-4 text-center">
             <h3 className="text-lg font-medium text-gray-800">Pending Requests</h3>
-            <p className="text-2xl font-bold text-orange-600">2</p>
+            <p className="text-2xl font-bold text-orange-600">{pendingCount}</p>
           </div>
         </div>
       </div>

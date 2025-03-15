@@ -32,6 +32,19 @@ const users = new mongoose.Schema({
       ref: "Tools",
     },
   ],
+  toolsRequested: [
+    {
+      tool: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Tools",
+      },
+      status: {
+        type: String,
+        enum: ["pending", "accepted", "rejected"],
+        default: "pending", 
+      }
+    }
+  ]
 });
 
 users.pre("save", async function (next) {
