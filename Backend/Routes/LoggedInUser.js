@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const router = Router();
 const { User , Tool, FeedBack } = require("../DB/db_models");
 const authentication = require("../Middlewares/Authentication");
+const formParser = require("../Middlewares/FormDataParser");
 const multer = require("multer");
 const path = require("path");
 const storage = multer.diskStorage({
@@ -115,9 +116,38 @@ router.get("/getProfilePhoto", authentication, async (req, res) => {
 
       const toolObjectId = new mongoose.Types.ObjectId(ToolId);
 
+      if (user.toolsUploaded.includes(toolObjectId)) {
+        return res.status(400).json({ msg: "Tool already exists in uploaded list!" });
+      }
+
       user.toolsUploaded.push(toolObjectId);
       await user.save();
       return res.status(200).json({ msg: "Tool added successfully!", user });
+
+    } catch (error) {
+      console.error("Error updating user:", error);
+      throw error;
+    }
+  });
+
+  router.patch("/saveAccountSettings", authentication, formParser,async (req, res) => {
+    try {
+      console.log("working")
+      const user  = await User.findOne({ email: req.email });
+      const { name, userPhone, userPostalCode } = req.body;
+      console.log(name, userPhone, userPostalCode)
+      
+      if (name) user.firstName = name;
+      if (userPhone) user.phoneNumber = userPhone;
+      if (userPostalCode && !isNaN(userPostalCode)) {
+          user.postalCode = parseInt(userPostalCode, 10);  // Convert to integer
+      }
+
+
+      await user.save();
+
+      res.status(200).json({ msg: "Account settings updated successfully!", user });
+      
 
     } catch (error) {
       console.error("Error updating user:", error);

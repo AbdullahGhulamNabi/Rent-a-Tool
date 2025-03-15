@@ -3,7 +3,7 @@ import io from "socket.io-client";
 import profileIcon from '../../assets/Chat/profile.jpeg'
 import SendIcon from "@mui/icons-material/Send";
 
-const socket = io("http://localhost:3000"); // Replace with your server URL
+// const socket = io("http://localhost:3000"); // Replace with your server URL
 
 const ChatPage = () => {
   const [messages, setMessages] = useState([]);
