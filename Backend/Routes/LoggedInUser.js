@@ -57,10 +57,10 @@ router.get("/getProfilePhoto", authentication, async (req, res) => {
   router.get("/getToolCount", authentication, async (req, res) => {
     try {
     
-        const user = await User.findOne({ email: req.email });
-        if (!user) {
-            return res.status(404).json({ msg: "User not found!" });
-        }
+      const user = await User.findOne({ email: req.email });
+      if (!user) {
+          return res.status(404).json({ msg: "User not found!" });
+      }
 
         res.json({ success: true, toolCount: user.toolsUploaded.length });
     } catch (error) {
@@ -71,11 +71,11 @@ router.get("/getProfilePhoto", authentication, async (req, res) => {
 
   router.get("/getRentalCount", authentication, async (req, res) => {
     try {
-    
-        const user = await User.findOne({ email: req.email });
-        if (!user) {
-            return res.status(404).json({ msg: "User not found!" });
-        }
+  
+      const user = await User.findOne({ email: req.email });
+      if (!user) {
+          return res.status(404).json({ msg: "User not found!" });
+      }
 
         res.json({ success: true, toolRentalCount: ((user.toolsRented.length) + (user.toolsRequested.length)) });
     } catch (error) {
@@ -88,15 +88,13 @@ router.get("/getProfilePhoto", authentication, async (req, res) => {
   router.get("/getPendingRequestCount", authentication, async (req, res) => {
     try {
     
-        const user = await User.findOne({ email: req.email });
-        if (!user) {
-            return res.status(404).json({ msg: "User not found!" });
-        }
+      const user = await User.findOne({ email: req.email });
+      if (!user) {
+          return res.status(404).json({ msg: "User not found!" });
+      }
 
-        const pendingCount = user.toolsRequested.filter(request => request.status === "pending").length;
-
-        console.log(pendingCount); 
-      
+      const pendingCount = user.toolsRequested.filter(request => request.status === "pending").length;
+    
         res.json({ success: true, pendingRequests: pendingCount });
     } catch (error) {
         console.error(error);
