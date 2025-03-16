@@ -109,6 +109,7 @@ export default function Modal({ onClose }) {
       closeSubModal(); 
       closeSettingModal();
       handleLogout();
+      onClose();
       if (response.ok) {
         console.log("Password updated successfully");
       } else {
