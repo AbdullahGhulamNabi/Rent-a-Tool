@@ -16,7 +16,7 @@ function Dashboard() {
         if (!token) return;
         
         console.log("Working")
-        const response = await fetch(`${Api_Route}/dashboard/getToolCount`, {
+        const response = await fetch(`${Api_Route}/dashboard/quickLinks/getToolCount`, {
           headers: {
             Authorization: localStorage.getItem("jwt_token"),
           },
@@ -40,7 +40,7 @@ function Dashboard() {
         if (!token) return;
         
         console.log("Working")
-        const response = await fetch(`${Api_Route}/dashboard/getRentalCount`, {
+        const response = await fetch(`${Api_Route}/dashboard/quickLinks/getRentalCount`, {
           headers: {
             Authorization: localStorage.getItem("jwt_token"),
           },
@@ -64,7 +64,7 @@ function Dashboard() {
         if (!token) return;
         
         console.log("Working")
-        const response = await fetch(`${Api_Route}/dashboard/getPendingRequestCount`, {
+        const response = await fetch(`${Api_Route}/dashboard/quickLinks/getPendingRequestCount`, {
           headers: {
             Authorization: localStorage.getItem("jwt_token"),
           },
