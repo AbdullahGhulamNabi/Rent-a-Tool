@@ -13,17 +13,17 @@ const ChatPage = () => {
     profilePicture: profileIcon,
   }); // Dummy data for the user you're chatting with
 
-  useEffect(() => {
-    // Listen for incoming messages
-    socket.on("chat message", (msg) => {
-      setMessages((prevMessages) => [...prevMessages, msg]);
-    });
+  // useEffect(() => {
+  //   // Listen for incoming messages
+  //   // socket.on("chat message", (msg) => {
+  //     setMessages((prevMessages) => [...prevMessages, msg]);
+  //   });
 
-    return () => socket.off("chat message");
-  }, []);
+  //   return () => socket.off("chat message");
+  // }, []);
 
   const sendMessage = () => {
-    if (input.trim() === "") return;
+    // if (input.trim() === "") return;
 
     const messageData = {
       sender: "You",
@@ -32,7 +32,7 @@ const ChatPage = () => {
     };
 
     socket.emit("chat message", messageData);
-    setMessages((prevMessages) => [...prevMessages, messageData]);
+    // setMessages((prevMessages) => [...prevMessages, messageData]);
     setInput("");
   };
 

@@ -3,6 +3,7 @@ import SignUpModel from '../Login and Sign Up/SignUp'
 import { useNavigate } from "react-router-dom";
 import {Api_Route} from '../../config'
 import { UserContext } from "../../App";
+// import { User } from "../../../../backend/DB/db_models";
 // import { Eye, EyeOff } from "lucide-react";
 // use npm install lucide-react
 
@@ -33,6 +34,9 @@ function Login({onClose, onSignUpClick }) {
 
       if (response.ok) {
         localStorage.setItem("jwt_token", data.token); 
+        console.log("Token:", data.token)
+        // localStorage.setItem("user", JSON.stringify(data.user));
+        // console.log("user email and id",User)
         dispatch({type:'USER' , payload:true})
         onClose()
         navigate("/Dashboard"); 
