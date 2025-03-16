@@ -3,26 +3,81 @@ const router = express.Router();
 const { Tool, User } = require('../DB/db_models');
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 const userMiddleware = require('../Middlewares/Authentication');
 
-// Configure multer for file upload
+// Ensure uploads directory exists
+const uploadDir = 'public/uploads/tools';
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+// Configure multer for file upload with file validation
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'public/uploads/tools')
+        cb(null, uploadDir);
     },
     filename: function (req, file, cb) {
-        cb(null, Date.now() + path.extname(file.originalname))
+        // Create unique filename with timestamp and original extension
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, uniqueSuffix + path.extname(file.originalname));
     }
 });
 
-const upload = multer({ storage: storage });
+// File filter for images
+const fileFilter = (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+        cb(null, true);
+    } else {
+        cb(new Error('Only image files are allowed!'), false);
+    }
+};
 
-// Get all tools
+const upload = multer({
+    storage: storage,
+    fileFilter: fileFilter,
+    limits: {
+        fileSize: 5 * 1024 * 1024 // 5MB limit
+    }
+});
+
+// Error handling middleware for multer
+const handleMulterError = (err, req, res, next) => {
+    if (err instanceof multer.MulterError) {
+        if (err.code === 'LIMIT_FILE_SIZE') {
+            return res.status(400).json({ message: 'File size is too large. Maximum size is 5MB.' });
+        }
+        return res.status(400).json({ message: err.message });
+    } else if (err) {
+        return res.status(400).json({ message: err.message });
+    }
+    next();
+};
+
+// Get all tools (public)
 router.get('/', async (req, res) => {
     try {
         const tools = await Tool.find()
             .populate('owner', 'firstName lastName email')
             .populate('rentedTo.user', 'firstName lastName email');
+        res.status(200).json(tools);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Get logged-in user's tools
+router.get('/my-tools', userMiddleware, async (req, res) => {
+    try {
+        const user = await User.findOne({ email: req.email });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const tools = await Tool.find({ owner: user._id })
+            .populate('owner', 'firstName lastName email')
+            .populate('rentedTo.user', 'firstName lastName email');
+
         res.status(200).json(tools);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -45,9 +100,9 @@ router.get('/:id', async (req, res) => {
 });
 
 // Create a new tool
-router.post('/', userMiddleware, upload.single('image'), async (req, res) => {
+router.post('/', userMiddleware, upload.single('image'), handleMulterError, async (req, res) => {
     try {
-        // Find the user first
+        // Get user from email (from auth middleware)
         const user = await User.findOne({ email: req.email });
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
@@ -56,9 +111,9 @@ router.post('/', userMiddleware, upload.single('image'), async (req, res) => {
         const toolData = {
             name: req.body.name,
             description: req.body.description,
-            price: req.body.price,
+            price: parseFloat(req.body.price) || 0,
             image: req.file ? req.file.filename : null,
-            owner: user._id
+            owner: user._id // Set owner as authenticated user's ID
         };
 
         const tool = new Tool(toolData);
@@ -70,41 +125,41 @@ router.post('/', userMiddleware, upload.single('image'), async (req, res) => {
             { $push: { toolsUploaded: savedTool._id } }
         );
 
-        // Populate owner details before sending response
         const populatedTool = await Tool.findById(savedTool._id)
             .populate('owner', 'firstName lastName email');
 
         res.status(201).json(populatedTool);
     } catch (error) {
+        if (req.file) {
+            fs.unlink(req.file.path, (err) => {
+                if (err) console.error('Error deleting file:', err);
+            });
+        }
         res.status(400).json({ message: error.message });
     }
 });
 
 // Update a tool
-router.put('/:id', userMiddleware, upload.single('image'), async (req, res) => {
+router.put('/:id', upload.single('image'), handleMulterError, async (req, res) => {
     try {
-        const user = await User.findOne({ email: req.email });
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-
-        // Check if user owns the tool
-        const existingTool = await Tool.findById(req.params.id);
-        if (!existingTool) {
+        const tool = await Tool.findById(req.params.id);
+        if (!tool) {
             return res.status(404).json({ message: 'Tool not found' });
-        }
-        
-        if (existingTool.owner.toString() !== user._id.toString()) {
-            return res.status(403).json({ message: 'Not authorized to update this tool' });
         }
 
         const toolData = {
             name: req.body.name,
             description: req.body.description,
-            price: req.body.price
+            price: parseFloat(req.body.price) || 0
         };
 
         if (req.file) {
+            if (tool.image) {
+                const oldImagePath = path.join(uploadDir, tool.image);
+                if (fs.existsSync(oldImagePath)) {
+                    fs.unlinkSync(oldImagePath);
+                }
+            }
             toolData.image = req.file.filename;
         }
 
@@ -117,18 +172,18 @@ router.put('/:id', userMiddleware, upload.single('image'), async (req, res) => {
 
         res.status(200).json(updatedTool);
     } catch (error) {
+        if (req.file) {
+            fs.unlink(req.file.path, (err) => {
+                if (err) console.error('Error deleting file:', err);
+            });
+        }
         res.status(400).json({ message: error.message });
     }
 });
 
 // Rent a tool
-router.post('/:id/rent', userMiddleware, async (req, res) => {
+router.post('/:id/rent', async (req, res) => {
     try {
-        const user = await User.findOne({ email: req.email });
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-
         const tool = await Tool.findById(req.params.id);
         if (!tool) {
             return res.status(404).json({ message: 'Tool not found' });
@@ -138,23 +193,13 @@ router.post('/:id/rent', userMiddleware, async (req, res) => {
             return res.status(400).json({ message: 'Tool is already rented' });
         }
 
-        if (tool.owner.toString() === user._id.toString()) {
-            return res.status(400).json({ message: 'Cannot rent your own tool' });
-        }
-
         tool.rented = true;
         tool.rentedTo = {
-            user: user._id,
+            user: req.body.userId,
             rentedAt: new Date()
         };
 
         await tool.save();
-
-        // Add tool to user's toolsRented array
-        await User.findByIdAndUpdate(
-            user._id,
-            { $push: { toolsRented: tool._id } }
-        );
 
         const updatedTool = await Tool.findById(tool._id)
             .populate('owner', 'firstName lastName email')
@@ -166,14 +211,9 @@ router.post('/:id/rent', userMiddleware, async (req, res) => {
     }
 });
 
-// Return a rented tool
-router.post('/:id/return', userMiddleware, async (req, res) => {
+// Return a tool
+router.post('/:id/return', async (req, res) => {
     try {
-        const user = await User.findOne({ email: req.email });
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-
         const tool = await Tool.findById(req.params.id);
         if (!tool) {
             return res.status(404).json({ message: 'Tool not found' });
@@ -183,19 +223,9 @@ router.post('/:id/return', userMiddleware, async (req, res) => {
             return res.status(400).json({ message: 'Tool is not rented' });
         }
 
-        if (tool.rentedTo.user.toString() !== user._id.toString()) {
-            return res.status(403).json({ message: 'Not authorized to return this tool' });
-        }
-
         tool.rented = false;
         tool.rentedTo = null;
         await tool.save();
-
-        // Remove tool from user's toolsRented array
-        await User.findByIdAndUpdate(
-            user._id,
-            { $pull: { toolsRented: tool._id } }
-        );
 
         const updatedTool = await Tool.findById(tool._id)
             .populate('owner', 'firstName lastName email');
@@ -207,33 +237,25 @@ router.post('/:id/return', userMiddleware, async (req, res) => {
 });
 
 // Delete a tool
-router.delete('/:id', userMiddleware, async (req, res) => {
+router.delete('/:id', async (req, res) => {
     try {
-        const user = await User.findOne({ email: req.email });
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-
         const tool = await Tool.findById(req.params.id);
         if (!tool) {
             return res.status(404).json({ message: 'Tool not found' });
         }
 
-        // Check if user owns the tool
-        if (tool.owner.toString() !== user._id.toString()) {
-            return res.status(403).json({ message: 'Not authorized to delete this tool' });
-        }
-
-        // Check if tool is currently rented
-        if (tool.rented) {
-            return res.status(400).json({ message: 'Cannot delete a tool that is currently rented' });
-        }
-
-        // Remove tool from user's toolsUploaded array
+        // Remove tool from owner's toolsUploaded array
         await User.findByIdAndUpdate(
-            user._id,
+            tool.owner,
             { $pull: { toolsUploaded: tool._id } }
         );
+
+        if (tool.image) {
+            const imagePath = path.join(uploadDir, tool.image);
+            if (fs.existsSync(imagePath)) {
+                fs.unlinkSync(imagePath);
+            }
+        }
 
         await Tool.findByIdAndDelete(req.params.id);
         res.status(200).json({ message: 'Tool deleted successfully' });

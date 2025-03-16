@@ -17,7 +17,7 @@ const MyTools = () => {
   const fetchTools = async () => {
     try {
       setLoading(true);
-      const fetchedTools = await toolService.getAllTools();
+      const fetchedTools = await toolService.getMyTools();
       setTools(fetchedTools);
       setError('');
     } catch (err) {
@@ -61,12 +61,12 @@ const MyTools = () => {
     <div className="p-4">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">My Tools</h1>
-        <button
+        {/* <button
           onClick={() => setShowAddUpdate(true)}
           className="bg-HomeText text-white px-4 py-2 rounded hover:bg-opacity-90"
         >
           Add New Tool
-        </button>
+        </button> */}
       </div>
 
       {showAddUpdate && (
@@ -95,10 +95,13 @@ const MyTools = () => {
             </div>
 
             <h2 className="text-lg font-semibold">{tool.name}</h2>
-            <p className="text-gray-600 text-sm mb-2">{tool.description}</p>
+            <p className="text-gray-600 text-sm mb-2">
+              {tool.description ? tool.description.split(" ").slice(0, 5).join(" ") + "..." : "No description available."}
+            </p>
+
             {tool.price > 0 && (
               <p className="text-green-600 font-semibold mb-4">
-                Rent: ₹{tool.price}/day
+                Rent: ₨.{tool.price}/day
               </p>
             )}
 
