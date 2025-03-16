@@ -69,7 +69,7 @@ export default function Modal({ onClose }) {
   async function savePersonalInfo() {
     try {
       const response = await fetch(
-        `${Api_Route}/dashboard/savePersonalInfo`,
+        `${Api_Route}/dashboard/Settings/savePersonalInfo`,
         {
           method: "PATCH",
           headers: {
@@ -95,7 +95,7 @@ export default function Modal({ onClose }) {
   async function updatePassword() {
     try {
       const response = await fetch(
-        `${Api_Route}/dashboard/updatePassword`,
+        `${Api_Route}/dashboard/Settings/updatePassword`,
         {
           method: "PATCH",
           headers: {
