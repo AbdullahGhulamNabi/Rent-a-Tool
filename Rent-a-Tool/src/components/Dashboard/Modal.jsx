@@ -1,20 +1,47 @@
-import React, { useState } from "react";
+import React, { useState,useContext, useEffect } from "react";
 import {Api_Route} from '../../config'
-
+import { UserContext } from "../../App";
+import { useNavigate } from "react-router-dom";
 
 export default function Modal({ onClose }) {
+  const { state, dispatch } = useContext(UserContext);
+  const navigate = useNavigate();
   const [activeModal, setActiveModal] = useState(null);
+  const [isSettingOpen, setSettingOpen] = useState(false);
   const [theme, setTheme] = useState("light");
   const [notifications, setNotifications] = useState({
     email: false,
     web: true,
   });
 
+
   const [formData, setFormData] = useState({
-    name: "",
+    firstName: "",
+    lastName: "",
     userPhone: "",
     userPostalCode: "",
   });
+  const [passwordData, setPasswordData] = useState({
+    currentPassword:"",
+    newPassword:"",
+    confirmedNewPassword:"",
+  });
+
+
+  useEffect(() => {
+    const token = localStorage.getItem("jwt_token");
+    if (!token) {
+      dispatch({ type: "USER", payload: false });
+      window.history.pushState(null, "", window.location.href);
+      window.history.replaceState(null, "", window.location.href);
+      navigate("/", { replace: true });
+    }
+  }, [navigate]);
+
+  const closeSettingModal = () => {
+    setSettingOpen(false);
+    document.body.style.overflow = "auto";
+  };
 
   const openSubModal = (type) => {
     setActiveModal(type);
@@ -23,15 +50,26 @@ export default function Modal({ onClose }) {
   const closeSubModal = () => {
     setActiveModal(null);
   };
+  
+  function handleLogout() {
+    localStorage.removeItem("jwt_token");
+    localStorage.removeItem("userState")
+    dispatch({ type: "USER", payload: false });
+    navigate("/", { replace: true });
+  }
 
-  const handleInputChange = (e) => {
+  const handleProfileInfoChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  async function saveAccountSettings() {
+  const handlePasswordChange = (e) => {
+    setPasswordData({ ...passwordData, [e.target.name]: e.target.value });
+  };
+
+  async function savePersonalInfo() {
     try {
       const response = await fetch(
-        `${Api_Route}/dashboard/saveAccountSettings`,
+        `${Api_Route}/dashboard/savePersonalInfo`,
         {
           method: "PATCH",
           headers: {
@@ -52,6 +90,37 @@ export default function Modal({ onClose }) {
       console.error("Error updating profile:", error);
     }
   }
+
+
+  async function updatePassword() {
+    try {
+      const response = await fetch(
+        `${Api_Route}/dashboard/updatePassword`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: localStorage.getItem("jwt_token"),
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(passwordData),
+        }
+      );
+      
+      closeSubModal(); 
+      closeSettingModal();
+      handleLogout();
+      if (response.ok) {
+        console.log("Password updated successfully");
+      } else {
+        console.error("Failed to update Password");
+      }
+    } catch (error) {
+      console.error("Error updating Password:", error);
+    }
+  }
+
+
+
 
   const handleNotificationChange = (type) => {
     setNotifications((prev) => ({
@@ -74,21 +143,38 @@ export default function Modal({ onClose }) {
 
         {activeModal === "account" && (
           <>
-            <h3 className="text-lg font-semibold mb-4">Account Settings</h3>
+            <h3 className="text-lg font-semibold mb-4">Personal Information Settings</h3>
             <div className="mb-4">
               <label
-                htmlFor="name"
+                htmlFor="firstName"
                 className="block text-gray-700 mb-1 font-medium"
               >
-                Name
+                First Name
               </label>
               <input
                 type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                placeholder="Enter your updated Name"
+                id="firstName"
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleProfileInfoChange}
+                placeholder="Enter your updated First Name"
+                className="w-full px-4 py-2 border rounded-md border-gray-300 focus:ring-2 focus:bg-nav focus:outline-none"
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="lastName"
+                className="block text-gray-700 mb-1 font-medium"
+              >
+                Last Name
+              </label>
+              <input
+                type="text"
+                id="lastName"
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleProfileInfoChange}
+                placeholder="Enter your updated Last Name"
                 className="w-full px-4 py-2 border rounded-md border-gray-300 focus:ring-2 focus:bg-nav focus:outline-none"
               />
             </div>
@@ -104,7 +190,7 @@ export default function Modal({ onClose }) {
                 id="userPhone"
                 name="userPhone"
                 value={formData.userPhone}
-                onChange={handleInputChange}
+                onChange={handleProfileInfoChange}
                 placeholder="Enter your updated Phone Number"
                 className="w-full px-4 py-2 border rounded-md border-gray-300 focus:ring-2 focus:bg-nav focus:outline-none"
               />
@@ -121,14 +207,14 @@ export default function Modal({ onClose }) {
                 id="userPostalCode"
                 name="userPostalCode"
                 value={formData.userPostalCode}
-                onChange={handleInputChange}
+                onChange={handleProfileInfoChange}
                 placeholder="Enter your updated Postal Code"
                 className="w-full px-4 py-2 border rounded-md border-gray-300 focus:ring-2 focus:bg-nav focus:outline-none"
               />
             </div>
 
             <button
-              onClick={saveAccountSettings}
+              onClick={savePersonalInfo}
               className="w-full bg-imageBG text-black px-4 py-2 rounded-md hover:bg-nav transition"
             >
               Save Changes
@@ -168,7 +254,7 @@ export default function Modal({ onClose }) {
             </div>
             <button
               onClick={() => {
-                saveAccountSettings(); 
+                savePersonalInfo(); 
                 alert("clicker")
               }}
               className="w-full bg-imageBG text-black px-4 py-2 rounded-md hover:bg-nav transition"
@@ -177,21 +263,21 @@ export default function Modal({ onClose }) {
             </button>
           </>
         )}
+        {/* 
         {activeModal === "theme" && (
           <>
             <h3 className="text-lg font-semibold mb-4">Theme Settings</h3>
             <p className="text-gray-600 mb-4">Choose your preferred theme.</p>
 
-            {/* Local state to store selected theme before saving */}
             <div className="space-y-2">
               {["light", "dark", "system"].map((option) => (
                 <button
-                  key={option}
-                  onClick={() => setTheme(option)}
-                  className={`w-full px-4 py-2 rounded-md transition border ${
-                    theme === option
-                      ? "bg-imageBG text-white "
-                      : "bg-gray-100 text-black border-gray-300"
+                key={option}
+                onClick={() => setTheme(option)}
+                className={`w-full px-4 py-2 rounded-md transition border ${
+                  theme === option
+                  ? "bg-imageBG text-white "
+                  : "bg-gray-100 text-black border-gray-300"
                   }`}
                   aria-label={`Select ${option} theme`}
                 >
@@ -204,7 +290,6 @@ export default function Modal({ onClose }) {
               ))}
             </div>
 
-            {/* Save Button */}
             <div className="mt-4 flex justify-end">
               <button
                 onClick={closeSubModal}
@@ -215,7 +300,8 @@ export default function Modal({ onClose }) {
             </div>
           </>
         )}
-
+        */}
+        
         {activeModal === "change-password" && (
           <>
             <h3 className="text-lg font-semibold mb-4">Change Password</h3>
@@ -227,9 +313,13 @@ export default function Modal({ onClose }) {
                 Current Password
               </label>
               <input
-                type="password"
-                id="current-password"
-                placeholder="Enter your current password"
+                  type="password"
+                  id="current-password"
+                  name="currentPassword"  
+                  placeholder="Enter your current password"
+                  value={passwordData.currentPassword}
+                  onChange={handlePasswordChange}
+
                 className="w-full px-4 py-2 border rounded-md border-gray-300 focus:ring-2 focus:bg-nav focus:outline-none"
               />
             </div>
@@ -241,9 +331,13 @@ export default function Modal({ onClose }) {
                 New Password
               </label>
               <input
-                type="password"
-                id="new-password"
-                placeholder="Enter your new password"
+                  type="password"
+                  id="new-password"
+                  name="newPassword"  // Ensure correct name
+                  placeholder="Enter your updated password"
+                  value={passwordData.newPassword}
+                  onChange={handlePasswordChange}
+
                 className="w-full px-4 py-2 border rounded-md border-gray-300 focus:ring-2 focus:bg-nav focus:outline-none"
               />
             </div>
@@ -257,12 +351,16 @@ export default function Modal({ onClose }) {
               <input
                 type="password"
                 id="confirm-password"
+                name="confirmedNewPassword"  // Ensure correct name
                 placeholder="Confirm your new password"
+                value={passwordData.confirmedNewPassword}
+                onChange={handlePasswordChange}
+
                 className="w-full px-4 py-2 border rounded-md border-gray-300 focus:ring-2 focus:bg-nav focus:outline-none"
               />
             </div>
             <button
-              onClick={closeSubModal}
+              onClick={updatePassword}
               className="w-full bg-imageBG text-black px-4 py-2 rounded-md hover:bg-nav transition"
             >
               Save Changes
@@ -286,8 +384,8 @@ export default function Modal({ onClose }) {
           <h2 className="text-xl font-bold mb-6 text-center">Settings</h2>
           <ul className="space-y-4">
             {[
-              { label: "Account Settings", key: "account" },
-              { label: "Theme Settings", key: "theme" },
+              { label: "Personal Info Settings", key: "account" },
+              // { label: "Theme Settings", key: "theme" },
               { label: "Notifications", key: "notifications" },
               { label: "Change Password", key: "change-password" },
             ].map((item) => (
@@ -304,6 +402,7 @@ export default function Modal({ onClose }) {
       ) : (
         renderSubModal()
       )}
+      
     </div>
   );
 }
