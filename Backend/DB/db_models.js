@@ -65,10 +65,24 @@ const tools = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  owner: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Users',
+    required: true
+  },
   rented: {
     type: Boolean,
     default: false,
   },
+  rentedTo: {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Users'
+    },
+    rentedAt: {
+      type: Date
+    }
+  }
 });
 
 const feedback = new mongoose.Schema({
