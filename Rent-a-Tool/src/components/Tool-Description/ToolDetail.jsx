@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Rating from "@mui/material/Rating";
 import Typography from "@mui/material/Typography";
 import toolIcon from "../../assets/ToolDetail/toolsample.jpg";
@@ -7,12 +7,46 @@ import ChatIcon from "@mui/icons-material/Chat";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { Outlet, useNavigate } from "react-router-dom";
 import { UserContext } from "../../App";
-import { useContext , useState } from "react";
+import { useContext, useState } from "react";
+import { useLocation } from "react-router-dom";
+import { Api_Route } from "../../config";
 
 const ToolDetail = () => {
   const { state, dispatch } = useContext(UserContext);
   const [showMessage, setShowMessage] = useState(false);
   const navigate = useNavigate();
+  const [image, setImage] = useState();
+  //  const { state, dispatch } = useContext(UserContext);
+
+
+  // code for profile picter 
+  useEffect(() => {
+    const token = localStorage.getItem("jwt_token");
+    if (!token) return;
+
+    fetch(`${Api_Route}/dashboard/getProfilePhoto`, {
+      headers: {
+        Authorization: localStorage.getItem("jwt_token"),
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.profilePhoto) {
+          setImage(data.profilePhoto);
+          console.log(data.profilePhoto + "Hello");
+        }
+      })
+      .catch((error) => console.error("Error fetching image:", error));
+  }, [state?.profileImage, state]);
+  //  code for description of tool
+
+  const location = useLocation();
+  const { tool } = location.state || {}; // Get tool data
+  if (!tool) {
+    return <p>No tool found!</p>;
+  }
+
+
 
   function handleNavigate() {
     if (state) {
@@ -55,45 +89,55 @@ const ToolDetail = () => {
       <div className="w-full flex justify-center sm:p-5  ">
         {/* detail section */}
         <div className="min-w-[300px] max-w-[1000px] p-5 bg-[#ffffff] shadow-2xl rounded-lg focus:outline-none focus:ring-0">
-          <div className="flex justify-center border rounded-lg">
-            <img
-              className="w-[900px] h-[350px] sm:h-[400px]"
-              src={toolIcon}
-              alt=""
-            />
-          </div>
+
+        <div className="relative flex justify-center border rounded-lg">
+  {/* Go Back Button */}
+  <button 
+    onClick={() => navigate(-1)} 
+    className="absolute top-2 left-2 bg-white text-blue-600 px-3 py-1 rounded shadow hover:underline"
+  >
+    🔙 Go Back
+  </button>
+
+  {/* Image */}
+  <img
+    className="w-[900px] h-[350px] sm:h-[400px]"
+    src={`http://localhost:3000/uploads/tools/${tool.image}`}
+    alt={tool.name}
+  />
+</div>
+
           <div className="mt-4">
-            <h2 className="text-3xl font-bold ">Bicycle carrier on the back</h2>
+            <h2 className="text-3xl font-bold ">{tool.name}</h2>
             <p className="text-lg mt-4 font-light">
-              Price Details: <b>PKR 500 to PKR 2,000 per day</b>
+              <b className="font-semibold">Renting Price Details:</b>  <b className="text-green-600">PKR {tool.price} per day</b>
             </p>
             <p className="text-lg mt-4 font-light">
-              Adress Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-              Incidunt, itaque!
+              <b className="font-semibold">Address:</b>   {tool.owner.address}
             </p>
             <p className="text-lg mt-4 font-light">
-              Details Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-              Incidunt, itaque!
+              <b className="font-semibold">   Details and Description : </b>{tool.description}
             </p>
             <hr className="mt-5 border-b-4 " />
           </div>
           <div className="flex justify-between w-full p-5 m-3">
             <div className="w-[70%] ">
-              <h2 className="text-3xl font-bold">Abdullah</h2>
+              <h2 className="text-3xl font-bold">{tool.owner.firstName} {tool.owner.lastName}</h2>
               <p className="text-lg mt-4 font-light">
-                Member since 8 Dec 2024 <br />
-                Lahore
+
+                <b className="font-semibold">Tool Owner Address:</b> {tool.owner.address}<br></br>
+                <b className="font-semibold">Postal Code:</b> {tool.owner.postalCode}
               </p>
               <button className="text-blue-800 font-medium ">
-                View Profile
+                {/* View Profile */}
               </button>
               <br />
             </div>
 
             <div className="w-20% flex flex-col items-center gap-2">
               <img
-                src={ProfileIcon}
-                alt=""
+                src={`${Api_Route}/Images/${image}`}
+                alt="Profile Photo"
                 className="h-[100px] w-[100px] rounded-full"
               />
 

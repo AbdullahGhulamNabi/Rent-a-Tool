@@ -61,6 +61,8 @@ const AddUpdate = ({ onClose, toolToEdit = null }) => {
         await toolService.updateTool(toolToEdit._id, submitData);
       } else {
         await toolService.createTool(submitData);
+    window.location.reload();
+
       }
 
       onClose();

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { toolService } from '../../services';
 import AddUpdate from "../Add-Update/AddUpdate";
+import { useNavigate } from 'react-router-dom';
 
 const MyTools = () => {
   const [tools, setTools] = useState([]);
@@ -8,6 +9,14 @@ const MyTools = () => {
   const [error, setError] = useState('');
   const [showAddUpdate, setShowAddUpdate] = useState(false);
   const [selectedTool, setSelectedTool] = useState(null);
+  const navigate = useNavigate();
+
+  const handleCardClick = (tool) => {
+    navigate("/ToolDescription", { state: { tool } });
+
+  };
+
+
 
   // Fetch tools when component mounts
   useEffect(() => {
@@ -37,6 +46,8 @@ const MyTools = () => {
       try {
         await toolService.deleteTool(id);
         setTools(tools.filter((tool) => tool._id !== id));
+    window.location.reload();
+
       } catch (err) {
         alert('Failed to delete tool: ' + (err.message || 'Unknown error'));
       }
@@ -46,7 +57,8 @@ const MyTools = () => {
   const handleAddUpdateClose = () => {
     setShowAddUpdate(false);
     setSelectedTool(null);
-    fetchTools(); // Refresh the tools list
+    fetchTools();
+ // Refresh the tools list
   };
 
   if (loading) {
@@ -80,7 +92,8 @@ const MyTools = () => {
         {tools.map((tool) => (
           <div
             key={tool._id}
-            className="border rounded-lg shadow-md p-4 flex flex-col items-center"
+            className="border rounded-lg shadow-md p-4 flex flex-col items-center cursor-pointer"
+            onClick={() => handleCardClick(tool)} 
           >
             <div className="w-full h-40 bg-gray-300 flex items-center justify-center rounded mb-4">
               {tool.image ? (
