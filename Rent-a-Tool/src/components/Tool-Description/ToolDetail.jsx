@@ -93,11 +93,12 @@ const ToolDetail = () => {
         <div className="relative flex justify-center border rounded-lg">
   {/* Go Back Button */}
   <button 
-    onClick={() => navigate(-1)} 
-    className="absolute top-2 left-2 bg-white text-blue-600 px-3 py-1 rounded shadow hover:underline"
-  >
-    🔙 Go Back
-  </button>
+  onClick={() => navigate(-1)} 
+  className="absolute top-4 left-4 bg-white text-blue-600 px-4 py-2 rounded-full shadow-lg hover:bg-[#d9e4e6]  hover:scale-105 transition duration-300 flex items-center gap-2"
+>
+  🔙 <span className="font-medium">Go Back</span>
+</button>
+
 
   {/* Image */}
   <img
@@ -113,7 +114,7 @@ const ToolDetail = () => {
               <b className="font-semibold">Renting Price Details:</b>  <b className="text-green-600">PKR {tool.price} per day</b>
             </p>
             <p className="text-lg mt-4 font-light">
-              <b className="font-semibold">Address:</b>   {tool.owner.address}
+              <b className="font-semibold">Address:</b>   {tool.owner.address} <span className="font-semibold">Postal code:</span> {tool.owner.postalCode}
             </p>
             <p className="text-lg mt-4 font-light">
               <b className="font-semibold">   Details and Description : </b>{tool.description}
