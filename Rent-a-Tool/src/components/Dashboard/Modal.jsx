@@ -108,9 +108,9 @@ export default function Modal({ onClose }) {
       
       closeSubModal(); 
       closeSettingModal();
-      handleLogout();
       onClose();
       if (response.ok) {
+        handleLogout();
         console.log("Password updated successfully");
       } else {
         console.error("Failed to update Password");
