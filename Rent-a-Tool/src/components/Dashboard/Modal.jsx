@@ -144,7 +144,7 @@ export default function Modal({ onClose }) {
 
         {activeModal === "account" && (
           <>
-            <h3 className="text-lg font-semibold mb-4">Personal Information Settings</h3>
+            <h3 className="text-lg font-semibold mb-4">Profile Settings</h3>
             <div className="mb-4">
               <label
                 htmlFor="firstName"
@@ -385,7 +385,7 @@ export default function Modal({ onClose }) {
           <h2 className="text-xl font-bold mb-6 text-center">Settings</h2>
           <ul className="space-y-4">
             {[
-              { label: "Personal Info Settings", key: "account" },
+              { label: "Profile Settings", key: "account" },
               // { label: "Theme Settings", key: "theme" },
               { label: "Notifications", key: "notifications" },
               { label: "Change Password", key: "change-password" },
