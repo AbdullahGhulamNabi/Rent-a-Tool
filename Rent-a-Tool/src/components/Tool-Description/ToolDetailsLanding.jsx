@@ -9,7 +9,7 @@ import { useContext, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Api_Route } from "../../config";
 
-const ToolDetail = () => {
+const ToolDetailsLanding = () => {
   const { state, dispatch } = useContext(UserContext);
   const [showMessage, setShowMessage] = useState(false);
   const navigate = useNavigate();
@@ -94,16 +94,16 @@ const ToolDetail = () => {
             </p>
             <hr className="mt-5 border-b-4 " />
           </div>
-          
-          {/* <div className="flex justify-between w-full p-5 m-3">
+          <div className="flex justify-between w-full p-5 m-3">
             <div className="w-[70%] ">
               <h2 className="text-3xl font-bold">{tool.owner.firstName} {tool.owner.lastName}</h2>
               <p className="text-lg mt-4 font-light">
 
                 <b className="font-semibold">Tool Owner Address:</b> {tool.owner.address}<br></br>
-                <b className="font-semibold">Postal Code:</b> {tool.owner.postalCode}
+                <b className="font-semibold">Postal Code:</b> {tool.owner.postalCode || " Postal Code not Available"}
               </p>
               <button className="text-blue-800 font-medium ">
+                {/* View Profile */}
               </button>
               <br />
             </div>
@@ -123,14 +123,14 @@ const ToolDetail = () => {
                 }}
               />
             </div>
-          </div> */}
-          {/* <div className="w-full flex justify-evenly mb-4 gap-3">
+          </div>
+          <div className="w-full flex justify-evenly mb-4 gap-3">
             <button
               onClick={handleNavigate}
               className="w-[150px] sm:w-[270px] mt-4 bg-HomeText text-white py-2 rounded flex items-center justify-center space-x-2 gap-2"
             >
               <ChatIcon className="w-7 h-7 " />
-              <span>Chat to Rent</span>
+              <span>Chat with Owner</span>
             </button>
 
             <button
@@ -138,13 +138,13 @@ const ToolDetail = () => {
               className="w-[150px] sm:w-[270px] mt-4 bg-HomeText text-white py-2 rounded flex items-center justify-center space-x-2 gap-2"
             >
               <ShoppingCartIcon className="w-7 h-7 " />
-              <span>Place Order</span>
+              <span>Request Tool</span>
             </button>
-          </div> */}
+          </div>
         </div>
       </div>
     </>
   );
 };
 
-export default ToolDetail;
+export default ToolDetailsLanding;

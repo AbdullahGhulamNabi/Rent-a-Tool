@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { toolService } from '../../services';
 import AddUpdate from "../Add-Update/AddUpdate";
+import { useNavigate } from 'react-router-dom';
+import { Api_Route } from "../../config";
 
 const MyTools = () => {
   const [tools, setTools] = useState([]);
@@ -8,6 +10,14 @@ const MyTools = () => {
   const [error, setError] = useState('');
   const [showAddUpdate, setShowAddUpdate] = useState(false);
   const [selectedTool, setSelectedTool] = useState(null);
+  const navigate = useNavigate();
+
+  const handleCardClick = (tool) => {
+    navigate("/ToolDescription", { state: { tool } });
+
+  };
+
+
 
   // Fetch tools when component mounts
   useEffect(() => {
@@ -37,6 +47,8 @@ const MyTools = () => {
       try {
         await toolService.deleteTool(id);
         setTools(tools.filter((tool) => tool._id !== id));
+    window.location.reload();
+
       } catch (err) {
         alert('Failed to delete tool: ' + (err.message || 'Unknown error'));
       }
@@ -46,7 +58,14 @@ const MyTools = () => {
   const handleAddUpdateClose = () => {
     setShowAddUpdate(false);
     setSelectedTool(null);
-    fetchTools(); // Refresh the tools list
+    fetchTools();
+ // Refresh the tools list
+  };
+
+  const [visibleCount, setVisibleCount] = useState(8); // Initial tools shown
+
+  const loadMore = () => {
+    setVisibleCount((prev) => prev + 4); // Load 4 more tools on each click
   };
 
   if (loading) {
@@ -61,12 +80,6 @@ const MyTools = () => {
     <div className="p-4">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">My Tools</h1>
-        {/* <button
-          onClick={() => setShowAddUpdate(true)}
-          className="bg-HomeText text-white px-4 py-2 rounded hover:bg-opacity-90"
-        >
-          Add New Tool
-        </button> */}
       </div>
 
       {showAddUpdate && (
@@ -76,17 +89,20 @@ const MyTools = () => {
         />
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {tools.map((tool) => (
           <div
             key={tool._id}
-            className="border rounded-lg shadow-md p-4 flex flex-col items-center"
+            className="border rounded-lg shadow-md p-4 flex flex-col items-center cursor-pointer"
+            
           >
-            <div className="w-full h-40 bg-gray-300 flex items-center justify-center rounded mb-4">
+            <div className="w-full h-32 bg-gray-300 flex items-center justify-center rounded mb-4"
+             onClick={() => handleCardClick(tool)}>
               {tool.image ? (
                 <img
                   className="w-full h-full object-cover rounded"
-                  src={`http://localhost:3000/uploads/tools/${tool.image}`}
+                  // src={`http://localhost:3000/uploads/tools/${tool.image}`}
+                  src={`${Api_Route}/uploads/tools/${tool.image}`}
                   alt={tool.name}
                 />
               ) : (
