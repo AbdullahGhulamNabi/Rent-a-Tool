@@ -20,6 +20,7 @@ import DashBoard from "./components/Dashboard/Dashboard";
 import MyTools from "./components/Dashboard/MyTools";
 import SettingsModal from "./components/Dashboard/Modal";
 import Help from "./components/FeedBack and Help/Help";
+// import Help from "./components/FeedBack and Help/Help";
 import Listing from "./components/FeedBack and Help/Listing";
 import ToolDetail from "./components/Tool-Description/ToolDetail";
 import AddUpdate from "./components/Add-Update/AddUpdate";
@@ -29,6 +30,7 @@ import Order from "./components/Order Tool/Order";
 import { createContext, useReducer, useState, useEffect} from "react";
 import { reducer, initialState } from "./Reducer/reducer"; 
 import ToolDetailsLanding from "./components/Tool-Description/ToolDetailsLanding";
+import TermsAndPolicy from "./components/FeedBack and Help/TermsAndPolicy";
 // import { create } from "@mui/material/styles/createTransitions";
 
 function PrivateRoute({ children }) {
@@ -71,6 +73,15 @@ const RoutesOfRent_a_Tool = createBrowserRouter([
             <Tools />
           </>
         ),
+      },
+      //new path add for user help
+      {
+        path: "help",
+        element: <Help />
+      },
+      {
+        path: "terms",
+        element: <TermsAndPolicy />
       },
       {
         path: "Dashboard",
@@ -126,8 +137,8 @@ const RoutesOfRent_a_Tool = createBrowserRouter([
             element: (
               <>
                 <PrivateRoute>
-                  <Listing />
-                </PrivateRoute>
+                <Listing /> 
+               </PrivateRoute>
               </>
             ),
           },
