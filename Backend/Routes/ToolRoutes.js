@@ -58,7 +58,7 @@ const handleMulterError = (err, req, res, next) => {
 router.get('/', async (req, res) => {
     try {
         const tools = await Tool.find()
-            .populate('owner', 'firstName lastName email')
+            .populate('owner', 'firstName lastName email address postalCode profilePhoto')
             .populate('rentedTo.user', 'firstName lastName email');
         res.status(200).json(tools);
     } catch (error) {
@@ -75,7 +75,7 @@ router.get('/my-tools', userMiddleware, async (req, res) => {
         }
 
         const tools = await Tool.find({ owner: user._id })
-            .populate('owner', 'firstName lastName email')
+            .populate('owner', 'firstName lastName email address postalCode profilePhoto')
             .populate('rentedTo.user', 'firstName lastName email');
 
         res.status(200).json(tools);
