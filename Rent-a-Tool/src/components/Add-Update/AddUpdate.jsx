@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import cameraIcon from '../../assets/AddTool/camra.png'
 import { toolService } from '../../services'
+import { Api_Route } from '../../config';
 
 const AddUpdate = ({ onClose, toolToEdit = null }) => {
   const [formData, setFormData] = useState({
@@ -23,7 +24,8 @@ const AddUpdate = ({ onClose, toolToEdit = null }) => {
         image: null
       });
       setIsForRent(toolToEdit.price > 0);
-      setPreviewImage(toolToEdit.image ? `http://localhost:3000/uploads/tools/${toolToEdit.image}` : null);
+      // setPreviewImage(toolToEdit.image ? `http://localhost:3000/uploads/tools/${toolToEdit.image}` : null);
+      setPreviewImage(toolToEdit.image ? `${Api_Route}/uploads/tools/${toolToEdit.image}` : null);
     }
   }, [toolToEdit]);
 

@@ -28,6 +28,7 @@ import SignUp from "./components/Login and Sign Up/SignUp";
 import Order from "./components/Order Tool/Order";
 import { createContext, useReducer, useState, useEffect} from "react";
 import { reducer, initialState } from "./Reducer/reducer"; 
+import ToolDetailsLanding from "./components/Tool-Description/ToolDetailsLanding";
 // import { create } from "@mui/material/styles/createTransitions";
 
 function PrivateRoute({ children }) {
@@ -100,6 +101,53 @@ const RoutesOfRent_a_Tool = createBrowserRouter([
         element: <Outlet />,
         children: [
           { index: true, element: <ToolDetail /> },
+          {
+            path: "Chat",
+            element: (
+              <>
+                <PrivateRoute>
+                  <ChatInterface />
+                </PrivateRoute>
+              </>
+            ),
+          },
+          {
+            path: "Order",
+            element: (
+              <>
+                <PrivateRoute>
+                  <Order />
+                </PrivateRoute>
+              </>
+            ),
+          },
+          {
+            path: "Listing",
+            element: (
+              <>
+                <PrivateRoute>
+                  <Listing />
+                </PrivateRoute>
+              </>
+            ),
+          },
+          {
+            path: "Feedback",
+            element: (
+              <>
+                <PrivateRoute>
+                  <FeedbackPage />
+                </PrivateRoute>
+              </>
+            ),
+          },
+        ],
+      },
+      {
+        path: "ToolDescriptions",
+        element: <Outlet />,
+        children: [
+          { index: true, element: <ToolDetailsLanding /> },
           {
             path: "Chat",
             element: (
