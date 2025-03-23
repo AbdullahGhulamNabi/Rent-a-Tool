@@ -269,7 +269,7 @@ router.delete('/:id', async (req, res) => {
 router.post('/:id/request', userMiddleware, async (req, res) => {
     try {
         const tool = await Tool.findById(req.params.id)
-            .populate('owner', 'firstName lastName email');
+            .populate('owner', 'firstName lastName email emailNotifications');
         
         if (!tool) {
             return res.status(404).json({ message: 'Tool not found' });
@@ -296,11 +296,12 @@ router.post('/:id/request', userMiddleware, async (req, res) => {
         });
         await user.save();
 
-        // Send email notification if user has enabled it
-        if (user.emailNotifications) {
+        // Send email notification to tool owner if they have enabled it
+        if (tool.owner.emailNotifications) {
             await sendToolRequestEmail(
-                user.email,
+                tool.owner.email,
                 tool.name,
+                `${user.firstName} ${user.lastName}`,
                 new Date().toLocaleDateString()
             );
         }

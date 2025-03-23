@@ -10,19 +10,20 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-// Function to send tool request confirmation email
-const sendToolRequestEmail = async (userEmail, toolName, requestDate) => {
+// Function to send tool request notification to tool owner
+const sendToolRequestEmail = async (ownerEmail, toolName, requesterName, requestDate) => {
     try {
         const mailOptions = {
             from: process.env.EMAIL_USER,
-            to: userEmail,
-            subject: 'Tool Request Confirmation',
+            to: ownerEmail,
+            subject: 'New Tool Request',
             html: `
-                <h2>Tool Request Confirmation</h2>
-                <p>Your request for the following tool has been received:</p>
+                <h2>New Tool Request</h2>
+                <p>Someone has requested to rent your tool:</p>
                 <p><strong>Tool:</strong> ${toolName}</p>
+                <p><strong>Requester:</strong> ${requesterName}</p>
                 <p><strong>Request Date:</strong> ${requestDate}</p>
-                <p>We will process your request and notify you once it's approved.</p>
+                <p>Please check your dashboard to review and respond to this request.</p>
                 <p>Thank you for using our Tool Rental Service!</p>
             `
         };
