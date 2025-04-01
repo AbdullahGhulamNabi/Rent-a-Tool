@@ -2,6 +2,7 @@
   "dependencies": {
     "@stripe/stripe-js": "^6.1.0",
     "axios": "^1.8.3",
+    "react-toastify": "^11.0.5",
     "stripe": "^17.7.0"
   }
 }

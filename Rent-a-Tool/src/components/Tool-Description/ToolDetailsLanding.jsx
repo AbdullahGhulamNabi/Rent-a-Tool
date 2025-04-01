@@ -9,6 +9,9 @@ import { useContext, useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Api_Route } from "../../config";
 import { loadStripe } from "@stripe/stripe-js";
+import { CircularProgress } from "@mui/material";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ToolDetailsLanding = () => {
   const { state, dispatch } = useContext(UserContext);
@@ -67,7 +70,14 @@ const ToolDetailsLanding = () => {
     }
 
     if (!stripe) {
-      alert('Payment system is initializing. Please try again in a moment.');
+      toast.warning('Payment system is initializing. Please try again in a moment.', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
       return;
     }
 
@@ -98,7 +108,15 @@ const ToolDetailsLanding = () => {
 
       // Check if price is too low (less than 140 PKR)
       if (toolPrice < 140) {
-        throw new Error('This tool cannot be rented through the payment system due to its low price. Please contact the owner directly.');
+        toast.error('This tool cannot be rented through the payment system due to its low price. Please contact the owner directly.', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+        return;
       }
 
       const body = {
@@ -159,7 +177,14 @@ const ToolDetailsLanding = () => {
       }
     } catch (error) {
       console.error('Payment error:', error);
-      alert(error.message || 'An error occurred during payment');
+      toast.error(error.message || 'An error occurred during payment', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     }
   };
 
@@ -175,7 +200,8 @@ const ToolDetailsLanding = () => {
   const [value, setValue] = React.useState(5);
 
   return (
-    <>
+    <div className="min-h-screen bg-imageBG">
+      <ToastContainer />
       {showMessage && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60">
           <div className="bg-white p-5 rounded-lg shadow-lg relative w-[300px] h-[150px] flex items-center justify-center">
@@ -278,7 +304,7 @@ const ToolDetailsLanding = () => {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
