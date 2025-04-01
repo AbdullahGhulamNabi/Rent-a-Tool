@@ -5,6 +5,8 @@ import { Api_Route } from '../../config'
 import { UserContext } from "../../App";
 import Modal from "./Modal";
 import { CircularProgress } from "@mui/material";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Dashboard() {
   const { state, dispatch } = useContext(UserContext);
@@ -99,11 +101,25 @@ function Dashboard() {
     const paymentStatus = params.get('payment');
     
     if (paymentStatus === 'success') {
-      alert('Payment successful! Your tool has been rented.');
+      toast.success('Payment successful! Your tool has been rented.', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
       // Clear the URL parameters
       window.history.replaceState({}, document.title, '/dashboard');
     } else if (paymentStatus === 'cancelled') {
-      alert('Payment was cancelled.');
+      toast.info('Payment was cancelled.', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
       // Clear the URL parameters
       window.history.replaceState({}, document.title, '/dashboard');
     }
@@ -166,6 +182,7 @@ function Dashboard() {
   }
   return (
     <div className="p-8 bg-imageBG">
+      <ToastContainer />
       {/* Welcome Message */}
       <div className="bg-white shadow-md rounded-lg p-6">
         <h1 className="text-3xl font-bold text-gray-800 mb-4">

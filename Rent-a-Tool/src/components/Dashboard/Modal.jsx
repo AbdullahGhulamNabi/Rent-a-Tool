@@ -2,6 +2,7 @@ import React, { useState,useContext, useEffect } from "react";
 import {Api_Route} from '../../config'
 import { UserContext } from "../../App";
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify';
 
 export default function Modal({ onClose }) {
   const { state, dispatch } = useContext(UserContext);
@@ -68,26 +69,46 @@ export default function Modal({ onClose }) {
 
   async function savePersonalInfo() {
     try {
-      const response = await fetch(
-        `${Api_Route}/dashboard/Settings/savePersonalInfo`,
-        {
-          method: "PATCH",
-          headers: {
-            Authorization: localStorage.getItem("jwt_token"),
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        }
-      );
-      
-      closeSubModal(); 
-      if (response.ok) {
-        console.log("Profile updated successfully");
-      } else {
-        console.error("Failed to update profile");
+      const token = localStorage.getItem("jwt_token");
+      const response = await fetch(`${Api_Route}/api/user/update-profile`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
+        body: JSON.stringify({
+          name: `${formData.firstName} ${formData.lastName}`,
+          email: "",
+          phone: formData.userPhone,
+          address: formData.userPostalCode,
+          emailNotifications: notifications.email,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update profile");
       }
+
+      const data = await response.json();
+      closeSubModal();
+      toast.success('Profile updated successfully!', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     } catch (error) {
       console.error("Error updating profile:", error);
+      toast.error('Failed to update profile. Please try again.', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     }
   }
 
