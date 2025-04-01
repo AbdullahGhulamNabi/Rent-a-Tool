@@ -1,9 +1,15 @@
 const { Router } = require("express");
+const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
+// const User = require("../models/User");
+
 const router = Router();
 const { User , Tool, FeedBack } = require("../DB/db_models");
 const authentication = require("../Middlewares/Authentication");
+const formParser = require("../Middlewares/FormDataParser");
 const multer = require("multer");
 const path = require("path");
+const { types } = require("util");
 const storage = multer.diskStorage({
     destination: function(req,file,cb){
         cb(null, path.join(__dirname, "../public/Images"))
@@ -51,26 +57,6 @@ router.get("/getProfilePhoto", authentication, async (req, res) => {
       res.status(500).json({ msg: "Error fetching profile photo", error });
     }
   })
-
-
-
-  router.get("/getToolCount", async(req, res)=>{
-    try {
-      const userEmail = req.Email
-      console.log(userEmail);
-      const toolCount = await Tool.countDocuments({"email":userEmail});
-
-      res.json({
-        success: true,
-        toolCount: toolCount,
-      });
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ msg: "Error fetching tool count", error });     
-      }
-  });
-
 
 
 module.exports = router;

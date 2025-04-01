@@ -7,6 +7,7 @@ import {
   RouterProvider,
   Outlet,
   Navigate,
+  useNavigate
 } from "react-router-dom";
 import "./App.css";
 import Navbar from "./components/Nav and Footer/Navbar";
@@ -19,6 +20,7 @@ import DashBoard from "./components/Dashboard/Dashboard";
 import MyTools from "./components/Dashboard/MyTools";
 import SettingsModal from "./components/Dashboard/Modal";
 import Help from "./components/FeedBack and Help/Help";
+// import Help from "./components/FeedBack and Help/Help";
 import Listing from "./components/FeedBack and Help/Listing";
 import ToolDetail from "./components/Tool-Description/ToolDetail";
 import AddUpdate from "./components/Add-Update/AddUpdate";
@@ -27,12 +29,29 @@ import SignUp from "./components/Login and Sign Up/SignUp";
 import Order from "./components/Order Tool/Order";
 import { createContext, useReducer, useState, useEffect} from "react";
 import { reducer, initialState } from "./Reducer/reducer"; 
+import ToolDetailsLanding from "./components/Tool-Description/ToolDetailsLanding";
+import TermsAndPolicy from "./components/FeedBack and Help/TermsAndPolicy";
 // import { create } from "@mui/material/styles/createTransitions";
 
 function PrivateRoute({ children }) {
   const token = localStorage.getItem("jwt_token");
+
+  useEffect(() => {
+    if (token && window.location.pathname === "/") {
+      window.location.replace("/Dashboard"); 
+    }
+
+    if (token) {
+      window.history.pushState(null, "", window.location.href);
+      window.addEventListener("popstate", function () {
+        window.history.pushState(null, "", window.location.href);
+      });
+    }
+  }, [token]);
+
   return token ? children : <Navigate to="/" />;
 }
+
 
 const RoutesOfRent_a_Tool = createBrowserRouter([
   {
@@ -54,6 +73,15 @@ const RoutesOfRent_a_Tool = createBrowserRouter([
             <Tools />
           </>
         ),
+      },
+      //new path add for user help
+      {
+        path: "help",
+        element: <Help />
+      },
+      {
+        path: "terms",
+        element: <TermsAndPolicy />
       },
       {
         path: "Dashboard",
@@ -84,6 +112,53 @@ const RoutesOfRent_a_Tool = createBrowserRouter([
         element: <Outlet />,
         children: [
           { index: true, element: <ToolDetail /> },
+          {
+            path: "Chat",
+            element: (
+              <>
+                <PrivateRoute>
+                  <ChatInterface />
+                </PrivateRoute>
+              </>
+            ),
+          },
+          {
+            path: "Order",
+            element: (
+              <>
+                <PrivateRoute>
+                  <Order />
+                </PrivateRoute>
+              </>
+            ),
+          },
+          {
+            path: "Listing",
+            element: (
+              <>
+                <PrivateRoute>
+                <Listing /> 
+               </PrivateRoute>
+              </>
+            ),
+          },
+          {
+            path: "Feedback",
+            element: (
+              <>
+                <PrivateRoute>
+                  <FeedbackPage />
+                </PrivateRoute>
+              </>
+            ),
+          },
+        ],
+      },
+      {
+        path: "ToolDescriptions",
+        element: <Outlet />,
+        children: [
+          { index: true, element: <ToolDetailsLanding /> },
           {
             path: "Chat",
             element: (

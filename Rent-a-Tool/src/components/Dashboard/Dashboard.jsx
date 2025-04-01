@@ -1,21 +1,39 @@
-import React, { useState, useEffect  } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useContext } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Add from "../Add-Update/AddUpdate";
-import {Api_Route} from '../../config'
+import { Api_Route } from '../../config'
+import { UserContext } from "../../App";
+import Modal from "./Modal";
+import { CircularProgress } from "@mui/material";
 
 function Dashboard() {
+  const { state, dispatch } = useContext(UserContext);
   const [isAddToolOpen, setAddToolOpen] = useState(false);
   const [toolCount, setToolCount] = useState(0);
+  const [rentalCount, setRentalCount] = useState(0);
+  const [pendingCount, setPendingCount] = useState(0);
+  const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [tools, setTools] = useState([]);
+  const [rentedTools, setRentedTools] = useState([]);
+  const [userData, setUserData] = useState(null);
+
+  const navigate = useNavigate();
+  const location = useLocation();
 
   async function showTotalToolsCount() {
     try {
-        const response = await fetch(`${Api_Route}/dashboard/getToolCount`, {
-          method: "GET",
-          credentials: "include",
+
+        const token = localStorage.getItem("jwt_token");
+        if (!token) return;
+        
+        console.log("Working")
+        const response = await fetch(`${Api_Route}/dashboard/quickLinks/getToolCount`, {
           headers: {
-            "Content-Type": "application/json",
+            Authorization: localStorage.getItem("jwt_token"),
           },
-        });
+        })
+
         const data = await response.json();
         if (data.success) {
           setToolCount(data.toolCount); 
@@ -27,12 +45,108 @@ function Dashboard() {
       }
   }
 
+  async function showActiveRental() {
+    try {
 
+        const token = localStorage.getItem("jwt_token");
+        if (!token) return;
+        
+        console.log("Working")
+        const response = await fetch(`${Api_Route}/dashboard/quickLinks/getRentalCount`, {
+          headers: {
+            Authorization: localStorage.getItem("jwt_token"),
+          },
+        })
+
+        const data = await response.json();
+        if (data.success) {
+          setRentalCount(data.toolRentalCount); 
+        } else {
+          console.error("Failed to fetch tool rental count:", data.msg);
+        }
+      } catch (error) {
+        console.error("Error fetching tool rental count:", error);
+      }
+  }
+
+  async function showPendingRequestCount() {
+    try {
+
+        const token = localStorage.getItem("jwt_token");
+        if (!token) return;
+        
+        console.log("Working")
+        const response = await fetch(`${Api_Route}/dashboard/quickLinks/getPendingRequestCount`, {
+          headers: {
+            Authorization: localStorage.getItem("jwt_token"),
+          },
+        })
+
+        const data = await response.json();
+        if (data.success) {
+          setPendingCount(data.pendingRequests); 
+        } else {
+          console.error("Failed to fetch tool rental count:", data.msg);
+        }
+      } catch (error) {
+        console.error("Error fetching tool rental count:", error);
+      }
+  }
+
+  useEffect(() => {
+    // Check payment status from URL parameters
+    const params = new URLSearchParams(location.search);
+    const paymentStatus = params.get('payment');
     
+    if (paymentStatus === 'success') {
+      alert('Payment successful! Your tool has been rented.');
+      // Clear the URL parameters
+      window.history.replaceState({}, document.title, '/dashboard');
+    } else if (paymentStatus === 'cancelled') {
+      alert('Payment was cancelled.');
+      // Clear the URL parameters
+      window.history.replaceState({}, document.title, '/dashboard');
+    }
+  }, [location]);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const token = localStorage.getItem("jwt_token");
+        if (!token) {
+          navigate("/");
+          return;
+        }
+
+        const response = await fetch(`${Api_Route}/api/user/profile`, {
+          headers: {
+            Authorization: token,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch user data");
+        }
+
+        const data = await response.json();
+        setUserData(data);
+        setTools(data.tools);
+        setRentedTools(data.toolsRented);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, [navigate]);
+
   useEffect(() => {
     showTotalToolsCount();
+    showActiveRental();
+    showPendingRequestCount();
   }, []);
-
 
   const openAddToolModal = () => {
     setAddToolOpen(true);
@@ -44,7 +158,6 @@ function Dashboard() {
     document.body.style.overflow = "auto";
   };
 
-  const navigate = useNavigate()
   function handleClick(){
       navigate('/Dashboard/Help')
   }
@@ -77,11 +190,11 @@ function Dashboard() {
             {/* <button onClick={showActiveRentals}> */}
               <h3 className="text-lg font-medium text-gray-800">Active Rentals</h3>
             {/* </button> */}
-            <p className="text-2xl font-bold text-green-600">4</p>
+            <p className="text-2xl font-bold text-green-600">{rentalCount}</p>
           </div>
           <div className="bg-white shadow-md rounded-lg p-4 text-center">
             <h3 className="text-lg font-medium text-gray-800">Pending Requests</h3>
-            <p className="text-2xl font-bold text-orange-600">2</p>
+            <p className="text-2xl font-bold text-orange-600">{pendingCount}</p>
           </div>
         </div>
       </div>

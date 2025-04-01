@@ -53,9 +53,20 @@ router.post("/login", async (req, res) => {
 
   const token = jwt.sign({ email }, jwt_secret);
 
+  // Send user data along with token
   res.json({
     token: `Bearer ${token}`,
-    message: "Login Succesful"
+    message: "Login Successful",
+    user: {
+      _id: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      address: user.address,
+      postalCode: user.postalCode,
+      profilePhoto: user.profilePhoto
+    }
   });
 });
 

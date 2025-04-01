@@ -32,6 +32,19 @@ const users = new mongoose.Schema({
       ref: "Tools",
     },
   ],
+  toolsRequested: [
+    {
+      tool: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Tools",
+      },
+      status: {
+        type: String,
+        enum: ["pending", "accepted", "rejected"],
+        default: "pending", 
+      }
+    }
+  ]
 });
 
 users.pre("save", async function (next) {
@@ -52,10 +65,24 @@ const tools = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  owner: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Users',
+    required: true
+  },
   rented: {
     type: Boolean,
     default: false,
   },
+  rentedTo: {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Users'
+    },
+    rentedAt: {
+      type: Date
+    }
+  }
 });
 
 const feedback = new mongoose.Schema({

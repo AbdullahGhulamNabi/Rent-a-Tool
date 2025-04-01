@@ -1,13 +1,17 @@
 export const reducer = (state, action) => {
-    if (action.type === "USER") {
-      return action.payload;
+    switch (action.type) {
+        case "USER":
+            return action.payload;
+        
+        case "SET_PROFILE_IMAGE":
+            return { ...state, profileImage: action.payload };
+        
+        case "LOGOUT":
+            return null;
+        
+        default:
+            return state;
     }
-  
-    if(action.type == "SET_PROFILE_IMAGE"){
-      return { ...state, profileImage: action.payload }
-    }
-  
-    return state;
-  };
-  
+};
+
 export const initialState = null;
