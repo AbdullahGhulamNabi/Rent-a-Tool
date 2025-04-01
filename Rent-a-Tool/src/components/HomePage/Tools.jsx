@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Api_Route } from '../../config'; // Ensure correct import
@@ -29,21 +28,31 @@ const Tools = () => {
     }
   };
 
-  const showMore = () => {
-    setVisibleCount((prev) => prev + 4);
-  };
-
   const handleCardClick = (tool) => {
-    navigate("/ToolDescriptions", { state: { tool } });
-
+    // Ensure tool data has the correct structure
+    const toolData = {
+      ...tool,
+      price: Number(tool.price) || 0,
+      _id: tool._id,
+      name: tool.name,
+      description: tool.description,
+      image: tool.image,
+      owner: tool.owner || {}
+    };
+    console.log('Navigating with tool data:', toolData);
+    navigate("/ToolDescriptions", { state: { tool: toolData } });
   };
+
+  const handleLoadMore = () => {
+    setVisibleCount(prev => prev + 4);
+  };
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className="w-[96%] m-auto">
+    <div className="container mx-auto px-4 py-8">
       <div className='font-bold text-5xl text-HomeText w-[120px] m-auto my-5'>Tools</div>
-
-      {loading && <p className="text-center">Loading tools...</p>}
-      {error && <p className="text-center text-red-500">{error}</p>}
 
       {!loading && !error && (
         <>
@@ -79,23 +88,9 @@ const Tools = () => {
                       {tool.rented ? "Rented" : "Available"}
                     </div>
                   </div>
-                  <div className="p-2">
-                    <h3 className="font-bold text-lg text-HomeText">
-                      {tool.name ? tool.name.split(" ").slice(0, 5).join(" ") : "Unnamed Tool"}
-                    </h3>
-                    <p className="text-gray-500 text-sm">
-                      {owner.address || "Location not available"}
-                    </p>
-                    <div className="flex items-center mt-2">
-                      <img
-                        src={owner.profilePhoto ? `${Api_Route}/Images/${owner.profilePhoto}` : "/user-placeholder.jpg"}
-                        alt={`${owner.firstName || "Unknown"} ${owner.lastName || ""}`}
-                        className="w-8 h-8 rounded-full mr-2"
-                      />
-                      <span className="text-sm font-medium text-HomeText">
-                        {owner.firstName ? `${owner.firstName} ${owner.lastName || ""}` : "Unknown Owner"}
-                      </span>
-                    </div>
+                  <div className="p-4">
+                    <h3 className="font-semibold text-lg mb-1">{tool.name}</h3>
+                    <p className="text-sm text-gray-600">{owner.firstName} {owner.lastName}</p>
                   </div>
                 </div>
               );
@@ -103,9 +98,12 @@ const Tools = () => {
           </div>
 
           {visibleCount < tools.length && (
-            <div className="text-center mt-4">
-              <button className="bg-HomeText text-white px-4 py-2 rounded" onClick={showMore}>
-               load More
+            <div className="text-center mt-8">
+              <button
+                onClick={handleLoadMore}
+                className="bg-HomeText text-white px-6 py-2 rounded hover:bg-opacity-90"
+              >
+                Load More
               </button>
             </div>
           )}

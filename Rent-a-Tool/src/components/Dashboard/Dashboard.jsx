@@ -1,13 +1,25 @@
-import React, { useState, useEffect  } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useContext } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Add from "../Add-Update/AddUpdate";
-import {Api_Route} from '../../config'
+import { Api_Route } from '../../config'
+import { UserContext } from "../../App";
+import Modal from "./Modal";
+import { CircularProgress } from "@mui/material";
 
 function Dashboard() {
+  const { state, dispatch } = useContext(UserContext);
   const [isAddToolOpen, setAddToolOpen] = useState(false);
   const [toolCount, setToolCount] = useState(0);
   const [rentalCount, setRentalCount] = useState(0);
   const [pendingCount, setPendingCount] = useState(0);
+  const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [tools, setTools] = useState([]);
+  const [rentedTools, setRentedTools] = useState([]);
+  const [userData, setUserData] = useState(null);
+
+  const navigate = useNavigate();
+  const location = useLocation();
 
   async function showTotalToolsCount() {
     try {
@@ -81,13 +93,60 @@ function Dashboard() {
       }
   }
 
+  useEffect(() => {
+    // Check payment status from URL parameters
+    const params = new URLSearchParams(location.search);
+    const paymentStatus = params.get('payment');
     
+    if (paymentStatus === 'success') {
+      alert('Payment successful! Your tool has been rented.');
+      // Clear the URL parameters
+      window.history.replaceState({}, document.title, '/dashboard');
+    } else if (paymentStatus === 'cancelled') {
+      alert('Payment was cancelled.');
+      // Clear the URL parameters
+      window.history.replaceState({}, document.title, '/dashboard');
+    }
+  }, [location]);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const token = localStorage.getItem("jwt_token");
+        if (!token) {
+          navigate("/");
+          return;
+        }
+
+        const response = await fetch(`${Api_Route}/api/user/profile`, {
+          headers: {
+            Authorization: token,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch user data");
+        }
+
+        const data = await response.json();
+        setUserData(data);
+        setTools(data.tools);
+        setRentedTools(data.toolsRented);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, [navigate]);
+
   useEffect(() => {
     showTotalToolsCount();
     showActiveRental();
     showPendingRequestCount();
   }, []);
-
 
   const openAddToolModal = () => {
     setAddToolOpen(true);
@@ -99,7 +158,6 @@ function Dashboard() {
     document.body.style.overflow = "auto";
   };
 
-  const navigate = useNavigate()
   function handleClick(){
       navigate('/Dashboard/Help')
   }

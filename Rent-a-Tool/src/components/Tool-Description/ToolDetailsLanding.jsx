@@ -5,13 +5,15 @@ import ChatIcon from "@mui/icons-material/Chat";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../App";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Api_Route } from "../../config";
+import { loadStripe } from "@stripe/stripe-js";
 
 const ToolDetailsLanding = () => {
   const { state, dispatch } = useContext(UserContext);
   const [showMessage, setShowMessage] = useState(false);
+  const [stripe, setStripe] = useState(null);
   const navigate = useNavigate();
  
   const location = useLocation();
@@ -20,8 +22,34 @@ const ToolDetailsLanding = () => {
     return <p>No tool found!</p>;
   }
 
+  // Debug user state
+  useEffect(() => {
+    console.log('Current user state:', state);
+    console.log('Local storage userState:', localStorage.getItem('userState'));
+    console.log('JWT Token:', localStorage.getItem('jwt_token'));
+  }, [state]);
+
+  // Initialize Stripe
+  useEffect(() => {
+    const initializeStripe = async () => {
+      try {
+        console.log('Initializing Stripe with key:', import.meta.env.VITE_STRIPE_PUBLIC_KEY ? 'Present' : 'Missing');
+        const stripeInstance = await loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
+        if (!stripeInstance) {
+          throw new Error('Failed to load Stripe');
+        }
+        setStripe(stripeInstance);
+        console.log('Stripe initialized successfully');
+      } catch (error) {
+        console.error('Error initializing Stripe:', error);
+      }
+    };
+
+    initializeStripe();
+  }, []);
+
   function handleNavigate() {
-    if (state) {
+    if (state && state._id) {
       navigate("/ToolDescription/Chat");
     } else {
       setShowMessage(true);
@@ -29,14 +57,120 @@ const ToolDetailsLanding = () => {
     }
   }
 
-  function orderTool() {
-    if (state) {
-      navigate("/ToolDescription/Order");
-    } else {
+  const makePayment = async () => {
+    // Check if user is logged in
+    const token = localStorage.getItem("jwt_token");
+    if (!token) {
       setShowMessage(true);
-      document.body.style.overflow = "hidden"
+      document.body.style.overflow = "hidden";
+      return;
     }
-  }
+
+    if (!stripe) {
+      alert('Payment system is initializing. Please try again in a moment.');
+      return;
+    }
+
+    try {
+      console.log('Starting payment process...');
+      console.log('Tool data:', tool);
+      console.log('User state:', state);
+      console.log('JWT Token:', token);
+
+      // Get user ID from state or localStorage
+      let userId = state?._id;
+      if (!userId) {
+        console.log('User ID not found in state, checking localStorage...');
+        const storedState = JSON.parse(localStorage.getItem('userState'));
+        console.log('Stored state:', storedState);
+        userId = storedState?._id;
+        
+        if (!userId) {
+          throw new Error('User information not found. Please try logging in again.');
+        }
+      }
+
+      // Ensure tool price is a number
+      const toolPrice = Number(tool.price);
+      if (isNaN(toolPrice) || toolPrice <= 0) {
+        throw new Error('Invalid tool price');
+      }
+
+      // Check if price is too low (less than 140 PKR)
+      if (toolPrice < 140) {
+        throw new Error('This tool cannot be rented through the payment system due to its low price. Please contact the owner directly.');
+      }
+
+      const body = {
+        toolId: tool._id,
+        userId: userId,
+        toolName: tool.name,
+        toolPrice: toolPrice,
+      };
+      console.log('Request body:', body);
+
+      // Validate required fields
+      if (!body.toolId || !body.userId || !body.toolName || !body.toolPrice) {
+        console.error('Missing required fields:', {
+          toolId: !!body.toolId,
+          userId: !!body.userId,
+          toolName: !!body.toolName,
+          toolPrice: !!body.toolPrice
+        });
+        throw new Error('Missing required payment information');
+      }
+
+      const response = await fetch(`${Api_Route}/api/payment/create-checkout-session`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": token
+        },
+        body: JSON.stringify(body),
+      });
+
+      console.log('Response status:', response.status);
+      const responseText = await response.text();
+      console.log('Response text:', responseText);
+
+      if (!response.ok) {
+        const errorData = JSON.parse(responseText);
+        throw new Error(errorData.error || 'Failed to create checkout session');
+      }
+
+      let sessionData;
+      try {
+        sessionData = JSON.parse(responseText);
+      } catch (e) {
+        console.error('Error parsing response:', e);
+        throw new Error('Invalid response from server');
+      }
+
+      if (!sessionData.sessionId) {
+        throw new Error('No session ID received');
+      }
+
+      const result = await stripe.redirectToCheckout({
+        sessionId: sessionData.sessionId,
+      });
+
+      if (result.error) {
+        throw new Error(result.error.message);
+      }
+    } catch (error) {
+      console.error('Payment error:', error);
+      alert(error.message || 'An error occurred during payment');
+    }
+  };
+
+  // function orderTool() {
+  //   if (state) {
+  //     navigate("/ToolDescription/Order");
+  //   } else {
+  //     setShowMessage(true);
+  //     document.body.style.overflow = "hidden"
+  //   }
+  // }
 
   const [value, setValue] = React.useState(5);
 
@@ -134,11 +268,12 @@ const ToolDetailsLanding = () => {
             </button>
 
             <button
-              onClick={orderTool}
+              // onClick={orderTool}
+              onClick={makePayment}
               className="w-[150px] sm:w-[270px] mt-4 bg-HomeText text-white py-2 rounded flex items-center justify-center space-x-2 gap-2"
             >
               <ShoppingCartIcon className="w-7 h-7 " />
-              <span>Request Tool</span>
+              <span>Order Tool</span>
             </button>
           </div>
         </div>

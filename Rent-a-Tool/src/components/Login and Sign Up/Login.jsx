@@ -34,11 +34,10 @@ function Login({onClose, onSignUpClick }) {
 
       if (response.ok) {
         localStorage.setItem("jwt_token", data.token); 
-        console.log("Token:", data.token)
-        // localStorage.setItem("user", JSON.stringify(data.user));
-        // console.log("user email and id",User)
-        dispatch({type:'USER' , payload:true})
-        onClose()
+        console.log("Token:", data.token);
+        // Store the user data in state
+        dispatch({type:'USER' , payload: data.user});
+        onClose();
         navigate("/Dashboard"); 
       } else {
         setError(data.message || "Login failed. Please try again.");
