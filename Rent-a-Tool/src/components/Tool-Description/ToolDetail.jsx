@@ -1,13 +1,17 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Rating from "@mui/material/Rating";
 import ProfileIcon from "../../assets/ToolDetail/profile.jpeg";
 import ChatIcon from "@mui/icons-material/Chat";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../App";
-import { useContext, useState } from "react";
+// import { useContext, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Api_Route } from "../../config";
+import { Outlet, useNavigate, useParams } from "react-router-dom";
+// import { UserContext } from "../../App";
+// import { useContext } from "react";
+import { toolService } from "../../services";
 
 const ToolDetail = () => {
   const { state, dispatch } = useContext(UserContext);
@@ -15,10 +19,32 @@ const ToolDetail = () => {
   const navigate = useNavigate();
  
   const location = useLocation();
-  const { tool } = location.state || {}; // Get tool data
-  if (!tool) {
-    return <p>No tool found!</p>;
-  }
+  // const { tool } = location.state || {}; // Get tool data
+  // if (!tool) {
+  //   return <p>No tool found!</p>;
+  // }
+  const [requestStatus, setRequestStatus] = useState(null);
+  const { toolId } = useParams();
+  const [tool, setTool] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchTool = async () => {
+      try {
+        const toolData = await toolService.getToolById(toolId);
+        setTool(toolData);
+      } catch (err) {
+        setError(err.message || 'Failed to fetch tool details');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (toolId) {
+      fetchTool();
+    }
+  }, [toolId]);
 
   function handleNavigate() {
     if (state) {
@@ -29,19 +55,42 @@ const ToolDetail = () => {
     }
   }
 
-  function orderTool() {
-    if (state) {
-      navigate("/ToolDescription/Order");
-    } else {
+  async function requestTool() {
+    if (!state) {
       setShowMessage(true);
-      document.body.style.overflow = "hidden"
+      document.body.style.overflow = "hidden";
+      return;
+    }
+
+    if (!toolId) {
+      alert('Invalid tool ID');
+      return;
+    }
+
+    try {
+      await toolService.requestTool(toolId);
+      setRequestStatus('success');
+      alert('Tool request submitted successfully! Check your email for confirmation.');
+    } catch (error) {
+      setRequestStatus('error');
+      alert(error.message || 'Failed to request tool');
     }
   }
 
-  const [value, setValue] = React.useState(5);
+  if (loading) {
+    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="flex justify-center items-center h-screen text-red-500">{error}</div>;
+  }
+
+  if (!tool) {
+    return <div className="flex justify-center items-center h-screen">Tool not found</div>;
+  }
 
   return (
-    <>
+    <div className="flex flex-col md:flex-row p-4 md:p-8 gap-8">
       {showMessage && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60">
           <div className="bg-white p-5 rounded-lg shadow-lg relative w-[300px] h-[150px] flex items-center justify-center">
@@ -58,8 +107,7 @@ const ToolDetail = () => {
           </div>
         </div>
       )}
-      <div className="w-full flex justify-center sm:p-5  ">
-        {/* detail section */}
+      <div className="w-full flex justify-center sm:p-5">
         <div className="min-w-[300px] max-w-[1000px] p-5 bg-[#ffffff] shadow-2xl rounded-lg focus:outline-none focus:ring-0">
 
           <div className="relative flex justify-center border rounded-lg">
@@ -105,7 +153,6 @@ const ToolDetail = () => {
               </p>
               <button className="text-blue-800 font-medium ">
               </button>
-              <br />
             </div>
 
             <div className="w-20% flex flex-col items-center gap-2">
@@ -114,13 +161,10 @@ const ToolDetail = () => {
                 alt="Profile Photo"
                 className="h-[100px] w-[100px] rounded-full"
               />
-
               <Rating
                 name="simple-controlled"
-                value={value}
-                onChange={(event, newValue) => {
-                  setValue(newValue);
-                }}
+                value={5}
+                readOnly
               />
             </div>
           </div> */}
@@ -129,21 +173,21 @@ const ToolDetail = () => {
               onClick={handleNavigate}
               className="w-[150px] sm:w-[270px] mt-4 bg-HomeText text-white py-2 rounded flex items-center justify-center space-x-2 gap-2"
             >
-              <ChatIcon className="w-7 h-7 " />
+              <ChatIcon className="w-7 h-7" />
               <span>Chat to Rent</span>
             </button>
 
             <button
-              onClick={orderTool}
+              onClick={requestTool}
               className="w-[150px] sm:w-[270px] mt-4 bg-HomeText text-white py-2 rounded flex items-center justify-center space-x-2 gap-2"
             >
-              <ShoppingCartIcon className="w-7 h-7 " />
-              <span>Place Order</span>
+              <ShoppingCartIcon className="w-7 h-7" />
+              <span>Request Tool</span>
             </button>
           </div> */}
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

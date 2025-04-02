@@ -179,11 +179,35 @@ export default function Modal({ onClose }) {
 
 
 
-  const handleNotificationChange = (type) => {
-    setNotifications((prev) => ({
-      ...prev,
-      [type]: !prev[type],
-    }));
+  const handleNotificationChange = async (type) => {
+    const newNotifications = {
+      ...notifications,
+      [type]: !notifications[type],
+    };
+    setNotifications(newNotifications);
+
+    if (type === 'email') {
+      try {
+        const response = await fetch(`${Api_Route}/dashboard/settings/saveNotificationPreferences`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': localStorage.getItem("jwt_token")
+          },
+          body: JSON.stringify({
+            emailNotifications: newNotifications.email
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to save notification preferences');
+        }
+      } catch (error) {
+        console.error('Error saving notification preferences:', error);
+        // Revert the state if save failed
+        setNotifications(notifications);
+      }
+    }
   };
 
   const renderSubModal = () => {

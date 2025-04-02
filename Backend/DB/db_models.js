@@ -16,6 +16,10 @@ const users = new mongoose.Schema({
   phoneNumber: String,
   address: String,
   postalCode: Number,
+  emailNotifications: {
+    type: Boolean,
+    default: false
+  },
   profilePhoto: {
     type : String,
     default: 'Default_ProfilePic.png'

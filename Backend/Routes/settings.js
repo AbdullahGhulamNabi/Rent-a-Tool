@@ -50,4 +50,24 @@ router.patch("/savePersonalInfo", authentication, formParser,async (req, res) =>
     }
   });
 
+// Save notification preferences
+router.post("/saveNotificationPreferences", authentication, async (req, res) => {
+    try {
+        const { emailNotifications } = req.body;
+        const user = await User.findOne({ email: req.email });
+        
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Add emailNotifications field if it doesn't exist
+        user.emailNotifications = emailNotifications;
+        await user.save();
+
+        res.status(200).json({ message: "Notification preferences updated successfully" });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 module.exports = router;

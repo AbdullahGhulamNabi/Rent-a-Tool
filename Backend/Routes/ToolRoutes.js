@@ -5,6 +5,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const userMiddleware = require('../Middlewares/Authentication');
+const { sendToolRequestEmail } = require('../config/emailConfig');
 
 // Ensure uploads directory exists
 const uploadDir = 'public/uploads/tools';
@@ -259,6 +260,53 @@ router.delete('/:id', async (req, res) => {
 
         await Tool.findByIdAndDelete(req.params.id);
         res.status(200).json({ message: 'Tool deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Request a tool
+router.post('/:id/request', userMiddleware, async (req, res) => {
+    try {
+        const tool = await Tool.findById(req.params.id)
+            .populate('owner', 'firstName lastName email emailNotifications');
+        
+        if (!tool) {
+            return res.status(404).json({ message: 'Tool not found' });
+        }
+
+        const user = await User.findOne({ email: req.email });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Check if user has already requested this tool
+        const existingRequest = user.toolsRequested.find(
+            request => request.tool.toString() === tool._id.toString()
+        );
+
+        if (existingRequest) {
+            return res.status(400).json({ message: 'You have already requested this tool' });
+        }
+
+        // Add tool to user's requested tools
+        user.toolsRequested.push({
+            tool: tool._id,
+            status: 'pending'
+        });
+        await user.save();
+
+        // Send email notification to tool owner if they have enabled it
+        if (tool.owner.emailNotifications) {
+            await sendToolRequestEmail(
+                tool.owner.email,
+                tool.name,
+                `${user.firstName} ${user.lastName}`,
+                new Date().toLocaleDateString()
+            );
+        }
+
+        res.status(200).json({ message: 'Tool request submitted successfully' });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

@@ -1,19 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Api_Route } from '../../config'; // Ensure correct import
-import toolService from '../../services'; // Ensure correct import
+// import toolService from '../../services'; // Ensure correct import
+import { toolService } from '../../services';
 
 const Tools = () => {
   const [tools, setTools] = useState([]);
   const [visibleCount, setVisibleCount] = useState(8);
+  // const [tools, setTools] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
+    const fetchTools = async () => {
+      try {
+        const fetchedTools = await toolService.getAllTools();
+        setTools(fetchedTools);
+      } catch (err) {
+        setError(err.message || 'Failed to fetch tools');
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchTools();
   }, []);
+
+  function handleNavigate(toolId) {
+    navigate(`/ToolDescription/${toolId}`);
+  }
 
   const fetchTools = async () => {
     try {

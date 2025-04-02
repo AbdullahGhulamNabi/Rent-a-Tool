@@ -201,6 +201,21 @@ export const toolService = {
         } catch (error) {
             throw new Error(error.message || 'Failed to return tool');
         }
+    },
+
+    // Request a tool
+    requestTool: async (toolId) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/tools/${toolId}/request`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': localStorage.getItem("jwt_token")
+                }
+            });
+            return handleResponse(response);
+        } catch (error) {
+            throw new Error(error.message || 'Failed to request tool');
+        }
     }
 };
 

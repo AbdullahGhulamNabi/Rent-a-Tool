@@ -111,7 +111,7 @@ const RoutesOfRent_a_Tool = createBrowserRouter([
         path: "ToolDescription",
         element: <Outlet />,
         children: [
-          { index: true, element: <ToolDetail /> },
+          { path: ":toolId", element: <ToolDetail /> },
           {
             path: "Chat",
             element: (
