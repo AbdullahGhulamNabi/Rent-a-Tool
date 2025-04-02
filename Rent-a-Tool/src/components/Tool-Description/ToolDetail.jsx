@@ -3,7 +3,7 @@ import Rating from "@mui/material/Rating";
 import ProfileIcon from "../../assets/ToolDetail/profile.jpeg";
 import ChatIcon from "@mui/icons-material/Chat";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../App";
 // import { useContext, useState } from "react";
 import { useLocation } from "react-router-dom";
