@@ -204,21 +204,16 @@ const ToolDetailsLanding = () => {
 
   const handleRequestTool = async () => {
     try {
-      const response = await fetch(`${Api_Route}/api/tools/request-tool`, {
+      const response = await fetch(`${Api_Route}/api/tools/${tool._id}/request`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': localStorage.getItem('jwt_token')
-        },
-        body: JSON.stringify({
-          toolId: tool._id,
-          userId: state._id,
-          ownerId: tool.owner._id
-        })
+        }
       });
 
       if (response.ok) {
-        toast.success('Tool request sent successfully!', {
+        toast.success('Tool request sent successfully! The owner will be notified.', {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -227,7 +222,8 @@ const ToolDetailsLanding = () => {
           draggable: true,
         });
       } else {
-        toast.error('Failed to send tool request', {
+        const errorData = await response.json();
+        toast.error(errorData.message || 'Failed to send tool request', {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,

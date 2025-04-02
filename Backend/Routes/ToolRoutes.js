@@ -268,26 +268,37 @@ router.delete('/:id', async (req, res) => {
 // Request a tool
 router.post('/:id/request', userMiddleware, async (req, res) => {
     try {
+        console.log('Tool request received for ID:', req.params.id);
+        
         const tool = await Tool.findById(req.params.id)
             .populate('owner', 'firstName lastName email emailNotifications');
         
         if (!tool) {
+            console.log('Tool not found');
             return res.status(404).json({ message: 'Tool not found' });
         }
 
         const user = await User.findOne({ email: req.email });
         if (!user) {
+            console.log('User not found');
             return res.status(404).json({ message: 'User not found' });
         }
 
+        console.log('Tool owner email notifications:', tool.owner.emailNotifications);
+        console.log('Tool owner email:', tool.owner.email);
+
+        // Commenting out duplicate request check
+        /*
         // Check if user has already requested this tool
         const existingRequest = user.toolsRequested.find(
             request => request.tool.toString() === tool._id.toString()
         );
 
         if (existingRequest) {
+            console.log('User has already requested this tool');
             return res.status(400).json({ message: 'You have already requested this tool' });
         }
+        */
 
         // Add tool to user's requested tools
         user.toolsRequested.push({
@@ -295,19 +306,30 @@ router.post('/:id/request', userMiddleware, async (req, res) => {
             status: 'pending'
         });
         await user.save();
+        console.log('Tool request saved to user');
 
         // Send email notification to tool owner if they have enabled it
         if (tool.owner.emailNotifications) {
-            await sendToolRequestEmail(
+            console.log('Attempting to send email notification...');
+            const emailSent = await sendToolRequestEmail(
                 tool.owner.email,
                 tool.name,
                 `${user.firstName} ${user.lastName}`,
                 new Date().toLocaleDateString()
             );
+            
+            if (emailSent) {
+                console.log('Email sent successfully');
+            } else {
+                console.log('Failed to send email');
+            }
+        } else {
+            console.log('Email notifications are disabled for this user');
         }
 
         res.status(200).json({ message: 'Tool request submitted successfully' });
     } catch (error) {
+        console.error('Error in tool request:', error);
         res.status(500).json({ message: error.message });
     }
 });

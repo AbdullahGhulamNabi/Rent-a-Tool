@@ -202,10 +202,27 @@ export default function Modal({ onClose }) {
         if (!response.ok) {
           throw new Error('Failed to save notification preferences');
         }
+
+        toast.success('Notification preferences updated successfully!', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
       } catch (error) {
         console.error('Error saving notification preferences:', error);
         // Revert the state if save failed
         setNotifications(notifications);
+        toast.error('Failed to update notification preferences', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
       }
     }
   };
@@ -326,22 +343,11 @@ export default function Modal({ onClose }) {
                   type="checkbox"
                   checked={true} // Always checked
                   disabled // Prevents user from unchecking
-                  // checked={notifications.web}
-                  onChange={() => handleNotificationChange("web")}
                   className="w-5 h-5 text-nav focus:ring-2 focus:ring-nav"
                 />
                 <span>Notifications as 'My Rentals' Only</span>
               </label>
             </div>
-            <button
-              onClick={() => {
-                savePersonalInfo(); 
-                // alert("clicker")
-              }}
-              className="w-full bg-imageBG text-black px-4 py-2 rounded-md hover:bg-nav transition"
-            >
-              Save Changes
-            </button>
           </>
         )}
         {/* 
