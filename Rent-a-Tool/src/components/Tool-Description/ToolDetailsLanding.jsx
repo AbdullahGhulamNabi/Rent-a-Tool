@@ -21,8 +21,22 @@ const ToolDetailsLanding = () => {
  
   const location = useLocation();
   const { tool } = location.state || {}; // Get tool data
+
+  // Early return if no tool data
   if (!tool) {
-    return <p>No tool found!</p>;
+    return (
+      <div className="min-h-screen bg-imageBG flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-xl text-gray-700 mb-4">No tool found!</p>
+          <button
+            onClick={() => navigate('/')}
+            className="bg-HomeText text-white px-6 py-2 rounded hover:bg-nav transition"
+          >
+            Go to Home
+          </button>
+        </div>
+      </div>
+    );
   }
 
   // Debug user state
@@ -188,16 +202,61 @@ const ToolDetailsLanding = () => {
     }
   };
 
-  // function orderTool() {
-  //   if (state) {
-  //     navigate("/ToolDescription/Order");
-  //   } else {
-  //     setShowMessage(true);
-  //     document.body.style.overflow = "hidden"
-  //   }
-  // }
+  const handleRequestTool = async () => {
+    try {
+      const response = await fetch(`${Api_Route}/api/tools/request-tool`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': localStorage.getItem('jwt_token')
+        },
+        body: JSON.stringify({
+          toolId: tool._id,
+          userId: state._id,
+          ownerId: tool.owner._id
+        })
+      });
+
+      if (response.ok) {
+        toast.success('Tool request sent successfully!', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+      } else {
+        toast.error('Failed to send tool request', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+      }
+    } catch (error) {
+      console.error('Error requesting tool:', error);
+      toast.error('An error occurred while requesting the tool', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    }
+  };
 
   const [value, setValue] = React.useState(5);
+
+  // Handle login navigation
+  const handleLoginNavigation = () => {
+    // Store the current tool data in localStorage before navigation
+    localStorage.setItem('toolToRent', JSON.stringify(tool));
+    navigate("/login");
+  };
 
   return (
     <div className="min-h-screen bg-imageBG">
@@ -289,18 +348,50 @@ const ToolDetailsLanding = () => {
               onClick={handleNavigate}
               className="w-[150px] sm:w-[270px] mt-4 bg-HomeText text-white py-2 rounded flex items-center justify-center space-x-2 gap-2"
             >
-              <ChatIcon className="w-7 h-7 " />
+              <ChatIcon className="w-7 h-7" />
               <span>Chat with Owner</span>
             </button>
 
-            <button
-              // onClick={orderTool}
-              onClick={makePayment}
-              className="w-[150px] sm:w-[270px] mt-4 bg-HomeText text-white py-2 rounded flex items-center justify-center space-x-2 gap-2"
-            >
-              <ShoppingCartIcon className="w-7 h-7 " />
-              <span>Order Tool</span>
-            </button>
+            {state ? (
+              tool.owner._id === state._id ? (
+                <button
+                  onClick={() => navigate(`/dashboard`)}
+                  className="w-[150px] sm:w-[270px] mt-4 bg-HomeText text-white py-2 rounded flex items-center justify-center space-x-2 gap-2"
+                >
+                  Go to Dashboard
+                </button>
+              ) : tool.rented ? (
+                <button
+                  disabled
+                  className="w-[150px] sm:w-[270px] mt-4 bg-HomeText text-white py-2 rounded flex items-center justify-center space-x-2 gap-2 cursor-not-allowed"
+                >
+                  Tool is not available for rent
+                </button>
+              ) : (
+                tool.price === 0 ? (
+                  <button
+                    onClick={handleRequestTool}
+                    className="w-[150px] sm:w-[270px] mt-4 bg-HomeText text-white py-2 rounded flex items-center justify-center space-x-2 gap-2"
+                  >
+                    Request Tool
+                  </button>
+                ) : (
+                  <button
+                    onClick={makePayment}
+                    className="w-[150px] sm:w-[270px] mt-4 bg-HomeText text-white py-2 rounded flex items-center justify-center space-x-2 gap-2"
+                  >
+                    <ShoppingCartIcon className="w-7 h-7" />
+                    <span>Order Tool</span>
+                  </button>
+                )
+              )
+            ) : (
+              <button
+                className="w-[150px] sm:w-[270px] mt-4 bg-HomeText text-white py-2 rounded flex items-center justify-center space-x-2 gap-2"
+              >
+                Login to Rent
+              </button>
+            )}
           </div>
         </div>
       </div>
