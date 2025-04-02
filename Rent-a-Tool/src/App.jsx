@@ -31,7 +31,9 @@ import { createContext, useReducer, useState, useEffect} from "react";
 import { reducer, initialState } from "./Reducer/reducer"; 
 import ToolDetailsLanding from "./components/Tool-Description/ToolDetailsLanding";
 import TermsAndPolicy from "./components/FeedBack and Help/TermsAndPolicy";
-// import { create } from "@mui/material/styles/createTransitions";
+import { Api_Route } from "./config";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function PrivateRoute({ children }) {
   const token = localStorage.getItem("jwt_token");
@@ -213,18 +215,56 @@ const RoutesOfRent_a_Tool = createBrowserRouter([
 
 export const UserContext = createContext();
 function App() {
-  const storedState = JSON.parse(localStorage.getItem("userState"));
-  const [state, dispatch] = useReducer(reducer, storedState || initialState);
-  
+  const [state, dispatch] = useReducer(reducer, null);
+
   useEffect(() => {
-    localStorage.setItem("userState", JSON.stringify(state));
-  }, [state])
+    const validateToken = async () => {
+      const token = localStorage.getItem("jwt_token");
+      if (token) {
+        try {
+          const response = await fetch(`${Api_Route}/api/user/profile`, {
+            headers: {
+              Authorization: token,
+            },
+          });
+
+          if (response.ok) {
+            const userData = await response.json();
+            dispatch({ type: "USER", payload: userData });
+          } else {
+            // If token is invalid, clear localStorage
+            localStorage.removeItem("jwt_token");
+            localStorage.removeItem("userState");
+            dispatch({ type: "LOGOUT" });
+          }
+        } catch (error) {
+          console.error("Error validating token:", error);
+          localStorage.removeItem("jwt_token");
+          localStorage.removeItem("userState");
+          dispatch({ type: "LOGOUT" });
+        }
+      }
+    };
+
+    validateToken();
+  }, []);
+
   return (
-    <>
-      <UserContext.Provider value={{ state, dispatch }}>
-        <RouterProvider router={RoutesOfRent_a_Tool} />
-      </UserContext.Provider>
-    </>
+    <UserContext.Provider value={{ state, dispatch }}>
+      <RouterProvider router={RoutesOfRent_a_Tool} />
+      <ToastContainer
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+    </UserContext.Provider>
   );
 }
 

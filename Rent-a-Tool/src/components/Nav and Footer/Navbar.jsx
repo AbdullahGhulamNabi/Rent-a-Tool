@@ -126,6 +126,10 @@ function Navbar({ isLoggedIn }) {
     navigate("/Dashboard");
   }
 
+  function Homepage() {
+    navigate("/");
+  }
+
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       navigate(state ? "/Dashboard/Tools" : "/Tools");
@@ -158,7 +162,7 @@ function Navbar({ isLoggedIn }) {
             </button>
           </>
         ) : (
-          <button>
+          <button onClick={Homepage}>
             <img src={home} alt="Home" className="h-7 w-7 mx-2" />
           </button>
         )}
