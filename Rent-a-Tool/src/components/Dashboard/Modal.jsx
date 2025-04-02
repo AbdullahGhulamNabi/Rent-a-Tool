@@ -115,6 +115,19 @@ export default function Modal({ onClose }) {
 
   async function updatePassword() {
     try {
+      // Check if any password field is empty
+      if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmedNewPassword) {
+        toast.error('Please fill in all password fields', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+        return; // Stop here if fields are empty
+      }
+
       const response = await fetch(
         `${Api_Route}/dashboard/Settings/updatePassword`,
         {
@@ -127,17 +140,39 @@ export default function Modal({ onClose }) {
         }
       );
       
-      closeSubModal(); 
-      closeSettingModal();
-      handleLogout();
-      onClose();
       if (response.ok) {
-        console.log("Password updated successfully");
+        toast.success('Password updated successfully!', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+        closeSubModal(); 
+        closeSettingModal();
+        handleLogout();
+        onClose();
       } else {
-        console.error("Failed to update Password");
+        toast.error('Failed to update password', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
       }
     } catch (error) {
       console.error("Error updating Password:", error);
+      toast.error('An error occurred while updating password', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     }
   }
 
@@ -277,7 +312,7 @@ export default function Modal({ onClose }) {
             <button
               onClick={() => {
                 savePersonalInfo(); 
-                alert("clicker")
+                // alert("clicker")
               }}
               className="w-full bg-imageBG text-black px-4 py-2 rounded-md hover:bg-nav transition"
             >
