@@ -107,7 +107,7 @@ const ToolDetailsLanding = () => {
       }
 
       // Check if price is too low (less than 140 PKR)
-      if (toolPrice < 140) {
+      if (toolPrice < 150) {
         toast.error('This tool cannot be rented through the payment system due to its low price. Please contact the owner directly.', {
           position: "top-right",
           autoClose: 5000,

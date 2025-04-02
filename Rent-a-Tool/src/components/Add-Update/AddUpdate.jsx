@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react'
 import cameraIcon from '../../assets/AddTool/camra.png'
 import { toolService } from '../../services'
 import { Api_Route } from '../../config';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AddUpdate = ({ onClose, toolToEdit = null }) => {
   const [formData, setFormData] = useState({
@@ -54,6 +56,24 @@ const AddUpdate = ({ onClose, toolToEdit = null }) => {
     setError('');
 
     try {
+      // Validate price if tool is for rent
+      if (isForRent) {
+        const price = Number(formData.price);
+        if (isNaN(price) || price < 150) {
+          toast.error('Tool price must be at least 150 PKR', {
+            position: "top-center",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            theme: "light"
+          });
+          setLoading(false);
+          return;
+        }
+      }
+
       const submitData = {
         ...formData,
         price: isForRent ? formData.price : 0
@@ -61,15 +81,45 @@ const AddUpdate = ({ onClose, toolToEdit = null }) => {
 
       if (toolToEdit) {
         await toolService.updateTool(toolToEdit._id, submitData);
+        toast.success('Tool updated successfully!', {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "light"
+        });
       } else {
         await toolService.createTool(submitData);
-    window.location.reload();
-
+        toast.success('Tool added successfully!', {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "light"
+        });
       }
 
-      onClose();
+      // Wait for toast to show before closing
+      setTimeout(() => {
+        onClose();
+        window.location.reload();
+      }, 1000);
+
     } catch (err) {
       setError(err.message || 'Something went wrong');
+      toast.error(err.message || 'Something went wrong', {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "light"
+      });
     } finally {
       setLoading(false);
     }
@@ -77,6 +127,18 @@ const AddUpdate = ({ onClose, toolToEdit = null }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+      <ToastContainer
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <div className="bg-white rounded-lg shadow-lg p-6 w-[380px] relative">
         <button
           onClick={onClose}
@@ -167,7 +229,7 @@ const AddUpdate = ({ onClose, toolToEdit = null }) => {
               {isForRent && (
                 <div className="mt-4">
                   <label className="block text-sm font-medium text-gray-700">
-                    Rent Price
+                    Rent Price (Minimum 150 PKR)
                   </label>
                   <input
                     type="number"
@@ -177,8 +239,11 @@ const AddUpdate = ({ onClose, toolToEdit = null }) => {
                     placeholder="Enter rent price in rupees"
                     className="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:border-imageBG"
                     required={isForRent}
-                    min="0"
+                    min="150"
                   />
+                  <p className="text-sm text-gray-500 mt-1">
+                    Minimum price required: 150 PKR
+                  </p>
                 </div>
               )}
             </div>
