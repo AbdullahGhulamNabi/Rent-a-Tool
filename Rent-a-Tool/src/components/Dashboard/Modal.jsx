@@ -70,8 +70,9 @@ export default function Modal({ onClose }) {
   async function savePersonalInfo() {
     try {
       const token = localStorage.getItem("jwt_token");
-      const response = await fetch(`${Api_Route}/api/user/update-profile`, {
-        method: "PUT",
+      console.log("working")
+      const response = await fetch(`${Api_Route}/dashboard/Settings/savePersonalInfo`, {
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
           Authorization: token,
@@ -84,6 +85,7 @@ export default function Modal({ onClose }) {
           emailNotifications: notifications.email,
         }),
       });
+      console.log("response",response)
 
       if (!response.ok) {
         throw new Error("Failed to update profile");
@@ -446,9 +448,12 @@ export default function Modal({ onClose }) {
                 className="w-full px-4 py-2 border rounded-md border-gray-300 focus:ring-2 focus:bg-nav focus:outline-none"
               />
             </div>
+            <p>
+              Note: You will be logged out after saving the new password
+            </p>
             <button
               onClick={updatePassword}
-              className="w-full bg-imageBG text-black px-4 py-2 rounded-md hover:bg-nav transition"
+              className="w-full mt-4 bg-imageBG text-black px-4 py-2 rounded-md hover:bg-nav transition"
             >
               Save Changes
             </button>
