@@ -128,15 +128,15 @@ function Dashboard() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const token = localStorage.getItem("jwt_token");
+        // const token = localStorage.getItem("jwt_token");
         if (!token) {
           navigate("/");
           return;
         }
 
-        const response = await fetch(`${Api_Route}/api/user/profile`, {
+        const response = await fetch(`${Api_Route}/dashboard/LoggedInUser/getProfileDetails`, {
           headers: {
-            Authorization: token,
+            Authorization: localStorage.getItem("jwt_token"),
           },
         });
 
