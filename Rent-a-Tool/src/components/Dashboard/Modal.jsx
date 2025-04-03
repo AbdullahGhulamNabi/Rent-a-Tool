@@ -93,8 +93,37 @@ export default function Modal({ onClose }) {
 
   async function savePersonalInfo() {
     try {
+      // Check if all fields are filled
       if (!formData.firstName || !formData.lastName || !formData.userPhone || !formData.userPostalCode) {
         toast.error('Please fill in all fields', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+        return;
+      }
+
+      // Validate phone number (must be 11 digits)
+      const phoneRegex = /^\d{11}$/;
+      if (!phoneRegex.test(formData.userPhone)) {
+        toast.error('Phone number must be exactly 11 digits', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+        return;
+      }
+
+      // Validate postal code (must be 4 digits)
+      const postalCodeRegex = /^\d{4}$/;
+      if (!postalCodeRegex.test(formData.userPostalCode)) {
+        toast.error('Postal code must be exactly 4 digits', {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
