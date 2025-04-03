@@ -16,8 +16,7 @@ const MyTools = () => {
   const navigate = useNavigate();
 
   const handleCardClick = (tool) => {
-    navigate("/ToolDescription", { state: { tool } });
-
+    navigate(`/ToolDescription/${tool._id}`);
   };
 
 

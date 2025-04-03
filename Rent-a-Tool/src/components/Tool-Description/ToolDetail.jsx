@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import Rating from "@mui/material/Rating";
 import ProfileIcon from "../../assets/ToolDetail/profile.jpeg";
 import ChatIcon from "@mui/icons-material/Chat";
@@ -6,12 +6,13 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 // import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../App";
 // import { useContext, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Api_Route } from "../../config";
-import { Outlet, useNavigate, useParams } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 // import { UserContext } from "../../App";
 // import { useContext } from "react";
 import { toolService } from "../../services";
+import { toast } from 'react-toastify';
 
 const ToolDetail = () => {
   const { state, dispatch } = useContext(UserContext);
@@ -32,18 +33,24 @@ const ToolDetail = () => {
   useEffect(() => {
     const fetchTool = async () => {
       try {
+        if (!toolId) {
+          throw new Error('Tool ID is required');
+        }
         const toolData = await toolService.getToolById(toolId);
+        if (!toolData) {
+          throw new Error('Tool not found');
+        }
         setTool(toolData);
       } catch (err) {
+        console.error('Error fetching tool:', err);
         setError(err.message || 'Failed to fetch tool details');
+        toast.error(err.message || 'Failed to fetch tool details');
       } finally {
         setLoading(false);
       }
     };
 
-    if (toolId) {
-      fetchTool();
-    }
+    fetchTool();
   }, [toolId]);
 
   function handleNavigate() {
