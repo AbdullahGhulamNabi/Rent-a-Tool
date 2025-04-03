@@ -69,23 +69,31 @@ export default function Modal({ onClose }) {
 
   async function savePersonalInfo() {
     try {
-      const token = localStorage.getItem("jwt_token");
-      console.log("working")
+      if (!formData.firstName || !formData.lastName || !formData.userPhone || !formData.userPostalCode) {
+        toast.error('Please fill in all fields', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+        return;
+      }
+
       const response = await fetch(`${Api_Route}/dashboard/Settings/savePersonalInfo`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          Authorization: token,
+          Authorization: localStorage.getItem("jwt_token"),
         },
         body: JSON.stringify({
-          name: `${formData.firstName} ${formData.lastName}`,
-          email: "",
-          phone: formData.userPhone,
-          address: formData.userPostalCode,
-          emailNotifications: notifications.email,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          userPhone: formData.userPhone,
+          userPostalCode: formData.userPostalCode
         }),
       });
-      console.log("response",response)
 
       if (!response.ok) {
         throw new Error("Failed to update profile");
@@ -352,44 +360,6 @@ export default function Modal({ onClose }) {
             </div>
           </>
         )}
-        {/* 
-        {activeModal === "theme" && (
-          <>
-            <h3 className="text-lg font-semibold mb-4">Theme Settings</h3>
-            <p className="text-gray-600 mb-4">Choose your preferred theme.</p>
-
-            <div className="space-y-2">
-              {["light", "dark", "system"].map((option) => (
-                <button
-                key={option}
-                onClick={() => setTheme(option)}
-                className={`w-full px-4 py-2 rounded-md transition border ${
-                  theme === option
-                  ? "bg-imageBG text-white "
-                  : "bg-gray-100 text-black border-gray-300"
-                  }`}
-                  aria-label={`Select ${option} theme`}
-                >
-                  {option === "light"
-                    ? "Light Theme"
-                    : option === "dark"
-                    ? "Dark Theme"
-                    : "System Theme"}
-                </button>
-              ))}
-            </div>
-
-            <div className="mt-4 flex justify-end">
-              <button
-                onClick={closeSubModal}
-                className="bg-imageBG text-white px-4 py-2 rounded-md transition"
-              >
-                Save
-              </button>
-            </div>
-          </>
-        )}
-        */}
         
         {activeModal === "change-password" && (
           <>
