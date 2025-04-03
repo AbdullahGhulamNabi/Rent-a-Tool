@@ -87,17 +87,26 @@ function SignUp({ onClose, onLoginClick }) {
       if (response.ok) {
         // Show success message
         setError("");
-        toast.success(data.msg || "Signup successful! Please check your email to verify your account.");
+        toast.success("Signup successful! Please check your email to verify your account.", {
+          duration: 5000,
+          position: 'top-center',
+        });
         onLoginClick(); // Switch to login modal
       } else {
         // Show specific error message from server
         setError(data.msg || "Signup failed. Please try again.");
-        toast.error(data.msg || "Signup failed. Please try again.");
+        toast.error(data.msg || "Signup failed. Please try again.", {
+          duration: 5000,
+          position: 'top-center',
+        });
       }
     } catch (error) {
       console.error("Error during signup:", error);
       setError("An error occurred. Please try again later.");
-      toast.error("An error occurred. Please try again later.");
+      toast.error("An error occurred. Please try again later.", {
+        duration: 5000,
+        position: 'top-center',
+      });
     }
   }
 
