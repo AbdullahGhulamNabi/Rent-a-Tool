@@ -120,8 +120,8 @@ export default function Modal({ onClose }) {
         return;
       }
 
-      // Validate postal code (must be 4 digits)
-      const postalCodeRegex = /^\d{4}$/;
+      // Validate postal code (must be 5 digits)
+      const postalCodeRegex = /^\d{5}$/;
       if (!postalCodeRegex.test(formData.userPostalCode)) {
         toast.error('Postal code must be exactly 4 digits', {
           position: "top-right",
