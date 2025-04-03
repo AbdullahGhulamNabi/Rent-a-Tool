@@ -6,9 +6,30 @@ const RentalDurationModal = ({ isOpen, onClose, onConfirm, toolPrice }) => {
 
   if (!isOpen) return null;
 
+  const handleRentalDaysChange = (e) => {
+    const value = e.target.value;
+    // Allow empty value for backspace
+    if (value === '') {
+      setRentalDays('');
+      return;
+    }
+    // Convert to number and validate
+    const numValue = parseInt(value);
+    if (!isNaN(numValue) && numValue > 0) {
+      setRentalDays(numValue);
+    }
+  };
+
   const handleConfirm = () => {
-    if (rentalDays < 1) {
-      toast.error('Please enter a valid number of days');
+    if (!rentalDays || rentalDays < 1) {
+      toast.error('Please enter a valid number of days', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
       return;
     }
     onConfirm(rentalDays);
@@ -29,8 +50,10 @@ const RentalDurationModal = ({ isOpen, onClose, onConfirm, toolPrice }) => {
             type="number"
             min="1"
             value={rentalDays}
-            onChange={(e) => setRentalDays(Math.max(1, parseInt(e.target.value) || 1))}
+            onChange={handleRentalDaysChange}
             className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            inputMode="numeric"
+            pattern="[0-9]*"
           />
         </div>
 
