@@ -1,21 +1,22 @@
-import React from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Rating from "@mui/material/Rating";
 import ProfileIcon from "../../assets/ToolDetail/profile.jpeg";
 import ChatIcon from "@mui/icons-material/Chat";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../App";
-import { useContext, useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Api_Route } from "../../config";
 import { loadStripe } from "@stripe/stripe-js";
 import { CircularProgress } from "@mui/material";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import RentalDurationModal from './RentalDurationModal';
 
 const ToolDetailsLanding = () => {
   const { state, dispatch } = useContext(UserContext);
   const [showMessage, setShowMessage] = useState(false);
+  const [showRentalModal, setShowRentalModal] = useState(false);
   const [stripe, setStripe] = useState(null);
   const navigate = useNavigate();
  
@@ -74,7 +75,21 @@ const ToolDetailsLanding = () => {
     }
   }
 
-  const makePayment = async () => {
+  const handleOrderClick = () => {
+    if (!state) {
+      setShowMessage(true);
+      document.body.style.overflow = "hidden";
+      return;
+    }
+    setShowRentalModal(true);
+  };
+
+  const handleRentalConfirm = async (rentalDays) => {
+    setShowRentalModal(false);
+    await makePayment(rentalDays);
+  };
+
+  const makePayment = async (rentalDays) => {
     // Check if user is logged in
     const token = localStorage.getItem("jwt_token");
     if (!token) {
@@ -100,6 +115,7 @@ const ToolDetailsLanding = () => {
       console.log('Tool data:', tool);
       console.log('User state:', state);
       console.log('JWT Token:', token);
+      console.log('Rental Days:', rentalDays);
 
       // Get user ID from state or localStorage
       let userId = state?._id;
@@ -133,21 +149,25 @@ const ToolDetailsLanding = () => {
         return;
       }
 
+      const totalPrice = toolPrice * rentalDays;
+
       const body = {
         toolId: tool._id,
         userId: userId,
         toolName: tool.name,
-        toolPrice: toolPrice,
+        toolPrice: totalPrice,
+        rentalDays: rentalDays
       };
       console.log('Request body:', body);
 
       // Validate required fields
-      if (!body.toolId || !body.userId || !body.toolName || !body.toolPrice) {
+      if (!body.toolId || !body.userId || !body.toolName || !body.toolPrice || !body.rentalDays) {
         console.error('Missing required fields:', {
           toolId: !!body.toolId,
           userId: !!body.userId,
           toolName: !!body.toolName,
-          toolPrice: !!body.toolPrice
+          toolPrice: !!body.toolPrice,
+          rentalDays: !!body.rentalDays
         });
         throw new Error('Missing required payment information');
       }
@@ -273,6 +293,14 @@ const ToolDetailsLanding = () => {
           </div>
         </div>
       )}
+
+      <RentalDurationModal
+        isOpen={showRentalModal}
+        onClose={() => setShowRentalModal(false)}
+        onConfirm={handleRentalConfirm}
+        toolPrice={tool?.price || 0}
+      />
+
       <div className="w-full flex justify-center sm:p-5  ">
         {/* detail section */}
         <div className="min-w-[300px] max-w-[1000px] p-5 bg-[#ffffff] shadow-2xl rounded-lg focus:outline-none focus:ring-0">
@@ -373,7 +401,7 @@ const ToolDetailsLanding = () => {
                   </button>
                 ) : (
                   <button
-                    onClick={makePayment}
+                    onClick={handleOrderClick}
                     className="w-[150px] sm:w-[270px] mt-4 bg-HomeText text-white py-2 rounded flex items-center justify-center space-x-2 gap-2"
                   >
                     <ShoppingCartIcon className="w-7 h-7" />

@@ -32,9 +32,17 @@ const users = new mongoose.Schema({
   ],
   toolsRented: [
     {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Tools",
-    },
+      tool: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Tools'
+      },
+      rentedAt: {
+        type: Date
+      },
+      rentedUntil: {
+        type: Date
+      }
+    }
   ],
   toolsRequested: [
     {
@@ -84,6 +92,9 @@ const tools = new mongoose.Schema({
       ref: 'Users'
     },
     rentedAt: {
+      type: Date
+    },
+    rentedUntil: {
       type: Date
     }
   }

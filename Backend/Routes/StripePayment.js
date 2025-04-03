@@ -17,16 +17,18 @@ router.post("/create-checkout-session", async (req, res) => {
       toolId: req.body.toolId,
       userId: req.body.userId,
       toolName: req.body.toolName,
-      toolPrice: req.body.toolPrice
+      toolPrice: req.body.toolPrice,
+      rentalDays: req.body.rentalDays
     });
 
     // Validate required fields
-    if (!req.body.toolId || !req.body.userId || !req.body.toolName || !req.body.toolPrice) {
+    if (!req.body.toolId || !req.body.userId || !req.body.toolName || !req.body.toolPrice || !req.body.rentalDays) {
       console.error('Missing required fields:', {
         toolId: !!req.body.toolId,
         userId: !!req.body.userId,
         toolName: !!req.body.toolName,
-        toolPrice: !!req.body.toolPrice
+        toolPrice: !!req.body.toolPrice,
+        rentalDays: !!req.body.rentalDays
       });
       return res.status(400).json({ error: "Missing required fields" });
     }
@@ -64,7 +66,7 @@ router.post("/create-checkout-session", async (req, res) => {
             currency: "usd", // Changed to USD for Stripe
             product_data: {
               name: req.body.toolName,
-              description: `Rental for ${req.body.toolName} (${priceInPKR} PKR)`
+              description: `Rental for ${req.body.toolName} (${req.body.rentalDays} days)`
             },
             unit_amount: Math.round(priceInUSD * 100), // Convert to cents
           },
@@ -77,7 +79,8 @@ router.post("/create-checkout-session", async (req, res) => {
       metadata: {
         toolId: req.body.toolId,
         userId: req.body.userId,
-        originalPricePKR: priceInPKR
+        originalPricePKR: priceInPKR,
+        rentalDays: req.body.rentalDays
       },
     });
 
@@ -107,19 +110,29 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
         const session = event.data.object;
         
         try {
+            // Calculate rental end date
+            const rentalStartDate = new Date();
+            const rentalEndDate = new Date();
+            rentalEndDate.setDate(rentalEndDate.getDate() + parseInt(session.metadata.rentalDays));
+
             // Update tool status
             await Tool.findByIdAndUpdate(session.metadata.toolId, {
                 rented: true,
                 rentedTo: {
                     user: session.metadata.userId,
-                    rentedAt: new Date()
+                    rentedAt: rentalStartDate,
+                    rentedUntil: rentalEndDate
                 }
             });
 
             // Create rental record
             await User.findByIdAndUpdate(session.metadata.userId, {
                 $push: {
-                    toolsRented: session.metadata.toolId
+                    toolsRented: {
+                        tool: session.metadata.toolId,
+                        rentedAt: rentalStartDate,
+                        rentedUntil: rentalEndDate
+                    }
                 }
             });
 
