@@ -70,4 +70,21 @@ router.post("/saveNotificationPreferences", authentication, async (req, res) => 
     }
 });
 
+// Get notification preferences
+router.get("/getNotificationPreferences", authentication, async (req, res) => {
+    try {
+        const user = await User.findOne({ email: req.email });
+        
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.status(200).json({
+            emailNotifications: user.emailNotifications
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 module.exports = router;

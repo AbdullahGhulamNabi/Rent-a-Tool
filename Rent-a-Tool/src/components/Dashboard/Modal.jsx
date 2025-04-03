@@ -39,6 +39,30 @@ export default function Modal({ onClose }) {
     }
   }, [navigate]);
 
+  useEffect(() => {
+    const fetchNotificationPreferences = async () => {
+      try {
+        const response = await fetch(`${Api_Route}/dashboard/settings/getNotificationPreferences`, {
+          headers: {
+            'Authorization': localStorage.getItem("jwt_token")
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setNotifications(prev => ({
+            ...prev,
+            email: data.emailNotifications
+          }));
+        }
+      } catch (error) {
+        console.error('Error fetching notification preferences:', error);
+      }
+    };
+
+    fetchNotificationPreferences();
+  }, []);
+
   const closeSettingModal = () => {
     setSettingOpen(false);
     document.body.style.overflow = "auto";
