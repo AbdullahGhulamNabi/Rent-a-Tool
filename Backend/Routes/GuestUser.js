@@ -4,28 +4,95 @@ const { jwt_secret } = require("../config");
 const jwt = require("jsonwebtoken");
 const router = Router();
 const bcrypt = require("bcrypt");
+const crypto = require("crypto");
+const { sendVerificationEmail } = require("../config/emailConfig");
 
 // Signup post request
 router.post("/signUp", async (req, res) => {
-  const signUPDetails = req.body;
-  const userExists = await User.findOne({ email: signUPDetails.email });
-
-  if (!userExists) {
-    const newUser = await User.create({
-      firstName: signUPDetails.firstName,
-      lastName: signUPDetails.lastName,
+  try {
+    const signUPDetails = req.body;
+    console.log("Signup attempt with details:", {
       email: signUPDetails.email,
-      password: signUPDetails.password,
-      phoneNumber: signUPDetails.phoneNumber,
-      address: signUPDetails.address,
-      postalCode: signUPDetails.postalCode,
+      firstName: signUPDetails.firstName,
+      lastName: signUPDetails.lastName
     });
+
+    const userExists = await User.findOne({ email: signUPDetails.email });
+    console.log("User exists check:", userExists ? "Yes" : "No");
+
+    if (!userExists) {
+      // Generate verification token
+      const verificationToken = crypto.randomBytes(32).toString('hex');
+      const verificationTokenExpires = new Date();
+      verificationTokenExpires.setHours(verificationTokenExpires.getHours() + 24);
+
+      console.log("Creating new user...");
+      const newUser = await User.create({
+        firstName: signUPDetails.firstName,
+        lastName: signUPDetails.lastName,
+        email: signUPDetails.email,
+        password: signUPDetails.password,
+        phoneNumber: signUPDetails.phoneNumber,
+        address: signUPDetails.address,
+        postalCode: signUPDetails.postalCode,
+        emailVerificationToken: verificationToken,
+        emailVerificationTokenExpires: verificationTokenExpires
+      });
+      console.log("User created successfully");
+
+      try {
+        console.log("Sending verification email...");
+        await sendVerificationEmail(signUPDetails.email, verificationToken);
+        console.log("Verification email sent successfully");
+      } catch (emailError) {
+        console.error("Error sending verification email:", emailError);
+        // Don't fail the signup if email sending fails
+      }
+
+      res.json({
+        msg: "User created successfully. Please check your email to verify your account.",
+      });
+    } else {
+      console.log("User already exists");
+      res.status(400).json({
+        msg: "User already exists",
+      });
+    }
+  } catch (error) {
+    console.error("Signup error:", error);
+    res.status(500).json({
+      msg: "Signup failed. Please try again.",
+      error: error.message
+    });
+  }
+});
+
+// Verify email route
+router.get("/verify-email/:token", async (req, res) => {
+  try {
+    const token = req.params.token;
+    const user = await User.findOne({
+      emailVerificationToken: token,
+      emailVerificationTokenExpires: { $gt: new Date() }
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        msg: "Invalid or expired verification token"
+      });
+    }
+
+    user.isEmailVerified = true;
+    user.emailVerificationToken = null;
+    user.emailVerificationTokenExpires = null;
+    await user.save();
+
     res.json({
-      msg: "User created successfully",
+      msg: "Email verified successfully"
     });
-  } else {
-    res.status(400).json({
-      msg: "User already exists",
+  } catch (error) {
+    res.status(500).json({
+      msg: "Error verifying email"
     });
   }
 });
@@ -38,7 +105,14 @@ router.post("/login", async (req, res) => {
 
   if (!user) {
     res.status(400).json({
-      message : "User does not exist",
+      message: "User does not exist",
+    });
+    return;
+  }
+
+  if (!user.isEmailVerified) {
+    res.status(400).json({
+      message: "Please verify your email before logging in",
     });
     return;
   }
@@ -46,7 +120,7 @@ router.post("/login", async (req, res) => {
   const match_password = await bcrypt.compare(password, user.password);
   if (!match_password) {
     res.status(400).json({
-      message : "Invalid credentials",
+      message: "Invalid credentials",
     });
     return;
   }

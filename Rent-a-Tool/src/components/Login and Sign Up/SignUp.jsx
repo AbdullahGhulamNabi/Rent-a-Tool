@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import LoginModel from "./Login";
 import { useNavigate } from "react-router-dom";
 import { Api_Route } from "../../config";
+import toast, { Toaster } from 'react-hot-toast';
 
 function SignUp({ onClose, onLoginClick }) {
   const navigate = useNavigate();
@@ -39,7 +40,7 @@ function SignUp({ onClose, onLoginClick }) {
   
     if (!postalCode) {
       newErrors.postalCode = "Postal Code is required.";
-    } else if (!/^\d{4}$/.test(postalCode)) {
+    } else if (!/^\d{5}$/.test(postalCode)) {
       newErrors.postalCode = "Postal Code must be exactly 4 digits.";
     }
   
@@ -60,32 +61,49 @@ function SignUp({ onClose, onLoginClick }) {
   async function handleSignIn(event) {
     event.preventDefault();
 
-    if (!validateForm()) return
+    if (!validateForm()) return;
 
     try {
+      console.log("Sending signup request...");
       const response = await fetch(`${Api_Route}/signUp`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ firstName, lastName, email, password, phoneNumber, address, postalCode }),
+        body: JSON.stringify({ 
+          firstName, 
+          lastName, 
+          email, 
+          password, 
+          phoneNumber, 
+          address, 
+          postalCode 
+        }),
       });
 
       const data = await response.json();
+      console.log("Signup response:", data);
 
       if (response.ok) {
-        onLoginClick()
+        // Show success message
+        setError("");
+        toast.success(data.msg || "Signup successful! Please check your email to verify your account.");
+        onLoginClick(); // Switch to login modal
       } else {
-        setError(data.message || "SignUp failed. Please try again.");
+        // Show specific error message from server
+        setError(data.msg || "Signup failed. Please try again.");
+        toast.error(data.msg || "Signup failed. Please try again.");
       }
     } catch (error) {
-      console.error("Error during SignUp:", error);
+      console.error("Error during signup:", error);
       setError("An error occurred. Please try again later.");
+      toast.error("An error occurred. Please try again later.");
     }
   }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+      <Toaster position="top-center" />
       <div className="bg-white rounded-lg shadow-lg p-4 w-[380px] relative ">
         <button
           onClick={onClose}

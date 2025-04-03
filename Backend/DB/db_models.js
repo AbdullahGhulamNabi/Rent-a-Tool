@@ -20,6 +20,18 @@ const users = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  isEmailVerified: {
+    type: Boolean,
+    default: false
+  },
+  emailVerificationToken: {
+    type: String,
+    default: null
+  },
+  emailVerificationTokenExpires: {
+    type: Date,
+    default: null
+  },
   profilePhoto: {
     type : String,
     default: 'Default_ProfilePic.png'

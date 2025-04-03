@@ -23,6 +23,41 @@ transporter.verify(function(error, success) {
     }
 });
 
+// Function to send verification email
+const sendVerificationEmail = async (userEmail, verificationToken) => {
+    try {
+        const verificationUrl = `http://localhost:5173/verify-email/${verificationToken}`;
+        
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: userEmail,
+            subject: "Verify Your Email - Rent-a-Tool",
+            html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                    <h2 style="color: #333;">Welcome to Rent-a-Tool!</h2>
+                    <p>Thank you for signing up. Please verify your email address by clicking the button below:</p>
+                    <div style="text-align: center; margin: 20px 0;">
+                        <a href="${verificationUrl}" 
+                            style="background-color: #4CAF50; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block;">
+                            Verify Email
+                        </a>
+                    </div>
+                    <p>If the button above doesn't work, you can also copy and paste this link into your browser:</p>
+                    <p style="word-break: break-all;">${verificationUrl}</p>
+                    <p>This link will expire in 24 hours.</p>
+                    <p>If you didn't create an account, you can safely ignore this email.</p>
+                </div>
+            `,
+        };
+
+        await transporter.sendMail(mailOptions);
+        console.log("Verification email sent successfully");
+    } catch (error) {
+        console.error("Error sending verification email:", error);
+        throw error;
+    }
+};
+
 // Function to send tool request notification to tool owner
 const sendToolRequestEmail = async (ownerEmail, toolName, requesterName, requestDate) => {
     try {
@@ -58,5 +93,6 @@ const sendToolRequestEmail = async (ownerEmail, toolName, requesterName, request
 };
 
 module.exports = {
-    sendToolRequestEmail
+    sendToolRequestEmail,
+    sendVerificationEmail
 }; 
