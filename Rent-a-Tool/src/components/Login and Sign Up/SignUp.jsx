@@ -13,7 +13,7 @@ function SignUp({ onClose, onLoginClick }) {
   const [lastName, setLastName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [address, setAddress] = useState("");
-  const [postalCode, setPostelCode] = useState(0);
+  const [postalCode, setPostelCode] = useState("");
   const [error, setError] = useState("");
   const [errors, setErrors] = useState({})
 
@@ -39,8 +39,8 @@ function SignUp({ onClose, onLoginClick }) {
   
     if (!postalCode) {
       newErrors.postalCode = "Postal Code is required.";
-    } else if (!/^\d+$/.test(postalCode)) {
-      newErrors.postalCode = "Postal Code should contain only numbers.";
+    } else if (!/^\d{4}$/.test(postalCode)) {
+      newErrors.postalCode = "Postal Code must be exactly 4 digits.";
     }
   
     if (!password) {
