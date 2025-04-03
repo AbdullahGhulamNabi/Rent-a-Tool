@@ -73,26 +73,26 @@ function Login({onClose, onSignUpClick }) {
               required
             />
           </div>
-          <div className="mb-4">
+          <div className="mb-4 relative">
             <label className="block text-sm font-medium mb-1">Password</label>
             <input
-              type="password"
-              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:border-imageBG"
+              type={showPassword ? "text" : "password"}
+              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:border-imageBG pr-10"
               placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
-            {/* <button
-          type="button"
-          className="absolute inset-y-0 right-3 flex items-center text-gray-600"
-          onClick={() => setShowPassword(!showPassword)}
-        >
-          {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-        </button> */}
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-9 text-gray-500 hover:text-gray-700"
+            >
+              {showPassword ? "Hide" : "Show"}
+            </button>
           </div>
           {/* <NavLink to="/dashboard" className="no-underline">  */}
-        <button
+          <button
             type="submit"
             onClick={()=>{
               document.body.style.overflow = "auto"
