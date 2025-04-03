@@ -147,11 +147,11 @@ export default function Modal({ onClose }) {
   }
 
 
-  async function updatePassword() {
+  const updatePassword = async () => {
     try {
-      // Check if any password field is empty
-      if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmedNewPassword) {
-        toast.error('Please fill in all password fields', {
+      // Check if current password is provided
+      if (!passwordData.currentPassword) {
+        toast.error('Please enter your current password', {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -159,21 +159,78 @@ export default function Modal({ onClose }) {
           pauseOnHover: true,
           draggable: true,
         });
-        return; // Stop here if fields are empty
+        return;
       }
 
-      const response = await fetch(
-        `${Api_Route}/dashboard/Settings/updatePassword`,
-        {
-          method: "PATCH",
-          headers: {
-            Authorization: localStorage.getItem("jwt_token"),
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(passwordData),
-        }
-      );
+      // Check if new password is provided
+      if (!passwordData.newPassword) {
+        toast.error('Please enter a new password', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+        return;
+      }
+
+      // Check if confirm password is provided
+      if (!passwordData.confirmedNewPassword) {
+        toast.error('Please confirm your new password', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+        return;
+      }
+
+      // Check if new passwords match
+      if (passwordData.newPassword !== passwordData.confirmedNewPassword) {
+        toast.error('New passwords do not match', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+        return;
+      }
+
+      console.log('Sending password update request with data:', {
+        currentPassword: passwordData.currentPassword,
+        newPassword: passwordData.newPassword,
+        confirmedNewPassword: passwordData.confirmedNewPassword
+      });
+
+      const response = await fetch(`${Api_Route}/dashboard/Settings/updatePassword`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: localStorage.getItem("jwt_token"),
+        },
+        body: JSON.stringify({
+          currentPassword: passwordData.currentPassword,
+          newPassword: passwordData.newPassword,
+          confirmedNewPassword: passwordData.confirmedNewPassword
+        }),
+      });
+
+      console.log('Response status:', response.status);
       
+      // Check if response is JSON
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new Error("Server returned non-JSON response");
+      }
+
+      const data = await response.json();
+      console.log('Response data:', data);
+
       if (response.ok) {
         toast.success('Password updated successfully!', {
           position: "top-right",
@@ -183,12 +240,17 @@ export default function Modal({ onClose }) {
           pauseOnHover: true,
           draggable: true,
         });
-        closeSubModal(); 
+        // Close all modals before logging out
+        closeSubModal();
         closeSettingModal();
-        handleLogout();
         onClose();
+        // Add a small delay before logging out to ensure modals are closed
+        setTimeout(() => {
+          handleLogout();
+        }, 100);
       } else {
-        toast.error('Failed to update password', {
+        console.error('Password update failed:', data);
+        toast.error(data.message || 'Failed to update password. Please check your current password.', {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -198,8 +260,8 @@ export default function Modal({ onClose }) {
         });
       }
     } catch (error) {
-      console.error("Error updating Password:", error);
-      toast.error('An error occurred while updating password', {
+      console.error("Error updating password:", error);
+      toast.error('An error occurred while updating password. Please try again.', {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -208,10 +270,7 @@ export default function Modal({ onClose }) {
         draggable: true,
       });
     }
-  }
-
-
-
+  };
 
   const handleNotificationChange = async (type) => {
     const newNotifications = {
@@ -396,13 +455,12 @@ export default function Modal({ onClose }) {
                 Current Password
               </label>
               <input
-                  type="password"
-                  id="current-password"
-                  name="currentPassword"  
-                  placeholder="Enter your current password"
-                  value={passwordData.currentPassword}
-                  onChange={handlePasswordChange}
-
+                type="password"
+                id="current-password"
+                name="currentPassword"
+                placeholder="Enter your current password"
+                value={passwordData.currentPassword}
+                onChange={handlePasswordChange}
                 className="w-full px-4 py-2 border rounded-md border-gray-300 focus:ring-2 focus:bg-nav focus:outline-none"
               />
             </div>
@@ -414,13 +472,12 @@ export default function Modal({ onClose }) {
                 New Password
               </label>
               <input
-                  type="password"
-                  id="new-password"
-                  name="newPassword"  // Ensure correct name
-                  placeholder="Enter your updated password"
-                  value={passwordData.newPassword}
-                  onChange={handlePasswordChange}
-
+                type="password"
+                id="new-password"
+                name="newPassword"
+                placeholder="Enter your updated password"
+                value={passwordData.newPassword}
+                onChange={handlePasswordChange}
                 className="w-full px-4 py-2 border rounded-md border-gray-300 focus:ring-2 focus:bg-nav focus:outline-none"
               />
             </div>
@@ -434,15 +491,14 @@ export default function Modal({ onClose }) {
               <input
                 type="password"
                 id="confirm-password"
-                name="confirmedNewPassword"  // Ensure correct name
+                name="confirmedNewPassword"
                 placeholder="Confirm your new password"
                 value={passwordData.confirmedNewPassword}
                 onChange={handlePasswordChange}
-
                 className="w-full px-4 py-2 border rounded-md border-gray-300 focus:ring-2 focus:bg-nav focus:outline-none"
               />
             </div>
-            <p>
+            <p className="text-sm text-gray-600 mb-4">
               Note: You will be logged out after saving the new password
             </p>
             <button
