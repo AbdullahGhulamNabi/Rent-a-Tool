@@ -177,40 +177,47 @@ function Listing() {
                   <p className="text-gray-500">No requests found</p>
                 </div>
               ) : (
-                requests.map((request) => (
-                  <div key={request._id} className="bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow duration-200 border border-gray-100">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h3 className="text-lg font-semibold text-gray-800">{request.tool.name}</h3>
-                        <p className="text-gray-600 mt-1">{request.tool.description}</p>
+                requests.map((request) => {
+                  // Skip rendering if tool data is missing
+                  if (!request.tool) {
+                    return null;
+                  }
+
+                  return (
+                    <div key={request._id} className="bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow duration-200 border border-gray-100">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <h3 className="text-lg font-semibold text-gray-800">{request.tool.name || 'Tool Name Not Available'}</h3>
+                          <p className="text-gray-600 mt-1">{request.tool.description || 'No description available'}</p>
+                        </div>
+                        <span className={`px-3 py-1 rounded-full text-sm ${getStatusColor(request.status)}`}>
+                          {getStatusText(request.status)}
+                        </span>
                       </div>
-                      <span className={`px-3 py-1 rounded-full text-sm ${getStatusColor(request.status)}`}>
-                        {getStatusText(request.status)}
-                      </span>
+                      <div className="mt-4">
+                        <p className="text-gray-500 text-sm">Price: RS {request.tool.price || 0} / day</p>
+                        <p className="text-gray-400 text-sm mt-2">
+                          Owner Name: {request.tool.owner.firstName} {request.tool.owner.lastName}
+                        </p>
+                      </div>
+                      <div className={`mt-4 p-3 rounded-lg ${
+                        request.status === "pending" 
+                        ? "bg-yellow-50 text-yellow-700" 
+                        : request.status === "accepted"
+                        ? "bg-green-50 text-green-700"
+                        : "bg-red-50 text-red-700"
+                      }`}>
+                        <p className="text-sm">
+                          {request.status === "pending" 
+                            ? "Your request is waiting for approval from the tool owner." 
+                            : request.status === "accepted"
+                            ? "Your request has been accepted! Please contact the tool owner to arrange pickup."
+                            : "Your request has been rejected by the tool owner."}
+                        </p>
+                      </div>
                     </div>
-                    <div className="mt-4">
-                      <p className="text-gray-500 text-sm">Price: RS {request.tool.price} / day</p>
-                      <p className="text-gray-400 text-sm mt-2">
-                        Requested on: {new Date(request.createdAt).toLocaleDateString()}
-                      </p>
-                    </div>
-                    <div className={`mt-4 p-3 rounded-lg ${
-                      request.status === "pending" 
-                      ? "bg-yellow-50 text-yellow-700" 
-                      : request.status === "accepted"
-                      ? "bg-green-50 text-green-700"
-                      : "bg-red-50 text-red-700"
-                    }`}>
-                      <p className="text-sm">
-                        {request.status === "pending" 
-                          ? "Your request is waiting for approval from the tool owner." 
-                          : request.status === "accepted"
-                          ? "Your request has been accepted! Please contact the tool owner to arrange pickup."
-                          : "Your request has been rejected by the tool owner."}
-                      </p>
-                    </div>
-                  </div>
-                ))
+                  );
+                })
               )
             )}
 

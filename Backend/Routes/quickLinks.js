@@ -81,19 +81,28 @@ router.get("/getToolCount", authentication, async (req, res) => {
 router.get("/getUserRequests", authentication, async (req, res) => {
     try {
         const user = await User.findOne({ email: req.email })
-            .populate('toolsRequested.tool', 'name description price image');
+            .populate({
+                path: 'toolsRequested.tool',
+                select: 'name description price image owner',
+                populate: {
+                    path: 'owner',
+                    select: 'firstName lastName email address postalCode'
+                }
+            });
         
         if (!user) {
             return res.status(404).json({ msg: "User not found!" });
         }
 
-        // Transform the requests to include tool details
-        const requests = user.toolsRequested.map(request => ({
-            _id: request._id,
-            tool: request.tool,
-            status: request.status,
-            createdAt: request.createdAt
-        }));
+        // Transform the requests and filter out any with null tools
+        const requests = user.toolsRequested
+            .filter(request => request.tool !== null)
+            .map(request => ({
+                _id: request._id,
+                tool: request.tool,
+                status: request.status,
+                createdAt: request.createdAt
+            }));
 
         res.json({ success: true, requests });
     } catch (error) {

@@ -287,18 +287,21 @@ router.post('/:id/request', userMiddleware, async (req, res) => {
         console.log('Tool owner email notifications:', tool.owner.emailNotifications);
         console.log('Tool owner email:', tool.owner.email);
 
-        // Commenting out duplicate request check
-        /*
         // Check if user has already requested this tool
         const existingRequest = user.toolsRequested.find(
-            request => request.tool.toString() === tool._id.toString()
+            request => request.tool.toString() === tool._id.toString() && 
+            (request.status === 'pending' || request.status === 'accepted')
         );
 
         if (existingRequest) {
             console.log('User has already requested this tool');
-            return res.status(400).json({ message: 'You have already requested this tool' });
+            return res.status(400).json({ 
+                success: false,
+                message: existingRequest.status === 'pending' 
+                    ? 'You have already requested this tool and it is pending approval' 
+                    : 'You already have an accepted request for this tool'
+            });
         }
-        */
 
         // Add tool to user's requested tools
         user.toolsRequested.push({
@@ -327,10 +330,10 @@ router.post('/:id/request', userMiddleware, async (req, res) => {
             console.log('Email notifications are disabled for this user');
         }
 
-        res.status(200).json({ message: 'Tool request submitted successfully' });
+        res.status(200).json({ success: true, message: 'Tool request submitted successfully' });
     } catch (error) {
         console.error('Error in tool request:', error);
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ success: false, message: error.message });
     }
 });
 
