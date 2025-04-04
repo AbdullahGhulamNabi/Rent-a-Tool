@@ -78,6 +78,28 @@ router.get("/getToolCount", authentication, async (req, res) => {
     }
   });
 
+router.get("/getUserRequests", authentication, async (req, res) => {
+    try {
+        const user = await User.findOne({ email: req.email })
+            .populate('toolsRequested.tool', 'name description price image');
+        
+        if (!user) {
+            return res.status(404).json({ msg: "User not found!" });
+        }
 
+        // Transform the requests to include tool details
+        const requests = user.toolsRequested.map(request => ({
+            _id: request._id,
+            tool: request.tool,
+            status: request.status,
+            createdAt: request.createdAt
+        }));
+
+        res.json({ success: true, requests });
+    } catch (error) {
+        console.error("Error fetching user requests:", error);
+        res.status(500).json({ msg: "Error fetching user requests", error });
+    }
+});
 
 module.exports = router;

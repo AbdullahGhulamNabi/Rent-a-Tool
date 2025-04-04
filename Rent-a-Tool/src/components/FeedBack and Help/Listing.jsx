@@ -1,76 +1,80 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Api_Route } from "../../config";
+import { toast } from "react-hot-toast";
 
 function Listing() {
   const [activeTab, setActiveTab] = useState("requests");
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Sample data for all tabs
-  const requestsData = [
-    {
-      name: "Abdullah Denver",
-      title: "Chairs",
-      description: "For party at home...",
-      date: "Jan 04 - Jan 05",
-      status: "Moderation",
-      approvalMessage: "Your request is waiting for approval and is not visible to the public yet.",
-      messages: "No messages yet",
-    },
-    {
-      name: "Usama Denver",
-      title: "Tables",
-      description: "Needed for a conference...",
-      date: "Feb 10 - Feb 12",
-      status: "Moderation",
-      approvalMessage: "Your request is waiting for approval and is not visible to the public yet.",
-      messages: "No messages yet",
-    },
-  ];
+  useEffect(() => {
+    const fetchRequests = async () => {
+      try {
+        const token = localStorage.getItem("jwt_token");
+        if (!token) {
+          toast.error("Please login to view your requests");
+          return;
+        }
 
-  const offeringsData = [
-    {
-      name: "Ali Lahore",
-      title: "Party Tents",
-      description: "For outdoor events...",
-      date: "Jan 15 - Jan 20",
-      status: "Available",
-      approvalMessage: "Your offering is live and visible to others.",
-      messages: "3 inquiries received",
-    },
-    {
-      name: "Sara Khan",
-      title: "Sound System",
-      description: "High-quality speakers for events...",
-      date: "Feb 05 - Feb 07",
-      status: "Available",
-      approvalMessage: "Your offering is live and visible to others.",
-      messages: "1 inquiry received",
-    },
-  ];
+        const response = await fetch(`${Api_Route}/dashboard/quickLinks/getUserRequests`, {
+          headers: {
+            'Authorization': token
+          }
+        });
 
-  const chatData = [
-    {
-      participant: "Ali Ahmed",
-      lastMessage: "Hi! I'm interested in your chairs...",
-      time: "2h ago",
-      unread: 3,
-    },
-    {
-      participant: "Sara Khan",
-      lastMessage: "When can I pick up the tent?",
-      time: "4h ago",
-      unread: 0,
-    },
-    {
-      participant: "John Doe",
-      lastMessage: "Thanks for the confirmation!",
-      time: "1d ago",
-      unread: 1,
-    },
-  ];
+        if (!response.ok) {
+          throw new Error('Failed to fetch requests');
+        }
+
+        const data = await response.json();
+        if (data.success) {
+          setRequests(data.requests || []);
+        } else {
+          throw new Error(data.msg || 'Failed to fetch requests');
+        }
+      } catch (error) {
+        console.error("Error fetching requests:", error);
+        toast.error("Failed to load your requests");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (activeTab === "requests") {
+      fetchRequests();
+    }
+  }, [activeTab]);
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "pending":
+        return "bg-yellow-100 text-yellow-700";
+      case "accepted":
+        return "bg-green-100 text-green-700";
+      case "rejected":
+        return "bg-red-100 text-red-700";
+      default:
+        return "bg-gray-100 text-gray-700";
+    }
+  };
+
+  const getStatusText = (status) => {
+    switch (status) {
+      case "pending":
+        return "Waiting for approval";
+      case "accepted":
+        return "Request Accepted";
+      case "rejected":
+        return "Request Rejected";
+      default:
+        return status;
+    }
+  };
 
   return (
     <div className="grid grid-cols-[80px_1fr] md:grid-cols-[200px_1fr] h-screen transition-all duration-300">
-      {/* Sidebar (unchanged) */}
+      {/* Sidebar */}
       <aside className="bg-white border-r p-2 md:p-4 shadow-lg">
         <div className="flex flex-col gap-2">
           <button
@@ -123,7 +127,6 @@ function Listing() {
             <span className="hidden md:inline font-medium">Offerings</span>
           </button>
 
-          {/* New Chat Tab */}
           <button
             onClick={() => setActiveTab("chat")}
             className={`flex items-center justify-center md:justify-start p-2 rounded-lg transition-all duration-200 ${
@@ -164,98 +167,66 @@ function Listing() {
 
           <div className="grid gap-4">
             {/* Requests Tab Content */}
-            {activeTab === "requests" && requestsData.map((item, index) => (
-              <div key={index} className="bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow duration-200 border border-gray-100">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-800">{item.name}</h3>
-                    <p className="text-gray-600 mt-1">{item.title}</p>
+            {activeTab === "requests" && (
+              loading ? (
+                <div className="flex justify-center items-center h-64">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+                </div>
+              ) : requests.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-gray-500">No requests found</p>
+                </div>
+              ) : (
+                requests.map((request) => (
+                  <div key={request._id} className="bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow duration-200 border border-gray-100">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-800">{request.tool.name}</h3>
+                        <p className="text-gray-600 mt-1">{request.tool.description}</p>
+                      </div>
+                      <span className={`px-3 py-1 rounded-full text-sm ${getStatusColor(request.status)}`}>
+                        {getStatusText(request.status)}
+                      </span>
+                    </div>
+                    <div className="mt-4">
+                      <p className="text-gray-500 text-sm">Price: RS {request.tool.price} / day</p>
+                      <p className="text-gray-400 text-sm mt-2">
+                        Requested on: {new Date(request.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <div className={`mt-4 p-3 rounded-lg ${
+                      request.status === "pending" 
+                      ? "bg-yellow-50 text-yellow-700" 
+                      : request.status === "accepted"
+                      ? "bg-green-50 text-green-700"
+                      : "bg-red-50 text-red-700"
+                    }`}>
+                      <p className="text-sm">
+                        {request.status === "pending" 
+                          ? "Your request is waiting for approval from the tool owner." 
+                          : request.status === "accepted"
+                          ? "Your request has been accepted! Please contact the tool owner to arrange pickup."
+                          : "Your request has been rejected by the tool owner."}
+                      </p>
+                    </div>
                   </div>
-                  <span className={`px-3 py-1 rounded-full text-sm ${
-                    item.status === "Moderation" 
-                    ? "bg-yellow-100 text-yellow-700" 
-                    : "bg-green-100 text-green-700"
-                  }`}>
-                    {item.status}
-                  </span>
-                </div>
-                <p className="text-gray-500 text-sm mt-3">{item.description}</p>
-                <p className="text-gray-400 text-sm mt-2">{item.date}</p>
-                <div className={`mt-4 p-3 rounded-lg ${
-                  item.status === "Moderation" 
-                  ? "bg-yellow-50 text-yellow-700" 
-                  : "bg-green-50 text-green-700"
-                }`}>
-                  <p className="text-sm">{item.approvalMessage}</p>
-                </div>
-                <div className="mt-3 flex items-center text-gray-500 text-sm">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                  </svg>
-                  {item.messages}
-                </div>
-              </div>
-            ))}
+                ))
+              )
+            )}
 
             {/* Offerings Tab Content */}
-            {activeTab === "offerings" && offeringsData.map((item, index) => (
-              <div key={index} className="bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow duration-200 border border-gray-100">
-                {/* Same structure as Requests */}
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-800">{item.name}</h3>
-                    <p className="text-gray-600 mt-1">{item.title}</p>
-                  </div>
-                  <span className={`px-3 py-1 rounded-full text-sm ${
-                    item.status === "Moderation" 
-                    ? "bg-yellow-100 text-yellow-700" 
-                    : "bg-green-100 text-green-700"
-                  }`}>
-                    {item.status}
-                  </span>
-                </div>
-                <p className="text-gray-500 text-sm mt-3">{item.description}</p>
-                <p className="text-gray-400 text-sm mt-2">{item.date}</p>
-                <div className={`mt-4 p-3 rounded-lg ${
-                  item.status === "Moderation" 
-                  ? "bg-yellow-50 text-yellow-700" 
-                  : "bg-green-50 text-green-700"
-                }`}>
-                  <p className="text-sm">{item.approvalMessage}</p>
-                </div>
-                <div className="mt-3 flex items-center text-gray-500 text-sm">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                  </svg>
-                  {item.messages}
-                </div>
+            {activeTab === "offerings" && (
+              <div className="text-center py-8">
+                <p className="text-gray-500">No offerings found</p>
               </div>
-            ))}
+            )}
 
             {/* Chat Tab Content */}
-            {activeTab === "chat" && chatData.map((chat, index) => (
-              <div key={index} className="bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow duration-200 border border-gray-100">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center mr-4">
-                      <span className="text-gray-500">{chat.participant[0]}</span>
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-gray-800">{chat.participant}</h3>
-                      <p className="text-gray-600 text-sm">{chat.lastMessage}</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-xs text-gray-400">{chat.time}</p>
-                    {chat.unread > 0 && (
-                      <span className="bg-green-500 text-white rounded-full px-2 py-1 text-xs mt-1 inline-block">
-                        {chat.unread}
-                      </span>
-                    )}
-                  </div>
-                </div>
+            {activeTab === "chat" && (
+              <div className="text-center py-8">
+                <p className="text-gray-500">No messages found</p>
               </div>
-            ))}
+            )}
           </div>
         </div>
       </main>
