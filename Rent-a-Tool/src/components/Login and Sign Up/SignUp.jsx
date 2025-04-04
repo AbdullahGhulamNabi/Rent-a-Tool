@@ -97,7 +97,11 @@ function SignUp({ onClose, onLoginClick }) {
           duration: 5000,
           position: 'top-center',
         });
-        onLoginClick(); // Switch to login modal
+        // Wait for 2 seconds before redirecting to show the toast message
+        setTimeout(() => {
+          onClose(); // Close the modal first
+          navigate("/"); // Then navigate to homepage
+        }, 2000);
       } else {
         // Show specific error message from server
         setError(data.msg || "Signup failed. Please try again.");
@@ -258,3 +262,4 @@ function SignUp({ onClose, onLoginClick }) {
 }
 
 export default SignUp;
+
