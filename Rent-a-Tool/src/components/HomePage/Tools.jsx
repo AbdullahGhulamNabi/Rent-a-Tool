@@ -105,8 +105,22 @@ const Tools = () => {
                     </div>
                   </div>
                   <div className="p-4">
-                    <h3 className="font-semibold text-lg mb-1">{tool.name}</h3>
-                    <p className="text-sm text-gray-600">{owner.firstName} {owner.lastName}</p>
+                    <h3 className="font-bold text-lg text-HomeText">
+                      {tool.name ? tool.name.split(" ").slice(0, 5).join(" ") : "Unnamed Tool"}
+                    </h3>
+                    <p className="text-gray-500 text-sm">
+                      {owner.address || "Location not available"}
+                    </p>
+                    <div className="flex items-center mt-2">
+                      <img
+                        src={owner.profilePhoto ? `${Api_Route}/Images/${owner.profilePhoto}` : "/user-placeholder.jpg"}
+                        alt={`${owner.firstName || "Unknown"} ${owner.lastName || ""}`}
+                        className="w-8 h-8 rounded-full mr-2"
+                      />
+                      <span className="text-sm font-medium text-HomeText">
+                        {owner.firstName ? `${owner.firstName} ${owner.lastName || ""}` : "Unknown Owner"}
+                      </span>
+                    </div>
                   </div>
                 </div>
               );
