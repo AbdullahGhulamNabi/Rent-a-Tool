@@ -222,28 +222,32 @@ function Dashboard() {
           Quick Links
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-  <div className="bg-white shadow-md rounded-lg p-4 text-center">
-    <button onClick={openAddToolModal} className="w-full h-full flex flex-col justify-center">
-      <h3 className="text-lg font-medium text-gray-800">Add Your Tools</h3>
-      <p className="text-gray-600">List your tools for rent here.</p>
-    </button>
-  </div>
+          <button onClick={openAddToolModal} className="w-full h-full">
+            <div className="bg-white shadow-md rounded-lg p-4 text-center h-full flex flex-col justify-center hover:shadow-lg transition-shadow">
+              <h3 className="text-lg font-medium text-gray-800">Add Your Tools</h3>
+              <p className="text-gray-600">List your tools for rent here.</p>
+            </div>
+          </button>
 
-  <button onClick={handleRentals} className="w-full h-full">
-    <div className="bg-white shadow-md rounded-lg p-4 text-center h-full flex flex-col justify-center">
-      <h3 className="text-lg font-medium text-gray-800">My Rentals</h3>
-      <p className="text-gray-600">View your current rentals and history.</p>
-    </div>
-  </button>
+          <button onClick={() => navigate('/Dashboard/requests')} className="w-full h-full">
+            <div className="bg-white shadow-md rounded-lg p-4 text-center h-full flex flex-col justify-center hover:shadow-lg transition-shadow">
+              <h3 className="text-lg font-medium text-gray-800">Tool Requests</h3>
+              <p className="text-gray-600">View and manage requests for your tools</p>
+              {pendingCount > 0 && (
+                <span className="mt-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">
+                  {pendingCount} pending
+                </span>
+              )}
+            </div>
+          </button>
 
-  <button onClick={handleClick} className="w-full h-full">
-    <div className="bg-white shadow-md rounded-lg p-4 text-center h-full flex flex-col justify-center">
-      <h3 className="text-lg font-medium text-gray-800">Tutorials and Help</h3>
-      <p className="text-gray-600">View the detailed tutorial to use the app along with videos.</p>
-    </div>
-  </button>
-</div>
-
+          <button onClick={handleClick} className="w-full h-full">
+            <div className="bg-white shadow-md rounded-lg p-4 text-center h-full flex flex-col justify-center hover:shadow-lg transition-shadow">
+              <h3 className="text-lg font-medium text-gray-800">Tutorials and Help</h3>
+              <p className="text-gray-600">View the detailed tutorial to use the app along with videos.</p>
+            </div>
+          </button>
+        </div>
       </div>
       {isAddToolOpen && <Add onClose={closeAddToolModal} />}
     </div>

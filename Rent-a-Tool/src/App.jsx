@@ -32,6 +32,7 @@ import { reducer, initialState } from "./Reducer/reducer";
 import ToolDetailsLanding from "./components/Tool-Description/ToolDetailsLanding";
 import TermsAndPolicy from "./components/FeedBack and Help/TermsAndPolicy";
 import EmailVerification from "./components/Login and Sign Up/EmailVerification";
+import ToolRequests from "./components/Dashboard/ToolRequests";
 // import { create } from "@mui/material/styles/createTransitions";
 
 function PrivateRoute({ children }) {
@@ -110,6 +111,7 @@ const RoutesOfRent_a_Tool = createBrowserRouter([
           { path: "Listing", element: <Listing /> },
           { path: "Help", element: <Help /> },
           { path: "Tools", element: <Tools /> },
+          { path: "requests", element: <ToolRequests /> },
         ],
       },
       {
