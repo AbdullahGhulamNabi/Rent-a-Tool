@@ -207,7 +207,7 @@ function SignUp({ onClose, onLoginClick }) {
             />
             {errors.postalCode && <p className="text-red-500 text-xs">{errors.postalCode}</p>}
           </div>
-          <div className="relative ">
+          <div className="mb-2 relative ">
             <label className="block text-sm font-medium mb-0.5">Password</label>
             <input
               type={showPassword ? "text" : "password"}
@@ -219,7 +219,7 @@ function SignUp({ onClose, onLoginClick }) {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-2 top-8 text-gray-500 hover:text-gray-700"
+              className="absolute right-2 top-8 text-gray-500 hover:text-gray-700 mt-2 justify-center"
             >
               {showPassword ? (
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
