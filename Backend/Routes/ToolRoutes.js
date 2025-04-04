@@ -85,6 +85,24 @@ router.get('/my-tools', userMiddleware, async (req, res) => {
     }
 });
 
+// Get all tools except the logged-in user's tools
+router.get('/other-tools', userMiddleware, async (req, res) => {
+    try {
+        const user = await User.findOne({ email: req.email });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const tools = await Tool.find({ owner: { $ne: user._id } })
+            .populate('owner', 'firstName lastName email address postalCode profilePhoto')
+            .populate('rentedTo.user', 'firstName lastName email');
+
+        res.status(200).json(tools);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 // Get a single tool by ID
 router.get('/:id', async (req, res) => {
     try {

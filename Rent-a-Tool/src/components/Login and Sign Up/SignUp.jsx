@@ -43,7 +43,7 @@ function SignUp({ onClose, onLoginClick }) {
     if (!postalCode) {
       newErrors.postalCode = "Postal Code is required.";
     } else if (!/^\d{5}$/.test(postalCode)) {
-      newErrors.postalCode = "Postal Code must be exactly 4 digits.";
+      newErrors.postalCode = "Postal Code must be exactly 5 digits.";
     }
   
     if (!password) {

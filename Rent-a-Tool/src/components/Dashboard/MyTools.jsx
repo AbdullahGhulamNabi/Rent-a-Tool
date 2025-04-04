@@ -4,6 +4,7 @@ import AddUpdate from "../Add-Update/AddUpdate";
 import { useNavigate } from 'react-router-dom';
 import { Api_Route } from "../../config";
 import Tools from "../HomePage/Tools";
+import ToolExceptMyTool from "./ToolExceptMyTool";
 
 const MyTools = () => {
   const [tools, setTools] = useState([]);
@@ -71,7 +72,7 @@ const MyTools = () => {
   };
 
   if (loading) {
-    return <div className="p-4 text-center">Loading...</div>;
+    return <div className="p-4 text-center m-auto ">Loading...</div>;
   }
 
   if (error) {
@@ -96,7 +97,7 @@ const MyTools = () => {
    
 
     {activeTab === "myTools" && <div>
-      <Tools/>
+      <ToolExceptMyTool/>
       </div>}
 
     {activeTab === "allTools" && (
