@@ -113,43 +113,86 @@ router.get("/getUserRequests", authentication, async (req, res) => {
 
 router.get("/getToolRequests", authentication, async (req, res) => {
     try {
+        console.log("Fetching tool requests for:", req.email);
+        
         // Find the user and populate their uploaded tools
         const user = await User.findOne({ email: req.email });
         if (!user) {
             return res.status(404).json({ success: false, msg: "User not found!" });
         }
 
-        // Find all users who have requested the user's tools
-        const requesters = await User.find({
+        // Log the user's uploaded tools for debugging
+        console.log("User uploaded tools:", user.toolsUploaded.length);
+
+        // Simple approach: Find all users with tool requests and check each request manually
+        // Get all users with any tool requests
+        const allRequesters = await User.find({
             'toolsRequested.tool': { $in: user.toolsUploaded }
-        }).populate({
-            path: 'toolsRequested.tool',
-            match: { owner: user._id }, // Only include tools owned by the current user
-            select: 'name description price image'
-        });
-
-        // Format the requests and filter to only include pending requests
-        const requests = [];
-        requesters.forEach(requester => {
-            requester.toolsRequested.forEach(request => {
-                if (request.tool && request.status === "pending") {
-                    requests.push({
-                        _id: request._id,
-                        tool: request.tool,
-                        status: request.status,
-                        requester: {
-                            _id: requester._id,
-                            firstName: requester.firstName,
-                            lastName: requester.lastName,
-                            email: requester.email,
-                            phoneNumber: requester.phoneNumber
+        }).select('firstName lastName email phoneNumber toolsRequested');
+        
+        console.log("Found requesters:", allRequesters.length);
+        
+        // Process the requests to include only pending ones for this user's tools
+        const pendingRequests = [];
+        let totalRequests = 0;
+        let pendingCount = 0;
+        let acceptedCount = 0;
+        let rejectedCount = 0;
+        
+        for (const requester of allRequesters) {
+            for (const request of requester.toolsRequested) {
+                if (!request.tool) continue;
+                totalRequests++;
+                
+                // Debug the status of each request
+                const toolId = request.tool.toString();
+                const isUsersTool = user.toolsUploaded.some(id => id.toString() === toolId);
+                
+                if (isUsersTool) {
+                    console.log(`Request status for tool ${toolId.substring(0, 6)}... is: ${request.status}`);
+                    
+                    // Track counts by status
+                    if (request.status === 'pending') pendingCount++;
+                    if (request.status === 'accepted') acceptedCount++;
+                    if (request.status === 'rejected') rejectedCount++;
+                    
+                    // Only proceed if this is a pending request for a tool owned by this user
+                    if (request.status === 'pending') {
+                        // Get tool details
+                        const tool = await Tool.findOne({
+                            _id: request.tool,
+                            owner: user._id
+                        }).select('name description price image');
+                        
+                        if (tool) {
+                            pendingRequests.push({
+                                _id: request._id,
+                                status: request.status,
+                                tool: {
+                                    _id: tool._id,
+                                    name: tool.name,
+                                    description: tool.description,
+                                    price: tool.price,
+                                    image: tool.image
+                                },
+                                requester: {
+                                    _id: requester._id,
+                                    firstName: requester.firstName,
+                                    lastName: requester.lastName,
+                                    email: requester.email,
+                                    phoneNumber: requester.phoneNumber
+                                }
+                            });
                         }
-                    });
+                    }
                 }
-            });
-        });
+            }
+        }
 
-        res.json({ success: true, requests });
+        console.log(`Request stats - Total: ${totalRequests}, Pending: ${pendingCount}, Accepted: ${acceptedCount}, Rejected: ${rejectedCount}`);
+        console.log("Final pending requests:", pendingRequests.length);
+        
+        res.json({ success: true, requests: pendingRequests });
     } catch (error) {
         console.error("Error fetching tool requests:", error);
         res.status(500).json({ success: false, msg: "Error fetching tool requests", error });
@@ -158,6 +201,7 @@ router.get("/getToolRequests", authentication, async (req, res) => {
 
 router.post("/updateRequestStatus", authentication, async (req, res) => {
     try {
+        console.log("Updating request status with:", req.body);
         const { requesterId, toolId, status } = req.body;
 
         if (!requesterId || !toolId || !status) {
@@ -189,12 +233,13 @@ router.post("/updateRequestStatus", authentication, async (req, res) => {
             });
         }
 
-        // Find the requester and update their request status
+        // Find the requester
         const requester = await User.findById(requesterId);
         if (!requester) {
             return res.status(404).json({ success: false, msg: "Requester not found" });
         }
 
+        // Find the request in the requester's toolsRequested array
         const requestIndex = requester.toolsRequested.findIndex(
             request => request.tool.toString() === toolId
         );
@@ -206,19 +251,21 @@ router.post("/updateRequestStatus", authentication, async (req, res) => {
             });
         }
 
-        // Update the request status directly in the database using findOneAndUpdate
-        await User.findOneAndUpdate(
-            { 
-                _id: requesterId,
-                "toolsRequested.tool": toolId 
-            },
-            { 
-                $set: { "toolsRequested.$.status": status } 
-            },
-            { new: true }
-        );
+        console.log("Found request at index:", requestIndex);
+        console.log("Current status:", requester.toolsRequested[requestIndex].status);
+        console.log("Setting status to:", status);
 
-        console.log(`Request status updated to ${status} for tool ${toolId} by requester ${requesterId}`);
+        // Directly update the array element in the requester object
+        requester.toolsRequested[requestIndex].status = status;
+        
+        // Save the updated requester document
+        const saveResult = await requester.save();
+        console.log("Save successful:", !!saveResult);
+        
+        // Double-check that the status was updated
+        const verifyUser = await User.findById(requesterId);
+        const verifyRequest = verifyUser.toolsRequested.find(r => r.tool.toString() === toolId);
+        console.log("Verified status after update:", verifyRequest ? verifyRequest.status : "request not found");
 
         // If accepted, update tool status and set rentedTo information
         if (status === 'accepted') {

@@ -319,29 +319,39 @@ router.post('/:id/request', userMiddleware, async (req, res) => {
         console.log('Tool owner email notifications:', tool.owner.emailNotifications);
         console.log('Tool owner email:', tool.owner.email);
 
-        // Check if user has already requested this tool
-        const existingRequest = user.toolsRequested.find(
-            request => request.tool.toString() === tool._id.toString() && 
-            (request.status === 'pending' || request.status === 'accepted')
+        // Check if user has already requested this tool (any status)
+        const existingRequestIndex = user.toolsRequested.findIndex(
+            request => request.tool.toString() === tool._id.toString()
         );
 
-        if (existingRequest) {
-            console.log('User has already requested this tool');
-            return res.status(400).json({ 
-                success: false,
-                message: existingRequest.status === 'pending' 
-                    ? 'You have already requested this tool and it is pending approval' 
-                    : 'You already have an accepted request for this tool'
+        if (existingRequestIndex !== -1) {
+            const existingRequest = user.toolsRequested[existingRequestIndex];
+            
+            // If pending or accepted, don't allow a new request
+            if (existingRequest.status === 'pending' || existingRequest.status === 'accepted') {
+                console.log('User has already requested this tool with status:', existingRequest.status);
+                return res.status(400).json({ 
+                    success: false,
+                    message: existingRequest.status === 'pending' 
+                        ? 'You have already requested this tool and it is pending approval' 
+                        : 'You already have an accepted request for this tool'
+                });
+            }
+            
+            // If rejected or completed, update the existing request instead of creating a new one
+            console.log('Updating existing request from status:', existingRequest.status, 'to pending');
+            user.toolsRequested[existingRequestIndex].status = 'pending';
+            await user.save();
+            console.log('Tool request updated to pending');
+        } else {
+            // Add tool to user's requested tools as a new request
+            user.toolsRequested.push({
+                tool: tool._id,
+                status: 'pending'
             });
+            await user.save();
+            console.log('New tool request saved to user');
         }
-
-        // Add tool to user's requested tools
-        user.toolsRequested.push({
-            tool: tool._id,
-            status: 'pending'
-        });
-        await user.save();
-        console.log('Tool request saved to user');
 
         // Send email notification to tool owner if they have enabled it
         if (tool.owner.emailNotifications) {
