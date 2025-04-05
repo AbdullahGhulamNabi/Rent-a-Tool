@@ -210,9 +210,13 @@ router.post("/updateRequestStatus", authentication, async (req, res) => {
         requester.toolsRequested[requestIndex].status = status;
         await requester.save();
 
-        // If accepted, update tool status
+        // If accepted, update tool status and set rentedTo information
         if (status === 'accepted') {
             tool.rented = true;
+            tool.rentedTo = {
+                user: requesterId,
+                rentedAt: new Date()
+            };
             await tool.save();
         }
 

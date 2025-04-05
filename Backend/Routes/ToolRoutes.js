@@ -213,9 +213,11 @@ router.post('/:id/rent', async (req, res) => {
 });
 
 // Return a tool
-router.post('/:id/return', async (req, res) => {
+router.post('/:id/return', userMiddleware, async (req, res) => {
     try {
-        const tool = await Tool.findById(req.params.id);
+        const tool = await Tool.findById(req.params.id)
+            .populate('rentedTo.user', '_id');
+        
         if (!tool) {
             return res.status(404).json({ message: 'Tool not found' });
         }
@@ -224,6 +226,28 @@ router.post('/:id/return', async (req, res) => {
             return res.status(400).json({ message: 'Tool is not rented' });
         }
 
+        // Find the user who rented the tool
+        const renter = await User.findById(tool.rentedTo.user._id);
+        if (!renter) {
+            return res.status(404).json({ message: 'Renter not found' });
+        }
+
+        // Update the request status in the renter's toolsRequested array
+        const requestIndex = renter.toolsRequested.findIndex(
+            request => request.tool.toString() === tool._id.toString()
+        );
+
+        if (requestIndex !== -1) {
+            try {
+                renter.toolsRequested[requestIndex].status = 'completed';
+                await renter.save();
+            } catch (error) {
+                console.error('Error updating request status:', error);
+                // Continue with the tool return even if updating the request status fails
+            }
+        }
+
+        // Update tool status
         tool.rented = false;
         tool.rentedTo = null;
         await tool.save();
@@ -231,9 +255,17 @@ router.post('/:id/return', async (req, res) => {
         const updatedTool = await Tool.findById(tool._id)
             .populate('owner', 'firstName lastName email');
 
-        res.status(200).json(updatedTool);
+        res.status(200).json({
+            success: true,
+            message: 'Tool marked as returned successfully',
+            tool: updatedTool
+        });
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        console.error('Error in return tool:', error);
+        res.status(500).json({ 
+            success: false,
+            message: error.message || 'Failed to mark tool as returned'
+        });
     }
 });
 
