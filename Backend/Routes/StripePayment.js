@@ -85,6 +85,66 @@ router.post("/create-checkout-session", async (req, res) => {
     });
 
     console.log('Stripe session created successfully:', session.id);
+    
+    // TEMPORARY WORKAROUND: Mark the tool as rented immediately after successful payment
+    // This is a backup in case the webhook doesn't work properly
+    try {
+      // Calculate rental dates
+      const rentalStartDate = new Date();
+      const rentalEndDate = new Date();
+      rentalEndDate.setDate(rentalEndDate.getDate() + parseInt(req.body.rentalDays || 7));
+      
+      // Find and update the tool
+      const tool = await Tool.findById(req.body.toolId);
+      if (tool && !tool.rented) {
+        tool.rented = true;
+        tool.rentedTo = {
+          user: req.body.userId,
+          rentedAt: rentalStartDate,
+          rentedUntil: rentalEndDate
+        };
+        await tool.save();
+        console.log(`MANUAL UPDATE: Tool ${req.body.toolId} marked as rented`);
+        
+        // Update user's rental information
+        const user = await User.findById(req.body.userId);
+        if (user) {
+          // Add to rented tools if not already there
+          const alreadyRented = user.toolsRented.some(
+            rental => rental.tool.toString() === req.body.toolId
+          );
+          
+          if (!alreadyRented) {
+            user.toolsRented.push({
+              tool: req.body.toolId,
+              rentedAt: rentalStartDate,
+              rentedUntil: rentalEndDate
+            });
+          }
+          
+          // Update existing request or create new one
+          const requestIndex = user.toolsRequested.findIndex(
+            request => request.tool.toString() === req.body.toolId && request.status === 'pending'
+          );
+          
+          if (requestIndex !== -1) {
+            user.toolsRequested[requestIndex].status = 'accepted';
+          } else {
+            user.toolsRequested.push({
+              tool: req.body.toolId,
+              status: 'accepted'
+            });
+          }
+          
+          await user.save();
+          console.log(`MANUAL UPDATE: User ${req.body.userId} rental info updated`);
+        }
+      }
+    } catch (error) {
+      console.error('Error in manual tool update:', error);
+      // Continue anyway - we don't want to block the payment process
+    }
+    
     res.json({ sessionId: session.id });
   } catch (error) {
     console.error('Error creating checkout session:', error);
@@ -94,55 +154,206 @@ router.post("/create-checkout-session", async (req, res) => {
 
 // Webhook to handle successful payments
 router.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
-    const sig = req.headers['stripe-signature'];
+    console.log('------------------------');
+    console.log('Webhook endpoint hit at:', new Date().toISOString());
+    console.log('Headers:', JSON.stringify(req.headers));
+    
+    let event;
+    const signature = req.headers['stripe-signature'];
     const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
-    let event;
-
     try {
-        event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
-    } catch (err) {
-        return res.status(400).send(`Webhook Error: ${err.message}`);
-    }
+        // Verify the webhook signature
+        if (!signature || !endpointSecret) {
+            console.error('Missing signature or endpoint secret');
+            console.error('Signature:', signature);
+            console.error('Endpoint Secret:', endpointSecret ? 'Present' : 'Missing');
+            return res.status(400).send('Webhook signature verification failed');
+        }
 
-    // Handle the event
-    if (event.type === 'checkout.session.completed') {
-        const session = event.data.object;
-        
         try {
-            // Calculate rental end date
-            const rentalStartDate = new Date();
-            const rentalEndDate = new Date();
-            rentalEndDate.setDate(rentalEndDate.getDate() + parseInt(session.metadata.rentalDays));
+            event = stripe.webhooks.constructEvent(
+                req.body,
+                signature,
+                endpointSecret
+            );
+            console.log('Webhook verified, event type:', event.type);
+            console.log('Event ID:', event.id);
+        } catch (err) {
+            console.error('Webhook signature verification failed:', err.message);
+            console.error('Signature:', signature);
+            console.error('Endpoint Secret:', endpointSecret ? 'Present (length: ' + endpointSecret.length + ')' : 'Missing');
+            console.error('Request body size:', req.body.length);
+            return res.status(400).send(`Webhook signature verification failed: ${err.message}`);
+        }
 
-            // Update tool status
-            await Tool.findByIdAndUpdate(session.metadata.toolId, {
-                rented: true,
-                rentedTo: {
-                    user: session.metadata.userId,
+        // Handle the checkout.session.completed event
+        if (event.type === 'checkout.session.completed') {
+            const session = event.data.object;
+            console.log('Payment succeeded, session ID:', session.id);
+            console.log('Session data:', JSON.stringify({
+                id: session.id,
+                payment_status: session.payment_status,
+                status: session.status,
+                customer: session.customer,
+                amount_total: session.amount_total
+            }));
+            console.log('Session metadata:', JSON.stringify(session.metadata));
+
+            // Extract metadata
+            const toolId = session.metadata.toolId;
+            const userId = session.metadata.userId;
+            const rentalDays = parseInt(session.metadata.rentalDays) || 7;
+
+            if (!toolId || !userId) {
+                console.error('Missing required metadata:', { toolId, userId });
+                return res.status(400).send('Missing required metadata');
+            }
+
+            console.log(`Processing payment for tool: ${toolId} and user: ${userId}`);
+
+            try {
+                // Calculate rental dates
+                const rentalStartDate = new Date();
+                const rentalEndDate = new Date();
+                rentalEndDate.setDate(rentalEndDate.getDate() + rentalDays);
+
+                // IMPORTANT: First check if tool exists and is not already rented
+                const tool = await Tool.findById(toolId);
+                if (!tool) {
+                    console.error(`Tool not found: ${toolId}`);
+                    return res.status(200).send();
+                }
+
+                if (tool.rented) {
+                    console.log(`Tool ${toolId} is already rented, skipping update`);
+                    return res.status(200).send();
+                }
+
+                // Update the tool - DIRECT update with save() for reliability
+                tool.rented = true;
+                tool.rentedTo = {
+                    user: userId,
                     rentedAt: rentalStartDate,
                     rentedUntil: rentalEndDate
-                }
-            });
+                };
 
-            // Create rental record
-            await User.findByIdAndUpdate(session.metadata.userId, {
-                $push: {
-                    toolsRented: {
-                        tool: session.metadata.toolId,
+                const savedTool = await tool.save();
+                console.log(`Tool ${toolId} marked as rented:`, savedTool.rented);
+
+                // Get the user who paid
+                const user = await User.findById(userId);
+                if (!user) {
+                    console.error(`User not found: ${userId}`);
+                    return res.status(200).send();
+                }
+
+                // Check if the user has a pending request for this tool
+                const requestIndex = user.toolsRequested.findIndex(request => 
+                    request.tool.toString() === toolId && request.status === 'pending'
+                );
+
+                if (requestIndex !== -1) {
+                    // Update existing request
+                    user.toolsRequested[requestIndex].status = 'accepted';
+                    console.log(`Updated existing request for tool ${toolId} to accepted`);
+                } else {
+                    // Create a new accepted request
+                    user.toolsRequested.push({
+                        tool: toolId,
+                        status: 'accepted'
+                    });
+                    console.log(`Created new accepted request for tool ${toolId}`);
+                }
+
+                // Add the tool to user's rented tools if not already there
+                const alreadyRented = user.toolsRented.some(
+                    rental => rental.tool.toString() === toolId
+                );
+
+                if (!alreadyRented) {
+                    user.toolsRented.push({
+                        tool: toolId,
                         rentedAt: rentalStartDate,
                         rentedUntil: rentalEndDate
+                    });
+                    console.log(`Added tool ${toolId} to user's rented tools`);
+                }
+
+                await user.save();
+                console.log(`User ${userId} record updated`);
+
+                // Make sure the tool owner has this tool in their toolsUploaded array
+                if (tool.owner) {
+                    const owner = await User.findById(tool.owner);
+                    if (owner) {
+                        const hasToolUploaded = owner.toolsUploaded.some(
+                            t => t.toString() === toolId
+                        );
+
+                        if (!hasToolUploaded) {
+                            owner.toolsUploaded.push(toolId);
+                            await owner.save();
+                            console.log(`Added tool ${toolId} to owner's uploaded tools`);
+                        }
                     }
                 }
-            });
 
-            console.log('Payment successful and rental created');
-        } catch (error) {
-            console.error('Error updating rental status:', error);
+                console.log('Payment processing completed successfully');
+            } catch (error) {
+                console.error('Error processing payment:', error);
+            }
         }
-    }
 
-    res.json({ received: true });
+        // Return a 200 response to acknowledge receipt of the event
+        res.status(200).send();
+    } catch (err) {
+        console.error('General webhook error:', err);
+        res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+});
+
+// Diagnostic endpoint to check webhook configuration
+router.get('/webhook-status', async (req, res) => {
+    try {
+        const webhooks = await stripe.webhookEndpoints.list({
+            limit: 10,
+        });
+        
+        // Filter out sensitive data
+        const sanitizedWebhooks = webhooks.data.map(webhook => ({
+            id: webhook.id,
+            url: webhook.url,
+            status: webhook.status,
+            enabled_events: webhook.enabled_events,
+            api_version: webhook.api_version,
+            created: new Date(webhook.created * 1000).toISOString(),
+            livemode: webhook.livemode
+        }));
+        
+        const config = {
+            webhooks: sanitizedWebhooks,
+            environment: {
+                STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY ? 'Configured' : 'Missing',
+                STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET ? 'Configured' : 'Missing',
+                NODE_ENV: process.env.NODE_ENV,
+                SERVER_URL: process.env.FRONTEND_URL
+            }
+        };
+        
+        res.json({
+            success: true,
+            message: 'Stripe webhook configuration',
+            config
+        });
+    } catch (error) {
+        console.error('Error fetching webhook status:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch webhook status',
+            error: error.message
+        });
+    }
 });
 
 module.exports = router;

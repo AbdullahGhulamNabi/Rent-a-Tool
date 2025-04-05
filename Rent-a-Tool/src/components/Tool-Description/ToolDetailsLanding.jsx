@@ -112,6 +112,26 @@ const ToolDetailsLanding = () => {
 
     try {
       console.log('Starting payment process...');
+      
+      // IMPORTANT: First check if the tool is already rented by fetching the latest tool status
+      const toolResponse = await fetch(`${Api_Route}/api/tools/${tool._id}`);
+      if (!toolResponse.ok) {
+        throw new Error('Failed to fetch tool status');
+      }
+      
+      const toolData = await toolResponse.json();
+      if (toolData.rented) {
+        toast.error('This tool is already rented and not available.', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+        return;
+      }
+      
       console.log('Tool data:', tool);
       console.log('User state:', state);
       console.log('JWT Token:', token);
