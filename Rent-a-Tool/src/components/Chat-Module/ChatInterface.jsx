@@ -2,10 +2,14 @@ import React, { useState, useEffect } from "react";
 import io from "socket.io-client";
 import profileIcon from '../../assets/Chat/profile.jpeg'
 import SendIcon from "@mui/icons-material/Send";
+import { useLocation } from "react-router-dom";
+
 
 // const socket = io("http://localhost:3000"); // Replace with your server URL
 
 const ChatPage = () => {
+  const location = useLocation();
+  const { tool } = location.state || {}; // Get tool data
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [chatUser, setChatUser] = useState({

@@ -72,11 +72,7 @@ export const toolService = {
     // Get logged-in user's tools
     getMyTools: async () => {
         try {
-            // const token = localStorage.getItem("jwt_token");
-            // if (!token) {
-            //     throw new Error('Authentication required');
-            // }
-
+           
             const response = await fetch(`${API_BASE_URL}/api/tools/my-tools`, {
                 headers: {
                     'Authorization': localStorage.getItem("jwt_token")
@@ -87,6 +83,21 @@ export const toolService = {
             throw new Error(error.message || 'Failed to fetch your tools');
         }
     },
+
+// Get all tools except the logged-in user's tools
+getOtherTools: async () => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/tools/other-tools`, {
+            headers: {
+                'Authorization': localStorage.getItem("jwt_token")
+            }
+        });
+        return handleResponse(response);
+    } catch (error) {
+        throw new Error(error.message || 'Failed to fetch other users\' tools');
+    }
+},
+
 
     // Get a single tool by ID
     getToolById: async (toolId) => {

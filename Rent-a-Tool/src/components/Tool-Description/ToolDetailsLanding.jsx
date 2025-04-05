@@ -66,9 +66,10 @@ const ToolDetailsLanding = () => {
     initializeStripe();
   }, []);
 
-  function handleNavigate() {
+  function handleNavigate(tool) {
     if (state && state._id) {
-      navigate("/ToolDescription/Chat");
+      // navigate("/ToolDescription/Chat");
+      navigate(`/ToolDescription/Chat/${tool}`);
     } else {
       setShowMessage(true);
       document.body.style.overflow = "hidden"
@@ -389,7 +390,7 @@ const ToolDetailsLanding = () => {
           </div>
           <div className="w-full flex justify-evenly mb-4 gap-3">
             <button
-              onClick={handleNavigate}
+              onClick={() => handleNavigate(tool)}
               className="w-[150px] sm:w-[270px] mt-4 bg-HomeText text-white py-2 rounded flex items-center justify-center space-x-2 gap-2"
             >
               <ChatIcon className="w-7 h-7" />
