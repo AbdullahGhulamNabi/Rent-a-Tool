@@ -128,11 +128,11 @@ router.get("/getToolRequests", authentication, async (req, res) => {
             select: 'name description price image'
         });
 
-        // Format the requests
+        // Format the requests and filter to only include pending requests
         const requests = [];
         requesters.forEach(requester => {
             requester.toolsRequested.forEach(request => {
-                if (request.tool) { // Only include if tool exists and matches (tool will be null if not owned by current user)
+                if (request.tool && request.status === "pending") {
                     requests.push({
                         _id: request._id,
                         tool: request.tool,
@@ -218,6 +218,20 @@ router.post("/updateRequestStatus", authentication, async (req, res) => {
                 rentedAt: new Date()
             };
             await tool.save();
+            
+            // Also update the tool in the owner's toolsUploaded array
+            const ownerToolIndex = owner.toolsUploaded.findIndex(
+                id => id.toString() === toolId
+            );
+            
+            if (ownerToolIndex !== -1) {
+                // The tool is already in the owner's toolsUploaded array
+                // No need to do anything
+            } else {
+                // Add the tool to the owner's toolsUploaded array if it's not already there
+                owner.toolsUploaded.push(toolId);
+                await owner.save();
+            }
         }
 
         res.json({ 

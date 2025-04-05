@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Api_Route } from "../../config";
 import { toast } from "react-hot-toast";
+import { toolService } from "../../services";
 
 function Listing() {
   const [activeTab, setActiveTab] = useState("requests");
@@ -40,7 +41,9 @@ function Listing() {
 
       const data = await response.json();
       if (data.success) {
-        setRequests(data.requests || []);
+        // Filter to only show pending requests
+        const pendingRequests = data.requests.filter(request => request.status === "pending");
+        setRequests(pendingRequests || []);
       } else {
         throw new Error(data.msg || 'Failed to fetch requests');
       }
@@ -94,27 +97,14 @@ function Listing() {
         return;
       }
 
-      const response = await fetch(`${Api_Route}/api/tools/${toolId}/return`, {
-        method: 'POST',
-        headers: {
-          'Authorization': token,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to mark tool as received');
-      }
-
-      const data = await response.json();
-      if (data.success) {
-        toast.success("Tool marked as received successfully");
-        // Refresh the offerings list
-        fetchOfferings();
-      } else {
-        throw new Error(data.message || "Failed to mark tool as received");
-      }
+      console.log("Marking tool as received:", toolId);
+      
+      const response = await toolService.returnTool(toolId);
+      console.log("Success response:", response);
+      
+      toast.success("Tool marked as received successfully");
+      // Refresh the offerings list
+      fetchOfferings();
     } catch (error) {
       console.error("Error marking tool as received:", error);
       toast.error(error.message || "Failed to mark tool as received");

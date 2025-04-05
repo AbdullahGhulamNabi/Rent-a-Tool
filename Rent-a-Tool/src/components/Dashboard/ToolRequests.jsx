@@ -30,7 +30,9 @@ function ToolRequests() {
 
       const data = await response.json();
       if (data.success) {
-        setRequests(data.requests || []);
+        // Filter to only show pending requests
+        const pendingRequests = data.requests.filter(request => request.status === "pending");
+        setRequests(pendingRequests || []);
       } else {
         throw new Error(data.msg || 'Failed to fetch requests');
       }
@@ -67,8 +69,10 @@ function ToolRequests() {
       
       if (data.success) {
         toast.success(data.msg);
-        // Refresh the requests list
-        fetchRequests();
+        // Remove the request from the local state
+        setRequests(prevRequests => prevRequests.filter(request => 
+          !(request.requester._id === requesterId && request.tool._id === toolId)
+        ));
       } else {
         throw new Error(data.msg || 'Failed to update request');
       }

@@ -193,8 +193,17 @@ export const toolService = {
     // Return a rented tool
     returnTool: async (toolId) => {
         try {
+            const token = localStorage.getItem("jwt_token");
+            if (!token) {
+                throw new Error('Authentication required');
+            }
+
             const response = await fetch(`${API_BASE_URL}/api/tools/${toolId}/return`, {
-                method: 'POST'
+                method: 'POST',
+                headers: {
+                    'Authorization': token,
+                    'Content-Type': 'application/json'
+                }
             });
 
             return handleResponse(response);
