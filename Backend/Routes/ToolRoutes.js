@@ -232,19 +232,24 @@ router.post('/:id/return', userMiddleware, async (req, res) => {
             return res.status(404).json({ message: 'Renter not found' });
         }
 
-        // Update the request status in the renter's toolsRequested array
+        // Find and remove the request from renter's toolsRequested array
         const requestIndex = renter.toolsRequested.findIndex(
             request => request.tool.toString() === tool._id.toString()
         );
 
         if (requestIndex !== -1) {
             try {
-                renter.toolsRequested[requestIndex].status = 'completed';
+                // Remove the request entirely instead of just marking as completed
+                console.log(`Removing tool request from user's toolsRequested array at index ${requestIndex}`);
+                renter.toolsRequested.splice(requestIndex, 1);
                 await renter.save();
+                console.log('Tool request removed from renter');
             } catch (error) {
-                console.error('Error updating request status:', error);
-                // Continue with the tool return even if updating the request status fails
+                console.error('Error removing tool request:', error);
+                // Continue with the tool return even if removing the request fails
             }
+        } else {
+            console.log('No matching tool request found to remove');
         }
 
         // Update tool status
@@ -257,7 +262,7 @@ router.post('/:id/return', userMiddleware, async (req, res) => {
 
         res.status(200).json({
             success: true,
-            message: 'Tool marked as returned successfully',
+            message: 'Tool marked as returned successfully and request removed',
             tool: updatedTool
         });
     } catch (error) {

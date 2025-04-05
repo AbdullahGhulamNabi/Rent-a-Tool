@@ -252,23 +252,15 @@ router.post("/updateRequestStatus", authentication, async (req, res) => {
         }
 
         console.log("Found request at index:", requestIndex);
-        console.log("Current status:", requester.toolsRequested[requestIndex].status);
-        console.log("Setting status to:", status);
+        console.log("Current status before action:", requester.toolsRequested[requestIndex].status);
+        console.log("Action being taken:", status);
 
-        // Directly update the array element in the requester object
-        requester.toolsRequested[requestIndex].status = status;
-        
-        // Save the updated requester document
-        const saveResult = await requester.save();
-        console.log("Save successful:", !!saveResult);
-        
-        // Double-check that the status was updated
-        const verifyUser = await User.findById(requesterId);
-        const verifyRequest = verifyUser.toolsRequested.find(r => r.tool.toString() === toolId);
-        console.log("Verified status after update:", verifyRequest ? verifyRequest.status : "request not found");
-
-        // If accepted, update tool status and set rentedTo information
         if (status === 'accepted') {
+            // Update request status to accepted
+            requester.toolsRequested[requestIndex].status = 'accepted';
+            await requester.save();
+            
+            // Update tool status
             tool.rented = true;
             tool.rentedTo = {
                 user: requesterId,
@@ -276,24 +268,38 @@ router.post("/updateRequestStatus", authentication, async (req, res) => {
             };
             await tool.save();
             
-            // Also update the tool in the owner's toolsUploaded array
+            // Check if the tool is in the owner's toolsUploaded array
             const ownerToolIndex = owner.toolsUploaded.findIndex(
                 id => id.toString() === toolId
             );
             
-            if (ownerToolIndex !== -1) {
-                // The tool is already in the owner's toolsUploaded array
-                // No need to do anything
-            } else {
+            if (ownerToolIndex === -1) {
                 // Add the tool to the owner's toolsUploaded array if it's not already there
                 owner.toolsUploaded.push(toolId);
                 await owner.save();
             }
+        } else if (status === 'rejected') {
+            // Remove the request entirely instead of just updating status
+            requester.toolsRequested.splice(requestIndex, 1);
+            await requester.save();
+            console.log("Request removed from user's toolsRequested array");
+        }
+
+        // Verify the update
+        const verifyUser = await User.findById(requesterId);
+        if (status === 'rejected') {
+            const requestStillExists = verifyUser.toolsRequested.some(r => r.tool.toString() === toolId);
+            console.log("Request still exists after removal:", requestStillExists);
+        } else {
+            const verifyRequest = verifyUser.toolsRequested.find(r => r.tool.toString() === toolId);
+            console.log("Verified status after update:", verifyRequest ? verifyRequest.status : "request not found");
         }
 
         res.json({ 
             success: true, 
-            msg: `Request ${status} successfully` 
+            msg: status === 'accepted' 
+                ? "Request accepted successfully" 
+                : "Request rejected and removed successfully" 
         });
     } catch (error) {
         console.error("Error updating request status:", error);
