@@ -206,9 +206,19 @@ router.post("/updateRequestStatus", authentication, async (req, res) => {
             });
         }
 
-        // Update the request status
-        requester.toolsRequested[requestIndex].status = status;
-        await requester.save();
+        // Update the request status directly in the database using findOneAndUpdate
+        await User.findOneAndUpdate(
+            { 
+                _id: requesterId,
+                "toolsRequested.tool": toolId 
+            },
+            { 
+                $set: { "toolsRequested.$.status": status } 
+            },
+            { new: true }
+        );
+
+        console.log(`Request status updated to ${status} for tool ${toolId} by requester ${requesterId}`);
 
         // If accepted, update tool status and set rentedTo information
         if (status === 'accepted') {
