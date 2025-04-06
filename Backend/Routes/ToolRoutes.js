@@ -233,62 +233,125 @@ router.post('/:id/rent', async (req, res) => {
 // Return a tool
 router.post('/:id/return', userMiddleware, async (req, res) => {
     try {
+        console.log(`Tool return request received for tool ID: ${req.params.id} by user: ${req.email}`);
+        
         const tool = await Tool.findById(req.params.id)
             .populate('rentedTo.user', '_id');
         
         if (!tool) {
+            console.log('Tool not found');
             return res.status(404).json({ message: 'Tool not found' });
         }
 
-        if (!tool.rented) {
-            return res.status(400).json({ message: 'Tool is not rented' });
-        }
-
-        // Find the user who rented the tool
-        const renter = await User.findById(tool.rentedTo.user._id);
-        if (!renter) {
-            return res.status(404).json({ message: 'Renter not found' });
-        }
-
-        // Find and remove the request from renter's toolsRequested array
-        const requestIndex = renter.toolsRequested.findIndex(
-            request => request.tool.toString() === tool._id.toString()
-        );
-
-        if (requestIndex !== -1) {
-            try {
-                // Remove the request entirely instead of just marking as completed
-                console.log(`Removing tool request from user's toolsRequested array at index ${requestIndex}`);
-                renter.toolsRequested.splice(requestIndex, 1);
-                await renter.save();
-                console.log('Tool request removed from renter');
-            } catch (error) {
-                console.error('Error removing tool request:', error);
-                // Continue with the tool return even if removing the request fails
+        // Get tool owner (for authorization check)
+        if (tool.owner) {
+            const toolOwner = await User.findById(tool.owner);
+            if (toolOwner && toolOwner.email !== req.email) {
+                console.log(`Authorization check: request from ${req.email}, but tool owner is ${toolOwner.email}`);
+                // Allow admins to override
+                const user = await User.findOne({ email: req.email });
+                if (!user || !user.isAdmin) {
+                    return res.status(403).json({ message: 'Only the tool owner can mark a tool as returned' });
+                }
             }
-        } else {
-            console.log('No matching tool request found to remove');
         }
 
-        // Update tool status
+        // Process the return - even if tool says it's not rented, still update the renter's records
+        const wasRented = tool.rented;
+        const renterUserId = tool.rentedTo?.user?._id;
+        
+        console.log(`Tool status check: rented=${wasRented}, renterUserId=${renterUserId}`);
+
+        // Update the tool regardless of current state
         tool.rented = false;
         tool.rentedTo = null;
         await tool.save();
+        
+        if (!wasRented || !renterUserId) {
+            console.log('Tool was not rented or missing renter data - completed basic update');
+            return res.status(200).json({ 
+                message: 'Tool marked as not rented', 
+                wasAlreadyReturned: true 
+            });
+        }
 
-        const updatedTool = await Tool.findById(tool._id)
-            .populate('owner', 'firstName lastName email');
+        // Find the user who rented the tool
+        const renter = await User.findById(renterUserId);
+        if (!renter) {
+            console.log('Renter not found even though tool had rentedTo data');
+            return res.status(200).json({ 
+                message: 'Tool marked as returned but renter not found in database' 
+            });
+        }
 
-        res.status(200).json({
-            success: true,
-            message: 'Tool marked as returned successfully and request removed',
-            tool: updatedTool
+        console.log(`Found renter: ${renter.email}`);
+        let updatedRequest = false;
+        let updatedRental = false;
+
+        // Find and update the request in renter's toolsRequested array (mark as completed)
+        if (renter.toolsRequested && Array.isArray(renter.toolsRequested)) {
+            const requestIndex = renter.toolsRequested.findIndex(
+                request => request.tool?.toString() === tool._id.toString() && 
+                        ['pending', 'accepted'].includes(request.status)
+            );
+
+            if (requestIndex !== -1) {
+                console.log(`Found active tool request at index ${requestIndex}, marking as completed`);
+                renter.toolsRequested[requestIndex].status = 'completed';
+                updatedRequest = true;
+            } else {
+                console.log('No matching active tool request found');
+            }
+        }
+
+        // Find the rental in the renter's toolsRented array and add returnedAt date
+        if (renter.toolsRented && Array.isArray(renter.toolsRented)) {
+            const rentalIndex = renter.toolsRented.findIndex(
+                rental => rental.tool?.toString() === tool._id.toString() && !rental.returnedAt
+            );
+
+            if (rentalIndex !== -1) {
+                console.log(`Found active rental record at index ${rentalIndex}, marking as returned`);
+                renter.toolsRented[rentalIndex].returnedAt = new Date();
+                updatedRental = true;
+            } else {
+                console.log('No matching active rental record found');
+                
+                // Check if there's any rental for this tool (even if it already has returnedAt)
+                const anyRental = renter.toolsRented.find(
+                    rental => rental.tool?.toString() === tool._id.toString()
+                );
+                
+                if (anyRental) {
+                    console.log('Found a rental record that was already marked as returned');
+                } else {
+                    // Special case - tool is rented but renter doesn't have it in their history
+                    // Create a completed rental record for consistency
+                    console.log('Creating a new completed rental record for consistency');
+                    renter.toolsRented.push({
+                        tool: tool._id,
+                        rentedAt: new Date(Date.now() - 86400000), // 1 day ago as placeholder
+                        rentedUntil: new Date(),
+                        returnedAt: new Date()
+                    });
+                    updatedRental = true;
+                }
+            }
+        }
+
+        if (updatedRequest || updatedRental) {
+            await renter.save();
+            console.log(`Updated renter's records: requests=${updatedRequest}, rental=${updatedRental}`);
+        }
+
+        res.status(200).json({ 
+            message: 'Tool marked as returned successfully',
+            toolUpdated: true,
+            renterUpdated: updatedRequest || updatedRental
         });
     } catch (error) {
-        console.error('Error in return tool:', error);
-        res.status(500).json({ 
-            success: false,
-            message: error.message || 'Failed to mark tool as returned'
-        });
+        console.error('Error returning tool:', error);
+        res.status(500).json({ message: 'Error returning tool', error: error.message });
     }
 });
 

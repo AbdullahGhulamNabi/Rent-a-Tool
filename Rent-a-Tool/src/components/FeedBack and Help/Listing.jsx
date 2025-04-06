@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Api_Route } from "../../config";
 import { toast } from "react-hot-toast";
 import { toolService } from "../../services";
+import FeedbackModal from "./FeedbackModal";
 
 function Listing() {
   const [activeTab, setActiveTab] = useState("requests");
@@ -10,12 +11,19 @@ function Listing() {
   const [offerings, setOfferings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const [selectedTool, setSelectedTool] = useState(null);
+  const [rentedTools, setRentedTools] = useState([]);
+  const [toolFeedbacks, setToolFeedbacks] = useState({});
+  const [isFixingRentals, setIsFixingRentals] = useState(false);
 
   useEffect(() => {
     if (activeTab === "requests") {
       fetchRequests();
     } else if (activeTab === "offerings") {
       fetchOfferings();
+    } else if (activeTab === "rentals") {
+      fetchRentedTools();
     }
   }, [activeTab]);
 
@@ -89,6 +97,82 @@ function Listing() {
     }
   };
 
+  const checkExistingFeedback = async (toolId) => {
+    try {
+      const token = localStorage.getItem("jwt_token");
+      if (!token) return false;
+
+      const response = await fetch(`${Api_Route}/api/feedback/tool/${toolId}`, {
+        headers: {
+          'Authorization': token
+        }
+      });
+
+      if (!response.ok) return false;
+
+      const data = await response.json();
+      
+      // Check if current user has already left feedback
+      const userFeedback = data.feedback.some(feedback => 
+        feedback.userId && feedback.userId._id === JSON.parse(localStorage.getItem("userState"))?._id
+      );
+
+      // Store the result
+      setToolFeedbacks(prev => ({
+        ...prev,
+        [toolId]: userFeedback
+      }));
+
+      return userFeedback;
+    } catch (error) {
+      console.error("Error checking feedback:", error);
+      return false;
+    }
+  };
+
+  const fetchRentedTools = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const token = localStorage.getItem("jwt_token");
+      if (!token) {
+        toast.error("Please login to view your rented tools");
+        return;
+      }
+
+      const response = await fetch(`${Api_Route}/dashboard/quickLinks/getUserRentals`, {
+        headers: {
+          'Authorization': token
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch rented tools');
+      }
+
+      const data = await response.json();
+      if (data.success) {
+        setRentedTools(data.rentals || []);
+        
+        // Check feedback status for returned tools
+        const returnedTools = data.rentals.filter(rental => rental.status === 'returned');
+        for (const rental of returnedTools) {
+          if (rental.tool && rental.tool._id) {
+            await checkExistingFeedback(rental.tool._id);
+          }
+        }
+      } else {
+        throw new Error(data.msg || 'Failed to fetch rented tools');
+      }
+    } catch (error) {
+      console.error("Error fetching rented tools:", error);
+      setError(error.message);
+      toast.error("Failed to load your rented tools");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleToolReceived = async (toolId) => {
     try {
       const token = localStorage.getItem("jwt_token");
@@ -103,12 +187,25 @@ function Listing() {
       console.log("Success response:", response);
       
       toast.success("Tool marked as received successfully");
+      
+      // Don't show feedback modal to the owner
+      // The feedback modal should be shown to the renter, not the owner
+      
       // Refresh the offerings list
       fetchOfferings();
     } catch (error) {
       console.error("Error marking tool as received:", error);
       toast.error(error.message || "Failed to mark tool as received");
     }
+  };
+
+  const closeFeedbackModal = async () => {
+    setShowFeedbackModal(false);
+    if (selectedTool) {
+      // After closing modal, update feedback status
+      await checkExistingFeedback(selectedTool._id);
+    }
+    setSelectedTool(null);
   };
 
   const getStatusColor = (status) => {
@@ -138,6 +235,46 @@ function Listing() {
         return "Tool Returned";
       default:
         return status;
+    }
+  };
+
+  const fixRentalInconsistencies = async () => {
+    try {
+      setIsFixingRentals(true);
+      const token = localStorage.getItem("jwt_token");
+      if (!token) {
+        toast.error("Please login to fix your rentals");
+        return;
+      }
+
+      const response = await fetch(`${Api_Route}/dashboard/quickLinks/fix_rentals`, {
+        method: 'POST',
+        headers: {
+          'Authorization': token
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fix rental inconsistencies');
+      }
+
+      const data = await response.json();
+      if (data.success) {
+        if (data.fixedCount > 0) {
+          toast.success(`Fixed ${data.fixedCount} rental inconsistencies`);
+          // Refresh the rentals list
+          fetchRentedTools();
+        } else {
+          toast.info("No rental inconsistencies found");
+        }
+      } else {
+        throw new Error(data.msg || 'Failed to fix rental inconsistencies');
+      }
+    } catch (error) {
+      console.error("Error fixing rental inconsistencies:", error);
+      toast.error(error.message || "Failed to fix rental inconsistencies");
+    } finally {
+      setIsFixingRentals(false);
     }
   };
 
@@ -240,6 +377,31 @@ function Listing() {
             </svg>
             <span className="hidden md:inline font-medium">Chat</span>
           </button>
+
+          <button
+            onClick={() => setActiveTab("rentals")}
+            className={`flex items-center justify-center md:justify-start p-2 rounded-lg transition-all duration-200 ${
+              activeTab === "rentals"
+                ? "bg-green-100 text-green-700 shadow-inner"
+                : "hover:bg-gray-100 text-gray-600"
+            }`}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6 md:mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z"
+              />
+            </svg>
+            <span className="hidden md:inline font-medium">My Rentals</span>
+          </button>
         </div>
       </aside>
 
@@ -247,7 +409,7 @@ function Listing() {
       <main className="bg-gray-50 p-4 overflow-y-auto">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-6">
-            {activeTab === "requests" ? "My Requests" : "My Offerings"}
+            {activeTab === "requests" ? "My Requests" : activeTab === "offerings" ? "My Offerings" : "My Rented Tools"}
           </h1>
 
           <div className="grid gap-4">
@@ -360,8 +522,120 @@ function Listing() {
                 <p className="text-gray-500">No messages found</p>
               </div>
             )}
+
+            {/* Rentals Tab Content */}
+            {activeTab === "rentals" && (
+              <>
+                {loading ? (
+                  <div className="flex justify-center items-center h-64">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+                  </div>
+                ) : rentedTools && rentedTools.length > 0 ? (
+                  <>
+                    <div className="flex flex-col mb-4">
+                      <div className="flex justify-between items-center">
+                        <h3 className="text-lg font-semibold text-gray-700 mb-2">My Rental History</h3>
+                        <button
+                          onClick={fixRentalInconsistencies}
+                          disabled={isFixingRentals}
+                          className="flex items-center bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition-colors"
+                        >
+                          {isFixingRentals ? (
+                            <>
+                              <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                              </svg>
+                              Fixing...
+                            </>
+                          ) : (
+                            <>
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                              </svg>
+                              Fix Issues
+                            </>
+                          )}
+                        </button>
+                      </div>
+                      <p className="text-sm text-gray-500 mb-4">
+                        If some tools appear as "Currently Rented" but have actually been returned, or your rental history seems incorrect, 
+                        click "Fix Issues" to automatically fix any inconsistencies in your rental data.
+                      </p>
+                    </div>
+                    {rentedTools.map((rental) => (
+                      <div key={rental._id} className="bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow duration-200 border border-gray-100">
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <h3 className="text-lg font-semibold text-gray-800">{rental.tool.name}</h3>
+                            <p className="text-gray-600 mt-1">{rental.tool.description}</p>
+                          </div>
+                          <span className={`px-3 py-1 rounded-full text-sm ${
+                            rental.status === 'active' 
+                              ? "bg-blue-100 text-blue-700"
+                              : "bg-green-100 text-green-700"
+                          }`}>
+                            {rental.status === 'active' ? 'Currently Rented' : 'Returned'}
+                          </span>
+                        </div>
+                        <div className="mt-4">
+                          <p className="text-gray-500 text-sm">Price: RS {rental.tool.price || 0} / day</p>
+                          <p className="text-gray-400 text-sm mt-2">
+                            Owner: {rental.tool.owner?.firstName} {rental.tool.owner?.lastName}
+                          </p>
+                          <p className="text-gray-400 text-sm">
+                            Rented on: {new Date(rental.rentedAt).toLocaleDateString()}
+                          </p>
+                          {rental.returnedAt && (
+                            <p className="text-gray-400 text-sm">
+                              Returned on: {new Date(rental.returnedAt).toLocaleDateString()}
+                            </p>
+                          )}
+                        </div>
+                        {rental.status === 'returned' && !toolFeedbacks[rental.tool._id] && (
+                          <div className="mt-4">
+                            <button
+                              onClick={() => {
+                                setSelectedTool(rental.tool);
+                                setShowFeedbackModal(true);
+                              }}
+                              className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors font-medium"
+                            >
+                              Leave Feedback
+                            </button>
+                          </div>
+                        )}
+                        {rental.status === 'returned' && toolFeedbacks[rental.tool._id] && (
+                          <div className="mt-4">
+                            <span className="text-sm text-gray-500">
+                              You have already left feedback for this tool
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </>
+                ) : (
+                  <div className="text-center py-8">
+                    <p className="text-gray-500">No rented tools found</p>
+                  </div>
+                )}
+              </>
+            )}
           </div>
         </div>
+
+        {/* Feedback Modal */}
+        {selectedTool && (
+          <FeedbackModal
+            isOpen={showFeedbackModal}
+            onClose={closeFeedbackModal}
+            toolId={selectedTool._id}
+            toolName={selectedTool.name}
+            toolImage={selectedTool.image}
+          />
+        )}
       </main>
     </div>
   );

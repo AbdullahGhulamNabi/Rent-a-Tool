@@ -311,4 +311,201 @@ router.post("/updateRequestStatus", authentication, async (req, res) => {
     }
 });
 
+// Add a new endpoint to get user rentals
+router.get("/getUserRentals", authentication, async (req, res) => {
+  try {
+    console.log(`Fetching rental history for user: ${req.email}`);
+    
+    const user = await User.findOne({ email: req.email })
+      .populate({
+        path: 'toolsRented.tool',
+        populate: {
+          path: 'owner',
+          select: 'firstName lastName email'
+        }
+      });
+
+    if (!user) {
+      console.log('User not found');
+      return res.status(404).json({
+        success: false,
+        msg: "User not found"
+      });
+    }
+
+    if (!user.toolsRented || !Array.isArray(user.toolsRented)) {
+      console.log('User has no toolsRented array');
+      return res.status(200).json({
+        success: true,
+        rentals: []
+      });
+    }
+
+    console.log(`User has ${user.toolsRented.length} rental records in database`);
+
+    // Format the rentals data and include status based on returnedAt field
+    const rentals = user.toolsRented
+      .filter(rental => rental.tool) // Filter out any null tools
+      .map(rental => {
+        // Determine the status
+        const status = rental.returnedAt ? 'returned' : 'active';
+        
+        // Check if the tool is actually marked as rented to this user in the Tools collection
+        let toolStatus = 'unknown';
+        if (rental.tool.rented && 
+            rental.tool.rentedTo && 
+            rental.tool.rentedTo.user && 
+            rental.tool.rentedTo.user.toString() === user._id.toString()) {
+          toolStatus = 'rented';
+        } else {
+          toolStatus = 'not_rented';
+        }
+
+        return {
+          _id: rental._id,
+          tool: rental.tool,
+          rentedAt: rental.rentedAt,
+          rentedUntil: rental.rentedUntil,
+          returnedAt: rental.returnedAt || null,
+          status: status,
+          toolStatus: toolStatus
+        };
+      });
+
+    // Log some debug information
+    const activeRentals = rentals.filter(r => r.status === 'active').length;
+    const returnedRentals = rentals.filter(r => r.status === 'returned').length;
+    console.log(`Found ${rentals.length} valid rentals for user: ${user.email}`);
+    console.log(`Active: ${activeRentals}, Returned: ${returnedRentals}`);
+    
+    // Show a warning if there are any active rentals where the tool is not actually rented to this user
+    const inconsistentRentals = rentals.filter(r => r.status === 'active' && r.toolStatus !== 'rented');
+    if (inconsistentRentals.length > 0) {
+      console.log(`WARNING: Found ${inconsistentRentals.length} active rentals where the tool is not actually rented to this user`);
+      
+      // Fix inconsistent rentals - mark them as returned
+      for (const rental of inconsistentRentals) {
+        console.log(`Fixing inconsistent rental for tool: ${rental.tool._id}`);
+        const rentalIndex = user.toolsRented.findIndex(
+          r => r.tool && r.tool._id && r.tool._id.toString() === rental.tool._id.toString()
+        );
+        
+        if (rentalIndex !== -1 && !user.toolsRented[rentalIndex].returnedAt) {
+          user.toolsRented[rentalIndex].returnedAt = new Date();
+          rental.returnedAt = new Date();
+          rental.status = 'returned';
+          console.log(`Marked inconsistent rental as returned`);
+          await user.save();
+        }
+      }
+    }
+    
+    res.status(200).json({
+      success: true,
+      rentals: rentals
+    });
+  } catch (error) {
+    console.error("Error fetching user rentals:", error);
+    res.status(500).json({
+      success: false,
+      msg: "Error fetching user rentals"
+    });
+  }
+});
+
+// Add an endpoint to fix inconsistent rental states
+router.post("/fix_rentals", authentication, async (req, res) => {
+  try {
+    console.log(`Fixing inconsistent rental states for user: ${req.email}`);
+    
+    // Find the user with their rentals
+    const user = await User.findOne({ email: req.email })
+      .populate({
+        path: 'toolsRented.tool',
+        select: 'name description price image owner rented rentedTo'
+      });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        msg: "User not found"
+      });
+    }
+
+    if (!user.toolsRented || !Array.isArray(user.toolsRented)) {
+      return res.status(200).json({
+        success: true,
+        msg: "No rentals to fix",
+        fixedCount: 0
+      });
+    }
+
+    let fixedCount = 0;
+    const fixedRentals = [];
+
+    // Process each rental record
+    for (const rental of user.toolsRented) {
+      // Skip if tool is null or no tool exists
+      if (!rental.tool || !rental.tool._id) continue;
+
+      // Case 1: The rental is marked active (no returnedAt) but the tool is not marked as rented
+      if (!rental.returnedAt && (!rental.tool.rented || !rental.tool.rentedTo)) {
+        console.log(`Found inconsistent rental: tool ${rental.tool._id} is not marked as rented but user has active rental`);
+        
+        // Fix: Mark the rental as returned
+        rental.returnedAt = new Date();
+        fixedCount++;
+        fixedRentals.push({
+          toolId: rental.tool._id,
+          toolName: rental.tool.name,
+          fixType: "marked_returned"
+        });
+      }
+      
+      // Case 2: The rental is marked as returned but the tool is still marked as rented to this user
+      else if (rental.returnedAt && rental.tool.rented && rental.tool.rentedTo && 
+               rental.tool.rentedTo.user && rental.tool.rentedTo.user.toString() === user._id.toString()) {
+        console.log(`Found inconsistent rental: tool ${rental.tool._id} is still marked as rented to user but rental is returned`);
+        
+        // Fix: Mark the tool as not rented
+        await Tool.findByIdAndUpdate(rental.tool._id, {
+          $set: {
+            rented: false,
+            rentedTo: null
+          }
+        });
+        
+        fixedCount++;
+        fixedRentals.push({
+          toolId: rental.tool._id,
+          toolName: rental.tool.name,
+          fixType: "marked_not_rented"
+        });
+      }
+    }
+
+    // Save the user's changes
+    if (fixedCount > 0) {
+      await user.save();
+      console.log(`Fixed ${fixedCount} inconsistent rentals`);
+    } else {
+      console.log('No inconsistent rentals found');
+    }
+
+    res.status(200).json({
+      success: true,
+      msg: fixedCount > 0 ? `Fixed ${fixedCount} inconsistent rentals` : "No inconsistent rentals found",
+      fixedCount,
+      fixedRentals
+    });
+  } catch (error) {
+    console.error("Error fixing rentals:", error);
+    res.status(500).json({
+      success: false,
+      msg: "Error fixing rental inconsistencies",
+      error: error.message
+    });
+  }
+});
+
 module.exports = router;

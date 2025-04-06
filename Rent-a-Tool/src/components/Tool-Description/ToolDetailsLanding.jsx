@@ -295,6 +295,38 @@ const ToolDetailsLanding = () => {
     navigate("/login");
   };
 
+  const [toolFeedback, setToolFeedback] = useState([]);
+  const [averageRating, setAverageRating] = useState(0);
+  const [feedbackCount, setFeedbackCount] = useState(0);
+  const [feedbackLoading, setFeedbackLoading] = useState(false);
+
+  // Add a new useEffect to fetch feedback
+  useEffect(() => {
+    const fetchFeedback = async () => {
+      if (!tool || !tool._id) return;
+      
+      setFeedbackLoading(true);
+      try {
+        const response = await fetch(`${Api_Route}/api/feedback/tool/${tool._id}`);
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch feedback');
+        }
+        
+        const data = await response.json();
+        setToolFeedback(data.feedback || []);
+        setAverageRating(data.averageRating || 0);
+        setFeedbackCount(data.count || 0);
+      } catch (error) {
+        console.error('Error fetching feedback:', error);
+      } finally {
+        setFeedbackLoading(false);
+      }
+    };
+    
+    fetchFeedback();
+  }, [tool]);
+
   return (
     <div className="min-h-screen bg-imageBG">
       <ToastContainer />
@@ -439,6 +471,73 @@ const ToolDetailsLanding = () => {
             )}
           </div>
         </div>
+      </div>
+
+      {/* Feedback Section */}
+      <div className="mt-8 bg-white rounded-xl shadow-md p-6">
+        <h3 className="text-xl font-semibold text-gray-800 mb-4">
+          Customer Reviews
+          {feedbackCount > 0 && (
+            <span className="text-sm font-normal text-gray-600 ml-2">
+              ({feedbackCount} {feedbackCount === 1 ? 'review' : 'reviews'})
+            </span>
+          )}
+        </h3>
+        
+        {feedbackLoading ? (
+          <div className="flex justify-center py-4">
+            <div className="w-8 h-8 border-4 border-t-transparent border-green-500 border-solid rounded-full animate-spin"></div>
+          </div>
+        ) : feedbackCount === 0 ? (
+          <p className="text-gray-500">No reviews yet. Be the first to leave a review!</p>
+        ) : (
+          <>
+            <div className="flex items-center mb-4">
+              <div className="flex">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <svg
+                    key={star}
+                    className="w-5 h-5"
+                    fill={star <= Math.round(averageRating) ? "#F59E0B" : "#E5E7EB"}
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M12 2l2.2 6.7h7.1l-5.7 4.1 2.2 6.7-5.7-4.1-5.7 4.1 2.2-6.7-5.7-4.1h7.1z" />
+                  </svg>
+                ))}
+              </div>
+              <span className="ml-2 text-lg font-medium text-gray-700">
+                {averageRating.toFixed(1)}
+              </span>
+            </div>
+            
+            <div className="space-y-4 mt-6">
+              {toolFeedback.map((review) => (
+                <div key={review._id} className="border-b pb-4">
+                  <div className="flex items-center">
+                    <div className="flex">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <svg
+                          key={star}
+                          className="w-4 h-4"
+                          fill={star <= review.rating ? "#F59E0B" : "#E5E7EB"}
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M12 2l2.2 6.7h7.1l-5.7 4.1 2.2 6.7-5.7-4.1-5.7 4.1 2.2-6.7-5.7-4.1h7.1z" />
+                        </svg>
+                      ))}
+                    </div>
+                    <div className="ml-2 text-sm font-medium text-gray-700">
+                      by {review.userId?.firstName || 'Anonymous'}
+                    </div>
+                  </div>
+                  {review.desc && (
+                    <p className="mt-2 text-gray-600">{review.desc}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

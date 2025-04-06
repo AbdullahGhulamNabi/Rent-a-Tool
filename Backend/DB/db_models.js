@@ -53,6 +53,10 @@ const users = new mongoose.Schema({
       },
       rentedUntil: {
         type: Date
+      },
+      returnedAt: {
+        type: Date,
+        default: null
       }
     }
   ],
