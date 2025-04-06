@@ -162,6 +162,12 @@ const chat = new mongoose.Schema({
       },
     },
   ],
+  deletedBy: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Users",
+    },
+  ],
 });
 
 const payment = new mongoose.Schema({

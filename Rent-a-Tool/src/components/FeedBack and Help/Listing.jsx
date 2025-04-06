@@ -4,6 +4,7 @@ import { toast } from "react-hot-toast";
 import { toolService } from "../../services";
 import FeedbackModal from "./FeedbackModal";
 import ChatInbox from "../Chat/ChatInbox";
+import { useLocation } from "react-router-dom";
 
 function Listing() {
   const [activeTab, setActiveTab] = useState("requests");
@@ -17,6 +18,15 @@ function Listing() {
   const [rentedTools, setRentedTools] = useState([]);
   const [toolFeedbacks, setToolFeedbacks] = useState({});
   const [isFixingRentals, setIsFixingRentals] = useState(false);
+  
+  const location = useLocation();
+
+  // Check if coming from tool details and set chat tab as active
+  useEffect(() => {
+    if (location.state?.activeTab) {
+      setActiveTab(location.state.activeTab);
+    }
+  }, [location.state]);
 
   useEffect(() => {
     if (activeTab === "requests") {

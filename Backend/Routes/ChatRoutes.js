@@ -11,7 +11,11 @@ router.get('/', userMiddleware, async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        const chats = await Chat.find({ participants: user._id })
+        // Find chats where user is participant and hasn't deleted the chat
+        const chats = await Chat.find({ 
+            participants: user._id,
+            deletedBy: { $ne: user._id } // Not deleted by this user
+        })
             .populate('participants', 'firstName lastName profilePhoto')
             .sort({ 'messages.time': -1 });
 
@@ -88,16 +92,37 @@ router.post('/', userMiddleware, async (req, res) => {
             return res.status(404).json({ message: 'Participant not found' });
         }
 
-        // Check if chat already exists between these users
+        // Check if chat already exists between these users (that hasn't been deleted by this user)
         const existingChat = await Chat.findOne({
-            participants: { $all: [user._id, participant._id] }
+            participants: { $all: [user._id, participant._id] },
+            deletedBy: { $ne: user._id } // Make sure chat is not marked as deleted by current user
         });
 
         if (existingChat) {
             return res.json(existingChat);
         }
 
-        // Create new chat
+        // If there's a chat deleted by the current user, update it by removing user from deletedBy
+        const deletedChat = await Chat.findOne({
+            participants: { $all: [user._id, participant._id] },
+            deletedBy: user._id
+        });
+
+        if (deletedChat) {
+            // Restore the chat by removing user from deletedBy
+            deletedChat.deletedBy = deletedChat.deletedBy.filter(
+                id => id.toString() !== user._id.toString()
+            );
+            await deletedChat.save();
+            
+            // Return the restored chat
+            const populatedDeletedChat = await Chat.findById(deletedChat._id)
+                .populate('participants', 'firstName lastName profilePhoto');
+                
+            return res.json(populatedDeletedChat);
+        }
+
+        // Create new chat if no existing chat is found
         const newChat = new Chat({
             participants: [user._id, participant._id],
             messages: []
@@ -196,20 +221,71 @@ router.put('/:chatId/read', userMiddleware, async (req, res) => {
     }
 });
 
+// Delete a chat
+router.delete('/:chatId', userMiddleware, async (req, res) => {
+    try {
+        const user = await User.findOne({ email: req.email });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Find the chat and make sure the user is a participant
+        const chat = await Chat.findOne({
+            _id: req.params.chatId,
+            participants: user._id
+        });
+
+        if (!chat) {
+            return res.status(404).json({ message: 'Chat not found' });
+        }
+
+        // Mark chat as deleted for this user (rather than deleting it completely)
+        await Chat.findByIdAndUpdate(
+            req.params.chatId,
+            { $addToSet: { deletedBy: user._id } }
+        );
+        
+        // If both participants have deleted the chat, remove it completely
+        const updatedChat = await Chat.findById(req.params.chatId);
+        if (updatedChat.deletedBy.length >= updatedChat.participants.length) {
+            await Chat.findByIdAndDelete(req.params.chatId);
+        }
+        
+        res.json({ success: true, message: 'Chat deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting chat:', error);
+        res.status(500).json({ message: error.message });
+    }
+});
+
 // Helper function to create a chat when a tool is requested
 // This can be imported and used in the tool request handler
 const createChatForToolRequest = async (renterId, ownerId) => {
     try {
-        // Check if chat already exists
+        // Check if chat already exists (that hasn't been deleted by either user)
         const existingChat = await Chat.findOne({
-            participants: { $all: [renterId, ownerId] }
+            participants: { $all: [renterId, ownerId] },
+            deletedBy: { $nin: [renterId, ownerId] } // Not deleted by either user
         });
 
         if (existingChat) {
             return existingChat;
         }
 
-        // Create new chat
+        // If there's a chat deleted by either user, update it by removing users from deletedBy
+        const deletedChat = await Chat.findOne({
+            participants: { $all: [renterId, ownerId] },
+            deletedBy: { $in: [renterId, ownerId] }
+        });
+
+        if (deletedChat) {
+            // Restore the chat by clearing deletedBy
+            deletedChat.deletedBy = [];
+            await deletedChat.save();
+            return deletedChat;
+        }
+
+        // Create new chat if no existing chat is found
         const newChat = new Chat({
             participants: [renterId, ownerId],
             messages: []

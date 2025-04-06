@@ -85,8 +85,14 @@ const ToolDetailsLanding = () => {
           if (response.ok) {
             const chatData = await response.json();
             console.log('Chat created or found:', chatData);
-            // Navigate to the chat interface/inbox
-            navigate("/Dashboard/Listing", { state: { activeTab: "chat" } });
+            // Navigate to the chat interface/inbox and explicitly set activeTab to "chat"
+            // Use state to ensure the chat tab is selected
+            navigate("/Dashboard/Listing", { 
+              state: { 
+                activeTab: "chat",
+                fromToolDetails: true 
+              } 
+            });
           } else {
             console.error('Failed to create chat');
             navigate("/Dashboard/Listing");

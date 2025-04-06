@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { Api_Route } from "../../config";
 import { toast } from "react-hot-toast";
 
@@ -9,9 +9,11 @@ function ChatConversation() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const messagesEndRef = useRef(null);
   const currentUserId = JSON.parse(localStorage.getItem("userState"))?._id;
   const pollingIntervalRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchChat();
@@ -140,6 +142,40 @@ function ChatConversation() {
     return date.toLocaleDateString();
   };
 
+  const deleteChat = async () => {
+    if (!window.confirm("Are you sure you want to delete this conversation? This cannot be undone.")) {
+      return;
+    }
+
+    try {
+      setDeleting(true);
+      const token = localStorage.getItem("jwt_token");
+      if (!token) {
+        toast.error("Please login to delete this chat");
+        return;
+      }
+
+      const response = await fetch(`${Api_Route}/api/chats/${chatId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': token
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete chat');
+      }
+
+      toast.success("Chat deleted successfully");
+      navigate("/dashboard/chat");
+    } catch (error) {
+      console.error("Error deleting chat:", error);
+      toast.error("Failed to delete chat");
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -165,22 +201,42 @@ function ChatConversation() {
   return (
     <div className="flex flex-col h-full bg-white rounded-lg shadow-md overflow-hidden">
       {/* Header */}
-      <div className="bg-gray-50 p-4 border-b flex items-center">
-        <Link to="/dashboard/chat" className="mr-3">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clipRule="evenodd" />
-          </svg>
-        </Link>
-        <img 
-          src={otherParticipant?.profilePhoto 
-            ? `${Api_Route}/public/uploads/users/${otherParticipant.profilePhoto}`
-            : '/Default_ProfilePic.png'} 
-          alt="Profile" 
-          className="h-10 w-10 rounded-full object-cover mr-3"
-        />
-        <div>
-          <h2 className="font-medium">{otherParticipant?.firstName} {otherParticipant?.lastName}</h2>
+      <div className="bg-gray-50 p-4 border-b flex items-center justify-between">
+        <div className="flex items-center">
+          <Link to="/dashboard/chat" className="mr-3">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clipRule="evenodd" />
+            </svg>
+          </Link>
+          <img 
+            src={otherParticipant?.profilePhoto 
+              ? `${Api_Route}/Images/${otherParticipant.profilePhoto}`
+              : '/Default_ProfilePic.png'} 
+            alt="Profile" 
+            className="h-10 w-10 rounded-full object-cover mr-3"
+          />
+          <div>
+            <h2 className="font-medium">{otherParticipant?.firstName} {otherParticipant?.lastName}</h2>
+          </div>
         </div>
+        
+        <button
+          onClick={deleteChat}
+          disabled={deleting}
+          className="p-2 text-gray-500 hover:text-red-500 rounded-full flex items-center"
+          title="Delete conversation"
+        >
+          {deleting ? (
+            <div className="h-5 w-5 animate-spin rounded-full border-b-2 border-red-500"></div>
+          ) : (
+            <>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+              <span className="text-sm hidden sm:inline">Delete</span>
+            </>
+          )}
+        </button>
       </div>
       
       {/* Messages */}
@@ -218,7 +274,7 @@ function ChatConversation() {
                       {!isFromMe && (
                         <img 
                           src={msg.sender.profilePhoto 
-                            ? `${Api_Route}/public/uploads/users/${msg.sender.profilePhoto}`
+                            ? `${Api_Route}/Images/${msg.sender.profilePhoto}`
                             : '/Default_ProfilePic.png'} 
                           alt="Profile" 
                           className="h-8 w-8 rounded-full object-cover mr-2 mb-1"

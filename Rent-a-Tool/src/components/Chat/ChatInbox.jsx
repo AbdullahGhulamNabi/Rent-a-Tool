@@ -6,6 +6,7 @@ import { toast } from "react-hot-toast";
 function ChatInbox() {
   const [chats, setChats] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [deletingChatId, setDeletingChatId] = useState(null);
 
   useEffect(() => {
     fetchChats();
@@ -54,6 +55,44 @@ function ChatInbox() {
     return chats.reduce((total, chat) => total + chat.unreadCount, 0);
   };
 
+  const deleteChat = async (chatId, e) => {
+    e.preventDefault(); // Prevent navigation
+    e.stopPropagation(); // Prevent event bubbling
+    
+    if (!window.confirm("Are you sure you want to delete this conversation? This cannot be undone.")) {
+      return;
+    }
+
+    try {
+      setDeletingChatId(chatId);
+      const token = localStorage.getItem("jwt_token");
+      if (!token) {
+        toast.error("Please login to delete a chat");
+        return;
+      }
+
+      const response = await fetch(`${Api_Route}/api/chats/${chatId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': token
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete chat');
+      }
+
+      // Remove the deleted chat from state
+      setChats(prevChats => prevChats.filter(chat => chat._id !== chatId));
+      toast.success("Chat deleted successfully");
+    } catch (error) {
+      console.error("Error deleting chat:", error);
+      toast.error("Failed to delete chat");
+    } finally {
+      setDeletingChatId(null);
+    }
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden h-full">
       <div className="p-4 border-b">
@@ -82,45 +121,60 @@ function ChatInbox() {
         ) : (
           <div className="divide-y">
             {chats.map(chat => (
-              <Link 
-                key={chat._id} 
-                to={`/dashboard/chat/${chat._id}`}
-                className="block p-4 hover:bg-gray-50 transition"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <div className="relative">
-                      <img 
-                        src={chat.participants[0]?.profilePhoto 
-                          ? `${Api_Route}/public/uploads/users/${chat.participants[0].profilePhoto}`
-                          : '/Default_ProfilePic.png'} 
-                        alt="Profile" 
-                        className="h-12 w-12 rounded-full object-cover"
-                      />
-                      {chat.unreadCount > 0 && (
-                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                          {chat.unreadCount}
-                        </span>
-                      )}
-                    </div>
-                    <div className="ml-3">
-                      <p className="font-medium">
-                        {chat.participants[0]?.firstName} {chat.participants[0]?.lastName}
-                      </p>
-                      {chat.lastMessage && (
-                        <p className="text-sm text-gray-600 truncate w-48">
-                          {chat.lastMessage.isFromUser ? 'You: ' : ''}{chat.lastMessage.text}
+              <div key={chat._id} className="relative">
+                <Link 
+                  to={`/dashboard/chat/${chat._id}`}
+                  className="block p-4 hover:bg-gray-50 transition"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <div className="relative">
+                        <img 
+                          src={chat.participants[0]?.profilePhoto 
+                            ? `${Api_Route}/Images/${chat.participants[0].profilePhoto}`
+                            : '/Default_ProfilePic.png'} 
+                          alt="Profile" 
+                          className="h-12 w-12 rounded-full object-cover"
+                        />
+                        {chat.unreadCount > 0 && (
+                          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                            {chat.unreadCount}
+                          </span>
+                        )}
+                      </div>
+                      <div className="ml-3">
+                        <p className="font-medium">
+                          {chat.participants[0]?.firstName} {chat.participants[0]?.lastName}
                         </p>
-                      )}
+                        {chat.lastMessage && (
+                          <p className="text-sm text-gray-600 truncate w-48">
+                            {chat.lastMessage.isFromUser ? 'You: ' : ''}{chat.lastMessage.text}
+                          </p>
+                        )}
+                      </div>
                     </div>
+                    {chat.lastMessage && (
+                      <span className="text-xs text-gray-500">
+                        {formatTime(chat.lastMessage.time)}
+                      </span>
+                    )}
                   </div>
-                  {chat.lastMessage && (
-                    <span className="text-xs text-gray-500">
-                      {formatTime(chat.lastMessage.time)}
-                    </span>
+                </Link>
+                <button
+                  onClick={(e) => deleteChat(chat._id, e)}
+                  disabled={deletingChatId === chat._id}
+                  className="absolute right-2 top-2 p-2 text-gray-400 hover:text-red-500 rounded-full"
+                  title="Delete conversation"
+                >
+                  {deletingChatId === chat._id ? (
+                    <div className="h-5 w-5 animate-spin rounded-full border-b-2 border-red-500"></div>
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
                   )}
-                </div>
-              </Link>
+                </button>
+              </div>
             ))}
           </div>
         )}
