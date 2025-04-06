@@ -68,8 +68,8 @@ const ToolDetailsLanding = () => {
 
   function handleNavigate(tool) {
     if (state && state._id) {
-      // navigate("/ToolDescription/Chat");
-      navigate(`/ToolDescription/Chat/${tool}`);
+      navigate("/ToolDescriptions/Chat");
+      // navigate(`/ToolDescription/Chat/${tool}`);
     } else {
       setShowMessage(true);
       document.body.style.overflow = "hidden"

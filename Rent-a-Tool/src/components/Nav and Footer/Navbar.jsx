@@ -16,8 +16,12 @@ import Add from "../Add-Update/AddUpdate";
 import { UserContext } from "../../App";
 import { useContext } from "react";
 import { Api_Route } from "../../config";
+// import { useSearch } from "../../SearchContext";
+import { SearchContext } from "../../Context/SearchContext";
 
 function Navbar({ isLoggedIn }) {
+  const { setSearchTerm } = useContext(SearchContext);
+  // const { state } = useContext(UserContext);
   const { state, dispatch } = useContext(UserContext);
 
   const navigate = useNavigate();
@@ -129,11 +133,21 @@ function Navbar({ isLoggedIn }) {
   function HomePage() {
     navigate("/");
   }
-
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      navigate(state ? "/Dashboard/Tools" : "/Tools");
-    }
+  //const { setSearchTerm } = useSearch(); // Assuming you have a context or state management for search term
+  // const handleKeyDown = (e) => {
+  //   if (e.key === "Enter") {
+  //     const value = e.target.value.trim();
+  //     if (!value) {
+  //       setSearchTerm(""); // Set searchTerm to empty string when the input is cleared
+  //     } else {
+  //       setSearchTerm(value); // Update the global state with the search term
+  //     }
+  //   }
+  // };
+  const handleSearchChange = (e) => {
+    const value = e.target.value.trim();
+    setSearchTerm(value);  // Update the global state with the search term
+    setSearchQuery(value)
   };
 
   return (
@@ -145,8 +159,9 @@ function Navbar({ isLoggedIn }) {
       <input
         type="search"
         placeholder="Search..."
-        onChange={(e) => setSearchQuery(e.target.value)}
-        onKeyDown={handleKeyDown}
+        // onChange={(e) => setSearchQuery(e.target.value)}
+        // onKeyDown={handleKeyDown}
+        onChange={handleSearchChange}
         className="md:w-[400px] sm:w-[300px] w-[200px] h-[45px] px-4 py-2 bg-white text-gray-400 placeholder-gray-400 border-2 border-slate-600 rounded-full"
       />
 
