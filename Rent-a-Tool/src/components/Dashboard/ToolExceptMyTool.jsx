@@ -1,10 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Api_Route } from '../../config'; // Ensure correct import
 // import toolService from '../../services'; // Ensure correct import
 import { toolService } from '../../services';
+import { SearchContext } from '../../Context/SearchContext'; // Ensure correct import
 
 const ToolExceptMyTool = () => {
+  const { searchTerm } = useContext(SearchContext);
+  // Filter tools based on the search term
+
+  console.log(searchTerm, "searchTerm in ToolExceptMyTool")
   const [tools, setTools] = useState([]);
   const [visibleCount, setVisibleCount] = useState(8);
   // const [tools, setTools] = useState([]);
@@ -26,23 +31,28 @@ const ToolExceptMyTool = () => {
 
     fetchTools();
   }, []);
+  const filteredTools = tools.filter((tool) =>
+    tool.name.toLowerCase().includes(searchTerm.toLowerCase()) || // Match by name
+    (tool.owner && tool.owner.firstName.toLowerCase().includes(searchTerm.toLowerCase())) || // Match by owner's first name
+    (tool.owner && tool.owner.lastName.toLowerCase().includes(searchTerm.toLowerCase())) // Match by owner's last name
+  );
 
   function handleNavigate(toolId) {
     navigate(`/ToolDescription/${toolId}`);
   }
 
-  const fetchTools = async () => {
-    try {
-      setLoading(true);
-      const fetchedTools = await toolService.getAllTools();
-      setTools(fetchedTools);
-      setError('');
-    } catch (err) {
-      setError('Failed to fetch tools: ' + (err.message || 'Unknown error'));
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const fetchTools = async () => {
+  //   try {
+  //     setLoading(true);
+  //     const fetchedTools = await toolService.getAllTools();
+  //     setTools(fetchedTools);
+  //     setError('');
+  //   } catch (err) {
+  //     setError('Failed to fetch tools: ' + (err.message || 'Unknown error'));
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const handleCardClick = (tool) => {
     // Ensure tool data has the correct structure
@@ -63,24 +73,28 @@ const ToolExceptMyTool = () => {
     setVisibleCount(prev => prev + 4);
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div class="flex justify-center items-center my-12">
+
+    <div class="w-16 h-16 border-4 border-t-transparent border-[#7bafa3] border-solid rounded-full animate-spin"></div>
+  </div>;
   if (error) return <div>Error: {error}</div>;
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className='font-bold text-5xl text-HomeText w-[120px] m-auto my-5'>Tools</div>
+      <div className="font-bold text-5xl text-HomeText w-[120px] m-auto my-5">Tools</div>
 
       {!loading && !error && (
         <>
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 cursor-pointer" >
-            {tools.slice(0, visibleCount).map((tool) => {
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 cursor-pointer">
+            {filteredTools.slice(0, visibleCount).map((tool) => {
               const owner = tool.owner || {}; // Ensure owner is always an object
               return (
-                <div key={tool._id} className="rounded-lg overflow-hidden shadow hover:shadow-lg cursor-pointer"> 
+                <div key={tool._id} className="rounded-lg overflow-hidden shadow hover:shadow-lg cursor-pointer">
                   <div className="relative">
-                    <div className="relative w-full h-40 sm:h-48 bg-gray-200 flex items-center justify-center"
-                  onClick={() => handleCardClick(tool)} 
-                  >
+                    <div
+                      className="relative w-full h-40 sm:h-48 bg-gray-200 flex items-center justify-center"
+                      onClick={() => handleCardClick(tool)}
+                    >
                       {tool.image ? (
                         <img
                           src={`${Api_Route}/uploads/tools/${tool.image}`}
@@ -93,13 +107,12 @@ const ToolExceptMyTool = () => {
                     </div>
                     <div
                       className={`absolute bottom-0 left-0 p-1 text-sm 
-    ${tool.price && tool.price > 0 ? "bg-black bg-opacity-30 text-white" : "bg-green-200 text-black "}`}
+                      ${tool.price && tool.price > 0 ? "bg-black bg-opacity-30 text-white" : "bg-green-200 text-black"}`}
                     >
                       {tool.price && tool.price > 0 ? `RS ${tool.price} / day` : "Free to Borrow"}
                     </div>
                     <div
-                      className={`absolute bottom-0 right-0 text-black p-1 text-sm ${tool.rented ? "bg-red-400" : "bg-green-200"
-                        }`}
+                      className={`absolute bottom-0 right-0 text-black p-1 text-sm ${tool.rented ? "bg-red-400" : "bg-green-200"}`}
                     >
                       {tool.rented ? "Rented" : "Available"}
                     </div>
@@ -127,7 +140,7 @@ const ToolExceptMyTool = () => {
             })}
           </div>
 
-          {visibleCount < tools.length && (
+          {filteredTools.length < tools.length && (
             <div className="text-center mt-8">
               <button
                 onClick={handleLoadMore}

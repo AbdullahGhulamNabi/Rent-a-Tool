@@ -33,6 +33,7 @@ import ToolDetailsLanding from "./components/Tool-Description/ToolDetailsLanding
 import TermsAndPolicy from "./components/FeedBack and Help/TermsAndPolicy";
 import EmailVerification from "./components/Login and Sign Up/EmailVerification";
 import ToolRequests from "./components/Dashboard/ToolRequests";
+import { SearchProvider } from "./Context/SearchContext";
 // import { create } from "@mui/material/styles/createTransitions";
 
 function PrivateRoute({ children }) {
@@ -229,7 +230,9 @@ function App() {
   return (
     <>
       <UserContext.Provider value={{ state, dispatch }}>
+      <SearchProvider>
         <RouterProvider router={RoutesOfRent_a_Tool} />
+        </SearchProvider>
       </UserContext.Provider>
     </>
   );
