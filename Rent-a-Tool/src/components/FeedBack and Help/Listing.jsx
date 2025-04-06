@@ -3,6 +3,7 @@ import { Api_Route } from "../../config";
 import { toast } from "react-hot-toast";
 import { toolService } from "../../services";
 import FeedbackModal from "./FeedbackModal";
+import ChatInbox from "../Chat/ChatInbox";
 
 function Listing() {
   const [activeTab, setActiveTab] = useState("requests");
@@ -518,8 +519,8 @@ function Listing() {
 
             {/* Chat Tab Content */}
             {activeTab === "chat" && (
-              <div className="text-center py-8">
-                <p className="text-gray-500">No messages found</p>
+              <div className="h-full w-full">
+                <ChatInbox />
               </div>
             )}
 

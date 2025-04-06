@@ -6,6 +6,7 @@ const path = require('path');
 const fs = require('fs');
 const userMiddleware = require('../Middlewares/Authentication');
 const { sendToolRequestEmail } = require('../config/emailConfig');
+const { createChatForToolRequest } = require('./ChatRoutes');
 
 // Ensure uploads directory exists
 const uploadDir = 'public/uploads/tools';
@@ -437,6 +438,15 @@ router.post('/:id/request', userMiddleware, async (req, res) => {
             });
             await user.save();
             console.log('New tool request saved to user');
+        }
+
+        // Create a chat between the owner and requester
+        try {
+            const chat = await createChatForToolRequest(user._id, tool.owner._id);
+            console.log('Chat created for tool request:', chat ? chat._id : 'Failed');
+        } catch (chatError) {
+            console.error('Error creating chat for tool request:', chatError);
+            // Continue with the request process even if chat creation fails
         }
 
         // Send email notification to tool owner if they have enabled it

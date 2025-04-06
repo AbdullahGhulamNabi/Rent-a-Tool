@@ -34,6 +34,8 @@ import TermsAndPolicy from "./components/FeedBack and Help/TermsAndPolicy";
 import EmailVerification from "./components/Login and Sign Up/EmailVerification";
 import ToolRequests from "./components/Dashboard/ToolRequests";
 import { SearchProvider } from "./Context/SearchContext";
+import ChatInbox from "./components/Chat/ChatInbox";
+import ChatConversation from "./components/Chat/ChatConversation";
 // import { create } from "@mui/material/styles/createTransitions";
 
 function PrivateRoute({ children }) {
@@ -113,6 +115,8 @@ const RoutesOfRent_a_Tool = createBrowserRouter([
           { path: "Help", element: <Help /> },
           { path: "Tools", element: <Tools /> },
           { path: "requests", element: <ToolRequests /> },
+          { path: "chat", element: <ChatInbox /> },
+          { path: "chat/:chatId", element: <ChatConversation /> },
         ],
       },
       {
