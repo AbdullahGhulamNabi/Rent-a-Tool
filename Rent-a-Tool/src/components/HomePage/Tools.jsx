@@ -70,7 +70,10 @@ const Tools = () => {
     setVisibleCount(prev => prev + 4);
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div class="flex justify-center items-center my-12">
+
+  <div class="w-16 h-16 border-4 border-t-transparent border-[#7bafa3] border-solid rounded-full animate-spin"></div>
+</div>;
   if (error) return <div>Error: {error}</div>;
 
   return (

@@ -81,7 +81,10 @@ const MyTools = () => {
   };
 
   if (loading) {
-    return <div className="p-4 text-center m-auto ">Loading...</div>;
+    return <div class="flex justify-center items-center my-12">
+
+    <div class="w-16 h-16 border-4 border-t-transparent border-[#7bafa3] border-solid rounded-full animate-spin"></div>
+  </div>;
   }
 
   if (error) {
