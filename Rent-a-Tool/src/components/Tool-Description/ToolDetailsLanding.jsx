@@ -68,8 +68,36 @@ const ToolDetailsLanding = () => {
 
   function handleNavigate(tool) {
     if (state && state._id) {
-      navigate("/ToolDescriptions/Chat");
-      // navigate(`/ToolDescription/Chat/${tool}`);
+      // Create a chat with the owner before navigating
+      const createChatWithOwner = async () => {
+        try {
+          const response = await fetch(`${Api_Route}/api/chats`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': localStorage.getItem('jwt_token')
+            },
+            body: JSON.stringify({
+              participantId: tool.owner._id
+            })
+          });
+
+          if (response.ok) {
+            const chatData = await response.json();
+            console.log('Chat created or found:', chatData);
+            // Navigate to the chat interface/inbox
+            navigate("/Dashboard/Listing", { state: { activeTab: "chat" } });
+          } else {
+            console.error('Failed to create chat');
+            navigate("/Dashboard/Listing");
+          }
+        } catch (error) {
+          console.error('Error creating chat:', error);
+          navigate("/Dashboard/Listing");
+        }
+      };
+
+      createChatWithOwner();
     } else {
       setShowMessage(true);
       document.body.style.overflow = "hidden"
