@@ -178,15 +178,15 @@ function ChatConversation() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen">
+      <div className="flex justify-center items-center min-h-[600px]">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
-      </div>
+        </div>
     );
   }
 
   if (!chat) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen">
+      <div className="flex flex-col items-center justify-center min-h-[600px]">
         <p className="text-gray-600 mb-4">Conversation not found</p>
         <Link to="/dashboard/chat" className="text-blue-500 hover:underline">
           Back to Messages
@@ -199,7 +199,7 @@ function ChatConversation() {
   const otherParticipant = chat.participants.find(p => p._id !== currentUserId);
 
   return (
-    <div className="flex flex-col h-full bg-white rounded-lg shadow-md overflow-hidden">
+    <div className="flex flex-col h-full bg-white rounded-lg shadow-md overflow-hidden min-h-[600px]">
       {/* Header */}
       <div className="bg-gray-50 p-4 border-b flex items-center justify-between">
         <div className="flex items-center">
@@ -240,7 +240,7 @@ function ChatConversation() {
       </div>
       
       {/* Messages */}
-      <div className="flex-1 p-4 overflow-y-auto bg-gray-50">
+      <div className="flex-1 p-4 overflow-y-auto bg-gray-50 min-h-[450px]">
         {chat.messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center">
             <div className="bg-gray-200 p-3 rounded-full mb-4">

@@ -94,7 +94,7 @@ function ChatInbox() {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden h-full">
+    <div className="bg-white rounded-lg shadow-md overflow-hidden min-h-[600px] h-full">
       <div className="p-4 border-b">
         <div className="flex justify-between items-center">
           <h2 className="text-xl font-semibold">Messages</h2>
@@ -108,11 +108,11 @@ function ChatInbox() {
       
       <div className="overflow-y-auto h-[calc(100%-60px)]">
         {loading ? (
-          <div className="flex justify-center py-8">
+          <div className="flex justify-center items-center h-[500px]">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-          </div>
+            </div>
         ) : chats.length === 0 ? (
-          <div className="text-center py-8">
+          <div className="flex flex-col justify-center items-center h-[500px]">
             <p className="text-gray-500">No conversations yet</p>
             <p className="text-sm text-gray-400 mt-2">
               Chat with tool owners or renters to coordinate your rentals
