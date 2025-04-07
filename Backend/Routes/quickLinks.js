@@ -27,7 +27,13 @@ router.get("/getToolCount", authentication, async (req, res) => {
             return res.status(404).json({ msg: "User not found!" });
         }
 
-        res.json({ success: true, toolRentalCount: ((user.toolsRented.length) + (user.toolsRequested.length)) });
+        // Count only active rentals (those without a returnedAt date)
+        const activeRentals = user.toolsRented.filter(rental => !rental.returnedAt).length;
+        
+        // Get pending requests count (optional - to show separately)
+        const pendingRequests = user.toolsRequested.filter(request => request.status === "pending").length;
+
+        res.json({ success: true, toolRentalCount: activeRentals });
     } catch (error) {
         res.status(500).json({ msg: "Error fetching tool rental count", error });
     }
@@ -258,6 +264,14 @@ router.post("/updateRequestStatus", authentication, async (req, res) => {
         if (status === 'accepted') {
             // Update request status to accepted
             requester.toolsRequested[requestIndex].status = 'accepted';
+            
+            // Add the tool to requester's toolsRented array
+            requester.toolsRented.push({
+                tool: toolId,
+                rentedAt: new Date(),
+                rentedUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days from now
+            });
+            
             await requester.save();
             
             // Update tool status

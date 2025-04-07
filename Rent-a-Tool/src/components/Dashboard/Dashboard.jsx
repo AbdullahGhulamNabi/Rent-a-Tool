@@ -205,7 +205,7 @@ function Dashboard() {
           </div>
           <div className="bg-white shadow-md rounded-lg p-4 text-center">
             {/* <button onClick={showActiveRentals}> */}
-              <h3 className="text-lg font-medium text-gray-800">Active Rentals</h3>
+              <h3 className="text-lg font-medium text-gray-800">Currently Renting</h3>
             {/* </button> */}
             <p className="text-2xl font-bold text-green-600">{rentalCount}</p>
           </div>
