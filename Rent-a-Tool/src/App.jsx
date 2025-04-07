@@ -1,5 +1,5 @@
 import UserGuide from "./components/FeedBack and Help/Help";
-import FeedbackPage from "./components/Feedback and Help/FeedBackPage";
+import FeedbackPage from "./components/FeedBack and Help/FeedbackPage";
 import {
   Routes,
   Route,
@@ -36,6 +36,9 @@ import ToolRequests from "./components/Dashboard/ToolRequests";
 import { SearchProvider } from "./Context/SearchContext";
 import ChatInbox from "./components/Chat/ChatInbox";
 import ChatConversation from "./components/Chat/ChatConversation";
+import Categories from "./components/Footer-Pages/Categories";
+import PricingPlans from "./components/Footer-Pages/PricingPlans";
+import FAQ from "./components/Footer-Pages/FAQ";
 // import { create } from "@mui/material/styles/createTransitions";
 
 function PrivateRoute({ children }) {
@@ -91,6 +94,18 @@ const RoutesOfRent_a_Tool = createBrowserRouter([
       {
         path: "terms",
         element: <TermsAndPolicy />
+      },
+      {
+        path: "categories",
+        element: <Categories />
+      },
+      {
+        path: "pricing",
+        element: <PricingPlans />
+      },
+      {
+        path: "faq",
+        element: <FAQ />
       },
       {
         path: "Dashboard",

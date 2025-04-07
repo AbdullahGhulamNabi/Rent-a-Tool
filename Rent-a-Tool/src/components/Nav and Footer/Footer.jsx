@@ -24,7 +24,6 @@ function Footer() {
           {/* Quick Links */}
           <div className="flex flex-col">
             <div className="font-bold mb-1 text-sm sm:text-base">Quick Links</div>
-            <Link to="/categories" className="text-footerText hover:text-gray-400 text-xs">Browse Categories</Link>
             <Link to="/pricing" className="text-footerText hover:text-gray-400 mt-1 text-xs">Pricing Plans</Link>
             <Link to="/faq" className="text-footerText hover:text-gray-400 mt-1 text-xs">FAQs</Link>
           </div>
@@ -32,8 +31,8 @@ function Footer() {
           {/* Contact Us */}
           <div className="flex flex-col">
             <div className="font-bold mb-1 text-sm sm:text-base">Contact Us</div>
-            <p className="text-footerText text-xs">Email: support@rentatool.com</p>
-            <p className="text-footerText text-xs">Phone: +92 123 456 7890</p>
+            <p className="text-footerText text-xs">Email: rentatool777@gmail.com</p>
+            <p className="text-footerText text-xs">Phone: +92 307 4943016</p>
             <p className="text-footerText text-xs">Address: Lahore, Pakistan</p>
           </div>
 
