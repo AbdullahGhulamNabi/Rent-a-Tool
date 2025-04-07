@@ -543,7 +543,7 @@ function Listing() {
                   </div>
                 ) : rentedTools && rentedTools.length > 0 ? (
                   <>
-                    {/* <div className="flex flex-col mb-4">
+                    <div className="flex flex-col mb-4">
                       <div className="flex justify-between items-center">
                         <h3 className="text-lg font-semibold text-gray-700 mb-2">My Rental History</h3>
                         <button
@@ -574,7 +574,7 @@ function Listing() {
                         If some tools appear as "Currently Rented" but have actually been returned, or your rental history seems incorrect, 
                         click "Fix Issues" to automatically fix any inconsistencies in your rental data.
                       </p>
-                    </div> */}
+                    </div>
                     {rentedTools.map((rental) => (
                       <div key={rental._id} className="bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow duration-200 border border-gray-100">
                         <div className="flex items-start justify-between">
