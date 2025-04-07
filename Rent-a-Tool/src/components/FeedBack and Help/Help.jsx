@@ -17,40 +17,41 @@ const UserGuide = () => {
     {
       "title": "Register User",
       "content": [
-        { "text": "Click on Sign Up", imageUrl: register },
-        { "text": "Provide the following information:", imageUrl: SignUp },
-        { "text": "Enter your first name and last name." },
-        { "text": "Email (must be in a valid format)." },
-        { "text": "Phone number (must be in a valid format)." },
-        { "text": "Password (must be at least 8 characters long)." },
-        { "text": "Enter your address." },
-        { "text": "Enter your postal code." },
-        { "text": "Click on the Sign Up button. The user is successfully registered." }
+        { text: "Click on Login", imageUrl: register },
+        { text: "Provide the following information:", imageUrl: SignUp },
+        { text: "Enter your first name and last name." },
+        { text: "Email (must be in a valid format)." },
+        { text: "Phone number (must be in a valid format)." },
+        { text: "Password (must be at least 8 characters long)." },
+        { text: "Enter your address." },
+        { text: "Enter your postal code." },
+        { text: "Click on the Sign Up button. A message 'User registered successfully' will be shown." }
       ]
     },
     
     {
       "title": "Add Tool",
       "content": [
-        { "text": "Before adding a tool, the user must be logged in. Otherwise, they will be unable to add a tool." },
-        { "text": "A form opens.", imageUrl: addicon },
-        { "text": "Provide the following information about the tool:",imageUrl: addtool  },
+        { "text": "Before adding a tool, the user must be logged in. Otherwise, they will not be able to add a tool." },
+        { "text": "A form opens.", "imageUrl": addicon },
+        { "text": "Provide the following information about the tool:", "imageUrl": addtool },
         { "text": "Add an image of the tool." },
         { "text": "Enter the tool name." },
         { "text": "Enter a description of the tool." },
-        { "text": "Select 'Free Borrow' or 'For Rent'." },
+        { "text": "Select either 'Free Borrow' or 'For Rent'." },
         { "text": "If 'Free Borrow' is selected, no price is required. If 'For Rent' is selected, enter the price." },
-        { "text": "Click on the 'Add' button, and the tool will be added successfully." }
+        { "text": "Click on the 'Add' button. A message saying 'Tool added successfully' will be shown." }
       ]
+      
     },
     
     {
       "title": "Edit Tool",
       "content": [
-        { "text": "Before edit a tool detail, the user must be logged in. Otherwise, they will be unable to edit a tool detail.", imageUrl: edit },
-        { "text": "Select the edit icon.", imageUrl: updateform },
+        { "text": "Before editing a tool's details, the user must be logged in. Otherwise, they will not be able to edit tool details.", "imageUrl": edit },
+        { "text": "Select the edit icon.", "imageUrl": updateform },
         { "text": "Provide the following information to edit the tool: image, name, and description." },
-        { "text": "Click the update button, and the tool's information will be updated successfully." }
+        { "text": "Click the update button. A message saying 'Tool information updated successfully' will be shown." }
       ]
     },
     
@@ -67,18 +68,20 @@ const UserGuide = () => {
       "title": "Search Tool",
       "content": [
         { "text": "Go to the 'Search Tool' section." },
-        { "text": "Enter the tool name or apply filters to find the desired tool." },
+        { "text": "Enter the tool name." },
         { "text": "Click the 'Enter' button to view the desired tools.", imageUrl: search }
       ]
     },    
     {
       title: "Order Tool",
       content: [
-        { text: "Select a tool that you want to rent.",imagimageUrl: requesttoolicon},
-        { text: "Click on 'Request Tool'. A form will open where you need to provide the following information." ,imageUrl: ordertool },
-        { text: "Enter or select the rental duration and choose a payment method." },
-        { text: "Click on 'Confirm Order' to successfully place your order." }
+        { "text": "Select a tool that you want to rent.", "imageUrl": requesttoolicon },
+        { "text": "Click on 'Request Tool'. A form will open where you need to provide the following information.", "imageUrl": ordertool },
+        { "text": "Enter or select the rental duration and complete the payment procedure." },
+        { "text": "Click on 'Confirm Order'. A message saying 'Order placed successfully' will be shown." }
       ]
+      
+      
     }
     
   ];
