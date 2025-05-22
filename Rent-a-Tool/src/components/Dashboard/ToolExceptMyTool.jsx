@@ -140,7 +140,7 @@ const ToolExceptMyTool = () => {
             })}
           </div>
 
-          {filteredTools.length < tools.length && (
+          {visibleCount < filteredTools.length && (
             <div className="text-center mt-8">
               <button
                 onClick={handleLoadMore}
